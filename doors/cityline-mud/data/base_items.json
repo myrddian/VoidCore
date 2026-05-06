@@ -1,0 +1,137 @@
+{
+  "arasake_kiritsuke_shotgun": {
+    "id": "arasake_kiritsuke_shotgun",
+    "name": "ARASAKE Kiritsuke Shotgun",
+    "kind": "weapon",
+    "tags": ["ranged", "shotgun", "corporate", "arasake"],
+    "modSlots": 3,
+    "baseEffects": { "damage": 4, "noise": 2, "accuracy": -1 },
+    "summary": "Tactical shotgun in Arasake's neon-bone livery. Four-shell tube, recoil it doesn't pretend to manage."
+  },
+  "veshrin_hand_cannon": {
+    "id": "veshrin_hand_cannon",
+    "name": "Veshrin Hand Cannon",
+    "kind": "weapon",
+    "tags": ["ranged", "pistol", "corporate", "veshrin"],
+    "modSlots": 2,
+    "baseEffects": { "damage": 3, "noise": 1, "accuracy": 1 },
+    "summary": "Veshrin Industries surface-mining sidearm. Ugly, simple, never fails to extract a question."
+  },
+  "clinic_neural_dart": {
+    "id": "clinic_neural_dart",
+    "name": "Clinic Neural Dart",
+    "kind": "weapon",
+    "tags": ["ranged", "compact", "clinic", "silent"],
+    "modSlots": 2,
+    "baseEffects": { "damage": 2, "noise": -2, "stress_inflict": 2 },
+    "summary": "Compressed-air dart unit from a clinic loading bay. Quiet enough to keep secrets, sharp enough to keep them long."
+  },
+  "branwen_rivet_gun": {
+    "id": "branwen_rivet_gun",
+    "name": "Branwen Rivet Gun",
+    "kind": "weapon",
+    "tags": ["ranged", "industrial", "branwen", "improvised"],
+    "modSlots": 2,
+    "baseEffects": { "damage": 3, "noise": 3, "reach": -1 },
+    "summary": "Repurposed shipwright tool. Punches Iron. Punches anything else considerably worse."
+  },
+  "coil_archive_blade": {
+    "id": "coil_archive_blade",
+    "name": "Coil Archive Blade",
+    "kind": "weapon",
+    "tags": ["melee", "blade", "feudal", "house_coil", "ceremonial"],
+    "modSlots": 2,
+    "baseEffects": { "damage": 3, "reach": 1, "vibe": 1 },
+    "summary": "Hilt-marked with House Coil's archive sigil. Carrying it openly makes some doors quieter and other doors louder."
+  },
+  "clinic_scalpel": {
+    "id": "clinic_scalpel",
+    "name": "Clinic Edge",
+    "kind": "weapon",
+    "tags": ["melee", "blade", "clinic", "compact"],
+    "modSlots": 2,
+    "baseEffects": { "damage": 2, "ghost_bonus": 1, "reach": -1 },
+    "summary": "Surgical blade re-handled for street use. Sharper than the conversation that ended with it."
+  },
+  "branwen_pry_bar": {
+    "id": "branwen_pry_bar",
+    "name": "Branwen Pry Bar",
+    "kind": "weapon",
+    "tags": ["melee", "blunt", "branwen", "industrial"],
+    "modSlots": 1,
+    "baseEffects": { "damage": 4, "reach": 1, "noise": 1, "body_bonus": 1 },
+    "summary": "Iron prybar with three generations of Branwen welders' initials scratched into the shaft."
+  },
+
+  "branwen_yards_jacket": {
+    "id": "branwen_yards_jacket",
+    "name": "Branwen Yards Jacket",
+    "kind": "armor",
+    "slot": "torso",
+    "tags": ["jacket", "branwen", "industrial", "midweight"],
+    "modSlots": 3,
+    "baseEffects": { "defense": 2, "heat_buffer": 1 },
+    "summary": "Welder's jacket. Iron-thread liner, scorched cuffs, every pocket holds a different kind of tool."
+  },
+  "dock_runner_coat": {
+    "id": "dock_runner_coat",
+    "name": "Dock Runner Coat",
+    "kind": "armor",
+    "slot": "torso",
+    "tags": ["coat", "dock", "light", "ghost-friendly"],
+    "modSlots": 2,
+    "baseEffects": { "defense": 1, "ghost_bonus": 1 },
+    "summary": "Long oilcloth, salt-bleached at the cuffs. The hem moves the way a Dock Runner wants their hem to move."
+  },
+  "clinic_scrubs": {
+    "id": "clinic_scrubs",
+    "name": "Clinic Scrubs",
+    "kind": "armor",
+    "slot": "torso",
+    "tags": ["scrubs", "clinic", "light", "vibe-medical"],
+    "modSlots": 1,
+    "baseEffects": { "defense": 0, "healing_passive": 1, "vibe": 1 },
+    "summary": "Surgical blues. Worn openly they earn you about thirty seconds of benefit-of-the-doubt; worn sloppily, they earn you a Bureau interview."
+  },
+  "bureau_rain_shell": {
+    "id": "bureau_rain_shell",
+    "name": "Bureau Rain Shell",
+    "kind": "armor",
+    "slot": "torso",
+    "tags": ["shell", "bureau", "light", "uniform"],
+    "modSlots": 2,
+    "baseEffects": { "defense": 1, "rep_passive_bureau": 1, "rep_passive_couriers": -1 },
+    "summary": "Bureau-issue. Spotless. Wearing it is a position even when it isn't a uniform."
+  },
+
+  "halen_coil_lung_filter": {
+    "id": "halen_coil_lung_filter",
+    "name": "Halen-Coil Lung Filter",
+    "kind": "cyberware",
+    "slot": "respiratory",
+    "tags": ["respiratory", "halen_coil", "corporate", "subdermal"],
+    "modSlots": 2,
+    "baseEffects": { "maxHp_bonus": 1, "heat_buffer": 1, "healing_passive": 1 },
+    "summary": "Subdermal pathogen filter. Halen-Coil refuses to install one but they make the parts."
+  },
+  "courier_netgear_jack": {
+    "id": "courier_netgear_jack",
+    "name": "Courier NetGear Jack",
+    "kind": "cyberware",
+    "slot": "neural",
+    "tags": ["neural", "couriers", "netgear", "interface"],
+    "modSlots": 2,
+    "baseEffects": { "wire_bonus": 1, "hacking": 2 },
+    "summary": "Pilfered officer-tier interface terminal, jury-rigged into a cervical jack. Sometimes it answers something."
+  },
+  "veshrin_tendon_weave": {
+    "id": "veshrin_tendon_weave",
+    "name": "Veshrin Tendon Weave",
+    "kind": "cyberware",
+    "slot": "leg",
+    "tags": ["musculature", "veshrin", "corporate", "subdermal"],
+    "modSlots": 2,
+    "baseEffects": { "body_bonus": 1, "edge_bonus": 1 },
+    "summary": "Industrial tendon mesh from the surface mining detail. Designed to lift ore. Lifts other things just as well."
+  }
+}

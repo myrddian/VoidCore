@@ -1,0 +1,31 @@
+{
+  "name": "Dead Shard Archive",
+  "route": "shard://cityline/dead-shard-archive",
+  "sigil": ":: cold index ::",
+  "accent": "white",
+  "support": "cyan",
+  "dim": "dark-grey",
+  "description": "Rows of dead media sit in cold sleeves while the air tastes like dust, coolant, and litigation.",
+  "detail": "Every shelf here is a blackmail file waiting for a buyer patient enough to ask.",
+  "fixtures": [
+    {
+      "id": "shelves",
+      "name": "cold shelves",
+      "inspect": "The shelves are labelled in a dead filing scheme that still feels capable of ruining lives."
+    },
+    {
+      "id": "dead-terminal",
+      "name": "dead terminal",
+      "inspect": "The dead terminal at the back of the archive looks abandoned, but the cursor blinks if you stand near it long enough to be remembered."
+    }
+  ],
+  "npcs": [
+    "tamsin",
+    "curator"
+  ],
+  "mood": [
+    "The cooling lines are cycling harder than the temperature warrants.",
+    "Tonight three sleeves on shelf D have had their dust disturbed and put back without quite matching.",
+    "The dead terminal at the back is humming on a frequency the rest of the room is pretending not to hear."
+  ]
+}

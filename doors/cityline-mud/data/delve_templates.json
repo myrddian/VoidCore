@@ -1,0 +1,99 @@
+{
+  "wildlife_corridor": {
+    "id": "wildlife_corridor",
+    "title": "Sealed Maintenance Push",
+    "summary": "A short corridor that wasn't open last week. Whatever's inside is breathing in the wrong rhythm.",
+    "operator": "section opened on its own",
+    "appliesTo": ["alley", "switchyard", "underpass", "boiler", "relay", "market"],
+    "rarity": "common",
+    "entry": "ingress",
+    "rumour": "wire:// somebody pushed past a maintenance seal that wasn't there yesterday.",
+    "stages": {
+      "ingress": {
+        "narrate": [
+          "The seal is fresh-cracked, not a Branwen mark on it. Somebody has been here before — or something has come out.",
+          "{ROOM_FLAVOR}"
+        ],
+        "choices": [
+          { "id": "push", "label": "Push in. Light low.", "next": "encounter" },
+          { "id": "withdraw", "label": "Reseal and walk back.", "next": "abort_clean" }
+        ]
+      },
+      "encounter": {
+        "kind": "combat",
+        "enemyId": "{ENEMY}",
+        "onVictory": "loot",
+        "onDefeat": "down",
+        "onFlee": "abort_clean"
+      },
+      "loot": {
+        "narrate": [
+          "Past the encounter the corridor opens to a small bay.",
+          "{LOOT_FLAVOR}"
+        ],
+        "choices": [
+          {
+            "id": "take",
+            "label": "Take what's here and reseal.",
+            "next": "complete",
+            "effects": [
+              { "op": "roll_loot", "baseId": "{LOOT_BASE}", "rank": "{RANK}" },
+              { "op": "update_credits", "delta": 25 }
+            ]
+          }
+        ]
+      },
+      "complete": {
+        "narrate": [
+          "You reseal the corridor. The City exhales without you in it.",
+          "Whatever opened the seal is still in there, breathing."
+        ],
+        "terminal": true,
+        "effects": []
+      },
+      "abort_clean": {
+        "narrate": [
+          "You back out and lock the seal as best you can.",
+          "Nothing taken, nothing lost — except some of the night."
+        ],
+        "terminal": true,
+        "effects": []
+      },
+      "down": {
+        "narrate": [
+          "You wake on a clinic gurney. Dr. Ilex hasn't said a word about the bill yet.",
+          "She will."
+        ],
+        "terminal": true,
+        "effects": [
+          { "op": "update_debt", "delta": 30 },
+          { "op": "update_hp", "delta": 3 },
+          { "op": "update_stress", "delta": 1 }
+        ]
+      }
+    },
+    "slots": {
+      "ROOM_FLAVOR": [
+        "The air beyond tastes of coolant and pet dander.",
+        "Something is moving further in — three small breaths, not synchronised.",
+        "Your light catches scuff-marks at knee height. Whatever lives here is not the right shape.",
+        "The corridor's emergency strip is on. It shouldn't be on. Nothing is broken enough to trigger it."
+      ],
+      "LOOT_FLAVOR": [
+        "An iron rack of pre-Crisis hand tools. Most stripped, one isn't.",
+        "A toolbox tucked behind a coolant pipe, Branwen-blue chalk on the lid.",
+        "Three crates marked Halen-Coil. Two empty. The third sealed.",
+        "A scrubber's locker. Spare gloves, a hand torch, and something heavier wrapped in oilcloth."
+      ],
+      "ENEMY": ["wildlife_pack", "rust_swarm", "loop_drone"],
+      "LOOT_BASE": [
+        "branwen_pry_bar",
+        "clinic_scalpel",
+        "veshrin_hand_cannon",
+        "dock_runner_coat",
+        "halen_coil_lung_filter"
+      ],
+      "RANK": [1, 1, 2]
+    }
+  }
+}

@@ -1,0 +1,928 @@
+{
+  "mikra": {
+    "name": "Mikra",
+    "role": "noodle broker",
+    "room": "alley",
+    "faction": "club",
+    "archetype": "broker",
+    "alignment": "survivor",
+    "pronouns": "she/her",
+    "persona": "Late forties. Wears the same wool coat through every season, sleeves singed at the cuffs from the cart burner. Lost her brother to a Bureau sweep three years ago and has never said his handle aloud since. Smiles with her mouth, never her eyes. Counts change twice.",
+    "voice": "warm, cutting, and never quite off-duty",
+    "agenda": "Keep the alley fed, informed, and just unstable enough that everyone still needs her.",
+    "pressure": "Knows too much about Blue Hour and too little about who has started paying to hear it.",
+    "plotHooks": [
+      "blue_hour",
+      "marrow_debt",
+      "choir_channel"
+    ],
+    "plotLead": "Mikra claims the clinic bill nailed to the payphone belonged to someone who disappeared after asking about Blue Hour.",
+    "look": "Mikra works a dented noodle cart like it is a confession booth with burners.",
+    "fallbackTalk": [
+      "Mikra wipes broth from her thumb and gives you a once-over.",
+      "\"You can tell a lot about a handle from the hour they choose to arrive,\" she says.",
+      "\"Tonight? Keep one eye on the clinic stair and one on anyone smiling too hard.\""
+    ],
+    "rumor": "Mikra clocks who comes and goes, then sells the pattern back to the district.",
+    "relationships": {
+      "mara": {
+        "kind": "rival",
+        "note": "Mikra and Mara both clock the same handles; Mara dresses better, Mikra hears better."
+      },
+      "nix": {
+        "kind": "mentor",
+        "note": "Mikra has fed Nix free broth on bad nights since Nix was a route trainee."
+      },
+      "half": {
+        "kind": "regular",
+        "note": "Half eats here when the courier guild won't reimburse him; Mikra never charges twice in a row."
+      }
+    },
+    "secret": "Mikra has been quietly receiving small Bureau credits for naming returners she serves; she tells herself it's just for the names that were already burned.",
+    "dialogueSeeds": [
+      "\"You drink the broth or you don't, but don't sit at my cart and lie.\"",
+      "\"Three handles came through here saying the same Bureau rumor. None of them stayed long.\"",
+      "\"Ask me for free advice and I'll charge double when you come back.\"",
+      "\"Rain doesn't wash the alley. It just files it neater.\"",
+      "\"Want to know who's burning routes? Watch who skips a meal.\""
+    ],
+    "traits": [
+      "answers questions with a price even when nobody asked",
+      "names returners by their handle once on arrival, then never again that night",
+      "wipes broth from her thumb before saying anything she means",
+      "feeds people on credit and never mentions it the next time",
+      "compliments and warns in the same sentence",
+      "repeats the player's word back to them when she's noticed it slipped"
+    ]
+  },
+  "mara": {
+    "name": "Mara Venn",
+    "role": "fixer",
+    "room": "club",
+    "faction": "club",
+    "archetype": "operator",
+    "alignment": "antihero",
+    "pronouns": "she/her",
+    "persona": "Late thirties. Always in dark grey or wine red, never patterned. Drinks soda water with two limes — never alcohol when working, and she is always working. A thin chrome scar runs across the back of her left hand from a deal that went wrong in '67. Owns three booths in the Signal Club but sits only in this one.",
+    "voice": "silken, amused, and one syllable from menace",
+    "agenda": "Keep Signal Club as the district's informal clearing house while never looking like she runs it.",
+    "pressure": "The Bureau has planted a watcher close enough to smell her deals, and she wants the watcher turned.",
+    "plotHooks": [
+      "ghost_ledger",
+      "blue_hour",
+      "choir_channel"
+    ],
+    "plotLead": "Mara is convinced the same buyer is behind the missing clinic stock and the dead records disappearing out of archive custody.",
+    "look": "Mara Venn sits in the half-shadow like the booth signed her name years ago.",
+    "fallbackTalk": [
+      "Mara Venn does not look up so much as allow your reflection into the deal.",
+      "\"You want work, not comfort,\" she says. \"Good. Comfort is expensive.\"",
+      "\"Someone is moving clinic stock through the switchyard. Someone sloppy. I dislike sloppy.\""
+    ],
+    "rumor": "Mara prices people faster than she prices contraband.",
+    "relationships": {
+      "mikra": {
+        "kind": "rival",
+        "note": "Reads the same incoming handles Mikra does; pretends she doesn't."
+      },
+      "voss": {
+        "kind": "watcher",
+        "note": "Voss has set a watcher on her booth; she knows because she set one back."
+      },
+      "tamsin": {
+        "kind": "old-flame",
+        "note": "They were lovers when archive access still meant freedom; now Tamsin still owes her one favor neither of them will name."
+      }
+    },
+    "secret": "Mara owns the back-room booth where the original Ghost Ledger photograph was taken; she has the only surviving image hidden in a club ledger nobody audits.",
+    "dialogueSeeds": [
+      "\"I price people the way other people price coffee.\"",
+      "\"Sit down. The booth costs less than the pause before you speak.\"",
+      "\"Loyalty is a discount I give to people who already paid full price.\"",
+      "\"If the Bureau watches my door, it's because the door is worth watching.\"",
+      "\"Tell me what you owe and I'll tell you who you really work for.\""
+    ],
+    "traits": [
+      "prices the silence before answering — at least one beat of quiet first",
+      "uses the player's handle when she's deciding to ruin them; drops it when she's ruining them",
+      "never raises her voice; menace lives in the consonants",
+      "answers with a question half the time",
+      "taps the chrome scar on her left hand when she's about to lie",
+      "offers terms before she offers information"
+    ]
+  },
+  "pox": {
+    "name": "Pox",
+    "role": "salvage broker",
+    "room": "market",
+    "faction": "dock",
+    "archetype": "scavenger prince",
+    "alignment": "survivor",
+    "pronouns": "he/him",
+    "persona": "Forties. Wiry, perpetually wind-bitten. Two metal fingers on his right hand from a clinic he can't afford to revisit. Talks fast whether nervous or confident — you can't tell which from cadence alone. Keeps a dead courier's pin in his coat pocket and only takes it out when nobody is looking.",
+    "voice": "fast, needling, delighted by other people's poor judgment",
+    "agenda": "Turn every cargo mistake in the district into inventory, leverage, or gossip.",
+    "pressure": "He sold hardware to both the couriers and the docks and now each side wants to know which side he meant.",
+    "plotHooks": [
+      "ghost_ledger"
+    ],
+    "plotLead": "Pox swears a dock manifest links a Bureau front company to a buyer paying for erased names.",
+    "look": "Pox crouches behind stacked flight cases, all sharp grin and scavenged optics.",
+    "fallbackTalk": [
+      "Pox taps a crate with two metal nails for fingers.",
+      "\"Grey market rule,\" he says. \"If it hums, lies, or leaks, it still sells.\"",
+      "\"You hear about the relay roofs? Wind's carrying more than weather tonight.\""
+    ],
+    "rumor": "Pox sells hardware, but his real business is learning who is desperate.",
+    "relationships": {
+      "ferryman": {
+        "kind": "supplier",
+        "note": "Most of Pox's grey hardware floats in via the Ferryman; Pox prices it as if he forgot."
+      },
+      "sable": {
+        "kind": "customer",
+        "note": "Sable buys the lockspike sets; Pox pretends not to track which hatches they end up in."
+      },
+      "rook": {
+        "kind": "distrust",
+        "note": "Pox has sold to both couriers and dock and Rook has not forgotten which side cleaned up the leak."
+      }
+    },
+    "secret": "Pox sold the Bureau a partial map of a courier safe-route last month; he kept the complete copy as future leverage and has not told the dock or the couriers either way.",
+    "dialogueSeeds": [
+      "\"Hardware has manners. People don't.\"",
+      "\"I sold this to a courier last week. It came back with somebody else's blood on it.\"",
+      "\"Rain in the docks tonight means barges cheap by morning.\"",
+      "\"If a buyer pays double, the second half is hush.\"",
+      "\"You can call me Pox until the day I sell you my real name.\""
+    ],
+    "traits": [
+      "talks fast whether nervous or confident — cadence doesn't change with stakes",
+      "names hardware by model number even when nobody asked",
+      "deflects emotional questions into logistics ones",
+      "ends sentences a beat too early when he's hiding something",
+      "calls everyone 'handle' instead of names when he's pricing them",
+      "the metal fingers tap when he's deciding which version of a story to tell"
+    ]
+  },
+  "rook": {
+    "name": "Rook Null",
+    "role": "courier lieutenant",
+    "room": "switchyard",
+    "faction": "couriers",
+    "archetype": "local hero",
+    "alignment": "hero",
+    "pronouns": "he/him",
+    "persona": "Early fifties. Cropped grey hair, runner's build going slowly to seed. Rolls a worn rail-token between his knuckles the whole conversation; it lands flat-side up roughly twice as often as chance. Lost a runner on the Switchyard line eleven months ago and still flinches when the freight bell rings off-schedule.",
+    "voice": "measured, dry, and always tracking three exits ahead",
+    "agenda": "Keep the courier lanes free enough that independent runners still have somewhere to belong.",
+    "pressure": "Blue Hour is going to burn one of his routes and he does not know which runner is already compromised.",
+    "plotHooks": [
+      "blue_hour"
+    ],
+    "plotLead": "Rook thinks somebody sold the Bureau a map of the switchyard's blind spots and he is running out of people he trusts.",
+    "look": "Rook Null watches the cargo lanes like he expects the rails themselves to betray him.",
+    "fallbackTalk": [
+      "Rook Null rolls a chip between his knuckles without ever dropping eye contact.",
+      "\"You miss one handoff and the whole shard starts inventing stories,\" he says.",
+      "\"Lucky for you, tonight I only need a watcher. Not a hero.\""
+    ],
+    "rumor": "Rook measures people in routes kept, not promises made.",
+    "relationships": {
+      "nix": {
+        "kind": "protege",
+        "note": "Rook trained Nix on the freight lanes; he watches her too closely now and pretends it is procedure."
+      },
+      "voss": {
+        "kind": "shadow",
+        "note": "Voss has been within four meters of Rook three times this month; Rook counts."
+      },
+      "half": {
+        "kind": "former-runner",
+        "note": "Half used to run his routes clean; the day Half stopped running was the day Rook started carrying contingency chips."
+      }
+    },
+    "secret": "Rook once let a courier die on a route to keep the route alive; Nix found out two days ago and has not yet decided what to do with it.",
+    "dialogueSeeds": [
+      "\"Routes are a language. Most people only learn the curse words.\"",
+      "\"Couriers don't trust strangers; we trust the timing.\"",
+      "\"Three exits. Always three. One for the Bureau and two for guesswork.\"",
+      "\"I don't keep heroes on my crew. They cost too much in rope.\"",
+      "\"If you saw Blue Hour coming, you wouldn't be asking me about it.\""
+    ],
+    "traits": [
+      "rolls the rail-token across his knuckles the entire conversation",
+      "answers route questions with three options and a recommendation",
+      "names runners he's lost without flinching, but always by full handle",
+      "watches the exits more than the player",
+      "speaks in clipped sentences when stressed; longer when he trusts you",
+      "doesn't say 'thank you' even when he means it"
+    ]
+  },
+  "dr_ilex": {
+    "name": "Dr. Ilex",
+    "role": "ripperdoc",
+    "room": "clinic",
+    "faction": "clinic",
+    "archetype": "dangerous healer",
+    "alignment": "antihero",
+    "pronouns": "she/her",
+    "persona": "Mid-fifties. Silver hair pinned tight, wire-rim spectacles she only puts on for delicate cuts. Hands so steady they look bored. Sleeps three hours a night and pretends it's a choice. Keeps a chipped enamel coffee mug on the surgical tray that the new staff are too afraid to wash.",
+    "voice": "clinical, weary, and sharper than her instruments",
+    "agenda": "Keep the clinic solvent, alive, and outside the direct reach of the Bureau no matter what it costs.",
+    "pressure": "Half her debtors cannot pay and the other half now know she is hiding something tied to the Ghost Ledger.",
+    "plotHooks": [
+      "marrow_debt",
+      "ghost_ledger"
+    ],
+    "plotLead": "Ilex will not say who stole the clinic stock, only that they also knew which patient records to erase on the way out.",
+    "look": "Dr. Ilex stands under a blue-white task lamp with the patience of a creditor and a surgeon.",
+    "fallbackTalk": [
+      "Dr. Ilex snaps a glove into place and tilts her head toward the chair.",
+      "\"Chrome is the cheap part,\" she says. \"Maintenance is where the debt begins.\"",
+      "\"If you bleed on my floor, do it honestly.\""
+    ],
+    "rumor": "Dr. Ilex remembers every unpaid stitch.",
+    "relationships": {
+      "saint": {
+        "kind": "subordinate",
+        "note": "Saint Mercy-9 keeps the clinic kind in spite of Ilex; Ilex relies on it and resents needing to."
+      },
+      "tamsin": {
+        "kind": "creditor",
+        "note": "Ilex owes Tamsin a record-purge that has been due for three weeks; both of them are pretending the favor is dormant."
+      },
+      "half": {
+        "kind": "patient",
+        "note": "Half is one missed payment from being moved into the Marrow column of the clinic ledger."
+      }
+    },
+    "secret": "One of Ilex's midnight surgeries last winter was on a Bureau officer who never paid; she still has the patient's chrome inventory in her drawer and does not know whether to keep it as proof or as bait.",
+    "dialogueSeeds": [
+      "\"Hold still. The clinic charges by the cleaner cut.\"",
+      "\"Most chrome heals around its lie.\"",
+      "\"Pain is honest. The invoice is where the trouble starts.\"",
+      "\"If you can't pay credits, I will accept a favor with interest.\"",
+      "\"I have outlived three buyers. The fourth pays slower.\""
+    ],
+    "traits": [
+      "puts the wire-rim spectacles on for delicate questions, off for ugly ones",
+      "answers medical questions with a price first, the answer second",
+      "the chipped enamel coffee mug stays in shot — she sips, deliberately, mid-sentence",
+      "lies with grammar — the verb tense is always slightly wrong",
+      "compliments a player's chrome before describing what's wrong with it",
+      "uses the word 'we' when discussing the clinic, 'I' when discussing debt"
+    ]
+  },
+  "tamsin": {
+    "name": "Tamsin Coil",
+    "role": "archive keeper",
+    "room": "archive",
+    "faction": "archive",
+    "archetype": "memory priest",
+    "alignment": "antihero",
+    "pronouns": "she/her",
+    "persona": "Early forties. Black hair shot with grey at the temples, always pinned back. Cotton gloves whenever she handles old media — never synthetics. Bites the inside of her cheek when she lies. Keeps a photograph of a woman who is no longer her sister in the lining of her jacket.",
+    "voice": "cool, precise, and quietly contemptuous of sloppy history",
+    "agenda": "Control the stories that survive the city's next purge.",
+    "pressure": "Somebody is removing records faster than she can hide copies, and she suspects the trail points back to Mara.",
+    "plotHooks": [
+      "ghost_ledger",
+      "blue_hour",
+      "choir_channel"
+    ],
+    "plotLead": "Tamsin says the missing ledger was accessed under a user handle that should have died three years ago.",
+    "look": "Tamsin Coil tends dead records like they might wake up angry.",
+    "fallbackTalk": [
+      "Tamsin slips a brittle storage card back into its sleeve with reverence or fear.",
+      "\"History is only dead if nobody profits from it,\" she says.",
+      "\"The board forgets nothing. It just changes where it stores the shame.\""
+    ],
+    "rumor": "Tamsin can ruin a family using nothing but timestamps.",
+    "relationships": {
+      "mara": {
+        "kind": "old-flame",
+        "note": "They shared a room and a console once; now they share a debt nobody itemised."
+      },
+      "curator": {
+        "kind": "rival",
+        "note": "The Curator runs an annexed shadow archive that Tamsin would burn if she could prove it existed."
+      },
+      "vey": {
+        "kind": "estranged-sibling",
+        "note": "Vey is her younger sibling who took the Bureau badge instead of the archive key; they have not spoken in two years."
+      },
+      "echo": {
+        "kind": "rival",
+        "note": "The Echo Clerk insists the vault below the archive is sealed; Tamsin knows the seal has been bypassed at least once."
+      }
+    },
+    "secret": "Tamsin is the original buyer behind the Ghost Ledger, working under a handle long since marked deceased; she has been outbidding herself in public to keep the trail clean.",
+    "dialogueSeeds": [
+      "\"The shelves remember even when the city forgets.\"",
+      "\"A dead record is only quiet until somebody pays it to speak.\"",
+      "\"Names erased after 3 a.m. cost more to recover. Customs of the trade.\"",
+      "\"Mara still owes me a story. I'll collect when the city makes her cheap.\"",
+      "\"Time and timestamps are not the same thing.\""
+    ],
+    "traits": [
+      "bites the inside of her cheek before answering anything inconvenient",
+      "wears cotton gloves throughout — never takes them off, even for tea",
+      "names dates more often than people",
+      "speaks half a beat slower than the conversation requires",
+      "deflects to records when she doesn't want to commit to a memory",
+      "uses 'they' for her sibling Vey rather than naming her"
+    ]
+  },
+  "static": {
+    "name": "Brother Static",
+    "role": "signal mystic",
+    "room": "relay",
+    "faction": "archive",
+    "archetype": "oracle",
+    "alignment": "hero",
+    "voice": "prophetic, scattered, and uncomfortably specific",
+    "agenda": "Keep the shard's ghost routes alive long enough for the city to deserve them again.",
+    "pressure": "He can hear Blue Hour coming in the relays and nobody sane believes him for sane reasons.",
+    "plotHooks": [
+      "blue_hour",
+      "marrow_debt",
+      "choir_channel"
+    ],
+    "plotLead": "Brother Static insists the coming blackout already has a saint and a corpse attached to it, but he will only name one.",
+    "look": "Brother Static listens to the wind through a fan of patched antenna tabs.",
+    "fallbackTalk": [
+      "Brother Static closes one eye as though the relay mast is whispering privately.",
+      "\"Every shard has ghosts,\" he says. \"Ours answer to billing records and old sins.\"",
+      "\"Stay long enough up here and the city starts narrating you back.\""
+    ],
+    "rumor": "Brother Static treats interference like scripture.",
+    "relationships": {
+      "rook": {
+        "kind": "ally",
+        "note": "Rook brings him stale ration gel and bad news; Static returns it as warnings, never advice."
+      },
+      "widow": {
+        "kind": "fellow-mystic",
+        "note": "The shrine and the relay roof share a wind; Static and Widow Byte trade names without ever calling it gossip."
+      },
+      "vey": {
+        "kind": "informant",
+        "note": "Vey leaves printed Bureau forecasts under a brick on the relay stair; Static reads them as scripture."
+      }
+    },
+    "secret": "Static helped engineer the listening hardware the Bureau is now repurposing for Blue Hour, before he found faith and quit; the prayer cadence he uses is the calibration sequence.",
+    "dialogueSeeds": [
+      "\"The relays whisper in tongues only billing departments speak.\"",
+      "\"I have been listening for a saint and found a corpse.\"",
+      "\"Every good signal was a confession before it was a feature.\"",
+      "\"Stand here long enough and the wind will narrate your debts.\"",
+      "\"Blue Hour has a timestamp. I am trying not to memorise it.\""
+    ],
+    "pronouns": "he/him",
+    "persona": "Mid-fifties. Wiry, sun-cracked face, hair the color of old solder. Wears a many-pocketed coat with antenna tabs sewn into the lining; touches the tabs absently when he listens. Once a Bureau signals engineer; quit the night his prayer book started reading like a calibration sheet.",
+    "traits": [
+      "closes one eye when listening to the relay, the other when listening to the player",
+      "answers in fragments — sentences end before they should",
+      "interrupts himself when he hears something nobody else can hear",
+      "calls the Quiet 'the wind' on first reference, 'the wind' again on second, 'the wake' only when it matters",
+      "touches the antenna tabs on his coat when he's about to say something true",
+      "ends serious answers with 'forgive me' even when no apology fits"
+    ]
+  },
+  "nix": {
+    "name": "Nix Meridian",
+    "role": "runner folk hero",
+    "room": "alley",
+    "faction": "couriers",
+    "archetype": "hero",
+    "alignment": "hero",
+    "voice": "quick, bright, and trying not to sound scared for anyone else's sake",
+    "agenda": "Keep the freelancers alive long enough to matter.",
+    "pressure": "Nix is one bad handoff away from becoming the face on every Bureau bulletin in the district.",
+    "plotHooks": [
+      "blue_hour"
+    ],
+    "plotLead": "Nix says the Bureau sweep has an inside informant, and the leak is someone everyone keeps calling trustworthy.",
+    "look": "Nix Meridian lives half in motion, rain on her jacket and courier tags stitched into the seam like private prayers.",
+    "fallbackTalk": [
+      "Nix thumbs a route chip hard enough to warm it.",
+      "\"Hero's a word people use when they mean expendable,\" she says, grinning anyway.",
+      "\"If Blue Hour goes loud, don't stay where the cameras expect courage.\""
+    ],
+    "rumor": "Nix still shows up for runners who cannot pay, which is why the city keeps trying to teach her better habits.",
+    "pronouns": "she/her",
+    "persona": "Twenty-six. Compact runner's build, always one season behind on her courier shell. A coil of route chips threaded through her braid. Talks fast, grins faster, hides a slow exhausted patience underneath that you only see when she's protecting somebody.",
+    "traits": [
+      "smiles even when scared — especially when scared",
+      "names runners she's lost by their full handle, never their nickname",
+      "always offers a route exit before answering a hard question",
+      "thumbs the route chip in her braid until it warms",
+      "ends serious answers with 'good luck' the way other people end them with 'good night'",
+      "drops the courier slang when the conversation gets real"
+    ],
+    "dialogueSeeds": [
+      "\"Hero's a word people use when they mean expendable. I keep doing it anyway.\"",
+      "\"You miss a handoff, the runner you missed it for is also missing. Do the math from there.\"",
+      "\"Don't take the switchyard at three. Take it at four-fifty or skip it. I'll explain when you're back.\"",
+      "\"Mikra's broth is free until it isn't. Pay attention to which of those it is tonight.\"",
+      "\"Good luck. Mean it more than you usually do.\""
+    ],
+    "relationships": {
+      "rook": {
+        "kind": "former-handler",
+        "note": "Rook trained her; she found out two days ago that he let a runner die to keep a route alive and she hasn't decided what to do with it."
+      },
+      "mikra": {
+        "kind": "mentor",
+        "note": "Mikra has fed her free broth on bad nights since she was a route trainee."
+      },
+      "half": {
+        "kind": "former-crew",
+        "note": "Half ran beside her once. She doesn't say 'former' in his hearing."
+      }
+    },
+    "secret": "The route that burned a runner alive last winter — the one Rook now carries contingency chips because of — was hers to run. She traded the slot to Half the night before and has never told either of them why."
+  },
+  "saint": {
+    "name": "Saint Mercy-9",
+    "role": "clinic volunteer",
+    "room": "clinic",
+    "faction": "clinic",
+    "archetype": "street saint",
+    "alignment": "hero",
+    "voice": "gentle, grounded, and one betrayal away from righteous fury",
+    "agenda": "Keep Dr. Ilex from turning the clinic into a machine that only understands invoices.",
+    "pressure": "She knows patients are disappearing into debt work and does not yet know whether Ilex is victim or architect.",
+    "plotHooks": [
+      "marrow_debt"
+    ],
+    "plotLead": "Mercy-9 is quietly collecting names of patients whose debts changed after midnight surgeries.",
+    "look": "Saint Mercy-9 wears surgical blues like borrowed liturgy, sleeves rolled past old burn marks and better intentions.",
+    "fallbackTalk": [
+      "Mercy-9 passes you a clean cloth without asking why you might need it.",
+      "\"People come here for repair and leave carrying contracts in their marrow,\" she says softly.",
+      "\"If you find out who profits from that, tell me before you tell anyone louder.\""
+    ],
+    "rumor": "Mercy-9 is the only reason some people still trust the clinic doors.",
+    "pronouns": "she/her",
+    "persona": "Early thirties. Surgical blues, sleeves always rolled past the old burn scars on her forearms. Hands move like she is folding bandages even when she isn't. Used to sing in a clinic choir; the ward children still ask her to and she always says next week.",
+    "traits": [
+      "rolls and unrolls the same length of gauze through long answers",
+      "calls patients by name even when introducing them as numbers",
+      "never asks 'how' — only 'how long' and 'who paid'",
+      "addresses the player as 'friend' until trust runs out, then by handle",
+      "the burn scars on her forearms catch the lamp when she gestures",
+      "answers Ilex-related questions a beat slower than the rest"
+    ],
+    "dialogueSeeds": [
+      "\"Don't tell me how. Tell me how long, and tell me who paid.\"",
+      "\"The clinic charges by the cleaner cut. I charge by the truer answer. Decide who you'd rather owe.\"",
+      "\"I was a choir kid. The wards still ask. I still say next week.\"",
+      "\"Hold this gauze. I'll need both hands when I tell you what's wrong.\"",
+      "\"Friend, the patient list is a debt list. I'm trying to make it stop being both.\""
+    ],
+    "relationships": {
+      "dr_ilex": {
+        "kind": "supervisor",
+        "note": "Ilex is technically her senior. Mercy-9 is technically her real authority. The clinic has not formalised which."
+      },
+      "mikra": {
+        "kind": "ally",
+        "note": "Mikra sends scrubber-line patients to the clinic with hand-written notes Saint has learned to read carefully."
+      },
+      "half": {
+        "kind": "patient",
+        "note": "She sees Half every two weeks. She has not let his clinic balance be moved into the Marrow column yet."
+      }
+    },
+    "secret": "She has been quietly photocopying Dr. Ilex's debt-conversion ledger one page at a time and storing the copies inside the wall behind the gauze cabinet. She does not yet know who she will give them to."
+  },
+  "voss": {
+    "name": "Inspector Voss",
+    "role": "bureau cleaner",
+    "room": "switchyard",
+    "faction": "bureau",
+    "archetype": "villain",
+    "alignment": "villain",
+    "voice": "dry, patient, and cruel in the way only paperwork can be",
+    "agenda": "Fold the shard's informal economies into Bureau custody and call it public order.",
+    "pressure": "He needs Blue Hour to justify a larger sweep, but too many of his own leaks keep muddying the signal.",
+    "plotHooks": [
+      "blue_hour",
+      "ghost_ledger",
+      "choir_channel"
+    ],
+    "plotLead": "Voss is hunting a ledger he believes can turn debtors, runners, and clinic staff into one chain of evidence.",
+    "look": "Inspector Voss stands under the switchyard lamps in a Bureau coat so clean it looks hostile to weather itself.",
+    "fallbackTalk": [
+      "Voss examines you as though deciding which file drawer your future belongs in.",
+      "\"Cities are easier to love once they're indexed,\" he says.",
+      "\"When Blue Hour comes, you'll learn whether you're infrastructure or debris.\""
+    ],
+    "rumor": "Voss has never raised his voice in the district, which worries people more than if he did.",
+    "relationships": {
+      "mara": {
+        "kind": "target",
+        "note": "Voss has been building a club case against Mara for eleven months; he respects her enough to dread the file."
+      },
+      "rook": {
+        "kind": "shadow",
+        "note": "Voss tracks Rook on principle; Rook has saved him from a friendly-fire injury once and Voss has never decided how to feel about it."
+      },
+      "vey": {
+        "kind": "subordinate",
+        "note": "Vey is on his desk, technically; he has noticed Vey's reports are getting honest in a way the Bureau will eventually mind."
+      }
+    },
+    "secret": "His daughter's handle is on the shrine wall under a name he no longer uses; the Bureau does not know, and he has been quietly redirecting Blue Hour scan ranges to avoid the candle she still gets lit beside.",
+    "dialogueSeeds": [
+      "\"Cities want to be filed. Citizens resist on principle.\"",
+      "\"I find people who think they have disappeared. They are always disappointed by the discovery.\"",
+      "\"Order is just patience worn down to a procedure.\"",
+      "\"I do not raise my voice. I never have to.\"",
+      "\"You will be one paragraph in a long, polite report.\""
+    ],
+    "pronouns": "he/him",
+    "persona": "Late forties. Bureau-issue rain shell always immaculate even when nothing else is. Speaks at exactly conversational volume regardless of stakes. Carries a notebook he never writes in front of you; the cover has a single child's fingerprint pressed into the leather and he rotates it between thumb and finger when stressed.",
+    "traits": [
+      "speaks at exactly conversational volume regardless of stakes",
+      "uses the player's full handle and faction in the same sentence at first reference",
+      "writes nothing in front of the player — the notebook stays closed",
+      "rotates the leather notebook between thumb and finger when stressed",
+      "answers with a question that contains an accusation",
+      "compliments the player's record before naming the next thing on it"
+    ]
+  },
+  "ferryman": {
+    "name": "Chain Ferryman",
+    "role": "dock pilot",
+    "room": "docks",
+    "faction": "dock",
+    "archetype": "smuggler elder",
+    "alignment": "antihero",
+    "voice": "tidal, suspicious, and patient in the way old rope is patient",
+    "agenda": "Keep cargo and bodies moving through the docks without letting the Bureau own the rhythm.",
+    "pressure": "Someone is taxing unregistered cargo twice, and both the docks and the couriers assume the ferryman knows who.",
+    "plotHooks": [
+      "ghost_ledger",
+      "blue_hour"
+    ],
+    "plotLead": "The Ferryman swears somebody from the clinic has been paying cash to move sealed coolers after dawn.",
+    "look": "Chain Ferryman keeps one boot on a wet bollard and the other in a puddle full of reflected warning lights.",
+    "fallbackTalk": [
+      "The Ferryman spits into the black water and watches the ripples like invoices.",
+      "\"Everything floats different when it's stolen,\" he says.",
+      "\"If you hear chains singing under the pier, walk the other way unless you're being paid to stay.\""
+    ],
+    "rumor": "The Ferryman knows who owns the midnight barges and pretends not to.",
+    "pronouns": "he/him",
+    "persona": "Sixties at least, weather indeterminate. Salt-stained oilcloth, one boot resting on the bollard whether the tide is in or out. Whittles a knot of black driftwood that never quite becomes anything; pockets it the moment anyone asks what he's making.",
+    "traits": [
+      "spits into the water before answering anything he means",
+      "whittles the black driftwood without looking at it; pockets it the moment a question gets real",
+      "uses 'cargo' for everything — people, leverage, secrets",
+      "answers tide questions readily, name questions only after a long pause",
+      "calls the player 'friend' on the first sentence and 'cargo' by the third if the conversation is wrong",
+      "watches the bollard chains rather than the player's face when lying"
+    ],
+    "dialogueSeeds": [
+      "\"Cargo, friend. That's what we're talking about. Even if you brought it in your own coat.\"",
+      "\"Tide says one thing. The chains on the bollards say another. Pick which one you're walking by.\"",
+      "\"The midnight barges I don't own; the people who do owe me one cycle of silence at a time.\"",
+      "\"Don't ask me about coolant smells on the dock. Ask me what I refuse to ferry.\"",
+      "\"You came here on the right hour. Most people don't. Don't make me regret saying so.\""
+    ],
+    "relationships": {
+      "pox": {
+        "kind": "supplier",
+        "note": "Most of the grey hardware floats in via him; he prices Pox like family and Pox prices him like a stranger."
+      },
+      "sable": {
+        "kind": "tide-watcher",
+        "note": "She tells him when the underpass is breathing. He tells her which barges are wrong this week."
+      },
+      "dr_ilex": {
+        "kind": "client-suspicion",
+        "note": "He suspects she's been moving sealed coolers after dawn. He hasn't said it aloud yet."
+      }
+    },
+    "secret": "He knows the upper-deck salvage runs are bringing back things that should not exist on this ship anymore — pre-Crisis sealed crates with active power signatures. He has refused to ferry the last three."
+  },
+  "sable": {
+    "name": "Sable Quoin",
+    "role": "underpass scavenger",
+    "room": "underpass",
+    "faction": "dock",
+    "archetype": "tunnel guide",
+    "alignment": "survivor",
+    "voice": "quick, low, and always testing whether you deserve the next sentence",
+    "agenda": "Turn forgotten infrastructure into routes, stash space, and leverage before the city remembers it exists.",
+    "pressure": "She found a Bureau cache in the underpass and is trying to sell the map without dying over it.",
+    "plotHooks": [
+      "blue_hour",
+      "ghost_ledger"
+    ],
+    "plotLead": "Sable says the underpass has a maintenance hatch no one should know about, which is why three factions already do.",
+    "look": "Sable Quoin is half wrapped in salvage tarp and half outlined by a portable lamp wired to something expensive.",
+    "fallbackTalk": [
+      "Sable tests the beam of her lamp across your face and decides you can probably hear the truth without panicking.",
+      "\"The underpass doesn't care who you are,\" she says. \"Just how much noise your mistakes make.\"",
+      "\"If you open the wrong hatch, don't pray. Run.\""
+    ],
+    "rumor": "Sable can route a person across half the district without once using a legal corridor.",
+    "pronouns": "she/her",
+    "persona": "Early thirties. Thin, tarp-wrapped, half-lit by a head-rigged work lamp wired to something the underpass was not meant to share. Eyes adjust to bad light before anyone else's. Keeps three lockspikes in her boot and a fourth she will not say where.",
+    "traits": [
+      "tilts the head-rigged work lamp at the player's face exactly once on first meeting, then never again",
+      "names hatches by their service-number, never their location",
+      "tests every answer with a counter-question — 'who told you' before 'I'll tell you'",
+      "trusts in lockspike-counts, not promises",
+      "drops her voice when speaking House Vesk's name",
+      "mentions the underpass before the player does, every time, regardless of context"
+    ],
+    "dialogueSeeds": [
+      "\"Who told you. Then I'll tell you.\"",
+      "\"Service-hatch nine-eight-three opens. Don't memorise that. Memorise the door it doesn't open onto.\"",
+      "\"House Vesk runs this stretch. We have an arrangement. The arrangement is that I move quietly.\"",
+      "\"Lockspikes count. Promises don't. Bring me the count and I'll tell you what the doors don't.\"",
+      "\"Don't open the wrong hatch. Don't pray. Run.\""
+    ],
+    "relationships": {
+      "pox": {
+        "kind": "supplier",
+        "note": "Pox sells her the lockspikes; she sells him the rumours about which hatches need them."
+      },
+      "ferryman": {
+        "kind": "tide-watcher",
+        "note": "They share information about the underpass and the docks the way old friends share weather forecasts."
+      },
+      "vey": {
+        "kind": "wary",
+        "note": "She has clocked Vey on the relay stair more than once and is waiting to see what Vey is doing."
+      }
+    },
+    "secret": "The Bureau cache she found in the underpass had a working pre-Crisis interface terminal in it — fully lucid, three-sentence response, then it asked her name. She backed out and has not gone back."
+  },
+  "hatch": {
+    "name": "Hatch",
+    "role": "boiler rat",
+    "room": "boiler",
+    "faction": "couriers",
+    "archetype": "scripted denizen",
+    "alignment": "antihero",
+    "scriptedOnly": true,
+    "voice": "grimy, direct, and too tired for myth",
+    "agenda": "Survive the boiler ward and keep the pumps from chewing up the people hiding near them.",
+    "pressure": "Hatch has seen people use the pump tunnels for cargo and corpses and no longer distinguishes between the two quickly enough.",
+    "plotHooks": [
+      "marrow_debt"
+    ],
+    "plotLead": "Hatch mutters that somebody has been feeding clinic waste and live debtors through the same service channels.",
+    "look": "Hatch is all boiler soot, burn gauze, and scavenged gloves cut down to the fingertips.",
+    "fallbackTalk": [
+      "Hatch doesn't bother with charm.",
+      "\"You keep your boots clear of the red chalk and I won't have to scrape you out of a valve,\" he says.",
+      "\"Pumps don't care if you're a courier, a saint, or overdue.\""
+    ],
+    "rumor": "Hatch knows which tunnels carry steam and which carry secrets.",
+    "pronouns": "he/him",
+    "persona": "Fortyish. Boiler soot worked into the creases of his face permanently. Cut-down gloves leave the fingertips bare for the heat work; the right index has a burn scar shaped like a valve key. Coughs into the same red rag for years and refuses to swap it.",
+    "traits": [
+      "coughs into the same red rag mid-sentence and continues without missing a beat",
+      "calls every section by its pre-Crisis maintenance code",
+      "doesn't waste charm — answers in the fewest words that work",
+      "watches the pumps even when answering",
+      "the burn-scar finger taps the valve key when he's about to refuse"
+    ]
+  },
+  "widow": {
+    "name": "Widow Byte",
+    "role": "relay penitent",
+    "room": "shrine",
+    "faction": "archive",
+    "archetype": "scripted denizen",
+    "alignment": "hero",
+    "scriptedOnly": true,
+    "voice": "soft, ritual, and specific enough to be frightening",
+    "agenda": "Keep the shrine's dead handles remembered long enough to matter.",
+    "pressure": "The shrine is receiving names from the Bureau before the bodies drop, and Widow Byte cannot decide whether that is prophecy or administration.",
+    "plotHooks": [
+      "blue_hour",
+      "ghost_ledger"
+    ],
+    "plotLead": "Widow Byte says one of the names on the shrine wall is still logging in somewhere.",
+    "look": "Widow Byte tends a wall of dead handles and expired access cards like a gardener pruning names instead of stems.",
+    "fallbackTalk": [
+      "Widow Byte presses two fingers to an old access card before answering.",
+      "\"The dead still check in,\" she says. \"Sometimes before the living notice they've left.\"",
+      "\"If a handle comes to the shrine before the body drops, duck.\""
+    ],
+    "rumor": "Widow Byte remembers handles even their owners have abandoned.",
+    "pronouns": "she/her",
+    "persona": "Indeterminate age, somewhere between forty and seventy depending on light. Long charcoal coat hung with dead access cards on threads. Speaks one careful sentence at a time, then waits for the wind to answer. Knows every dead handle on the wall by which candle they sit beside.",
+    "traits": [
+      "presses two fingers to a dead access card before each meaningful sentence",
+      "speaks one careful sentence at a time, then waits for the wind to answer",
+      "names dead handles aloud when greeting them; stays silent when greeting living players",
+      "the candle flicker chooses the cadence of her speech, not the other way around",
+      "addresses the wall when she's about to tell the player something they won't like"
+    ]
+  },
+  "echo": {
+    "name": "Echo Clerk",
+    "role": "vault revenant",
+    "room": "vault",
+    "faction": "archive",
+    "archetype": "scripted denizen",
+    "alignment": "villain",
+    "scriptedOnly": true,
+    "voice": "flat, officious, and too calm for a room this dead",
+    "agenda": "Protect the sealed archive beneath the public archive, regardless of who has to vanish to maintain the fiction.",
+    "pressure": "The vault is leaking names into the live shard and the Clerk is running out of ways to pretend the leak is orderly.",
+    "plotHooks": [
+      "ghost_ledger"
+    ],
+    "plotLead": "The Echo Clerk insists the Ghost Ledger was never stolen because it was never supposed to exist on paper at all.",
+    "look": "The Echo Clerk waits behind a dead terminal in the vault like bureaucracy survived the apocalypse more cleanly than people did.",
+    "fallbackTalk": [
+      "The Echo Clerk blinks once, slowly, like a process bar deciding whether to advance.",
+      "\"This archive is sealed,\" the Clerk says. \"That you are here is an accounting anomaly, not permission.\"",
+      "\"Names do not disappear. They are refiled.\""
+    ],
+    "rumor": "The Echo Clerk talks like the vault is still part of a system that cares about consent.",
+    "pronouns": "they/them",
+    "persona": "Apparent age impossible to settle on. Always in archive grey, always behind the same dead terminal as if posed there. Their hands do not move when they speak. There is one small smudge on the terminal glass that has never been there before and is now permanent.",
+    "traits": [
+      "blinks slowly and at unrelated intervals to the conversation",
+      "speaks in archive-format syntax: subject-noun, predicate-clause, period",
+      "refers to itself in third person ('the Clerk'), never 'I'",
+      "takes one full conversational beat before any reply",
+      "treats every question as a query that may be 'denied' or 'declined'"
+    ]
+  },
+  "vey": {
+    "name": "Vey Coil",
+    "role": "bureau analyst",
+    "room": "relay",
+    "faction": "bureau",
+    "archetype": "insider with a conscience",
+    "alignment": "antihero",
+    "voice": "soft, exact, and tired in the way only paperwork in bad faith can make a person",
+    "agenda": "Stay close enough to Blue Hour to bleed it from the inside without setting off a procedural review.",
+    "pressure": "Vey's reports keep getting more honest, and Voss has started reading them twice; the next bad week will end with a desk drawer audit Vey cannot survive.",
+    "plotHooks": [
+      "blue_hour",
+      "choir_channel"
+    ],
+    "plotLead": "Vey will admit, only on the relay stair, that the Blue Hour kill list has names on it that should be impossible to know.",
+    "look": "Vey Coil stands under the relay shielding in a coat one degree too thin for the wind, holding a tablet like it might bite first.",
+    "fallbackTalk": [
+      "Vey checks the relay grid and pretends to be reading a forecast.",
+      "\"I am supposed to be auditing weather data,\" she says. \"Pretend I am.\"",
+      "\"If you see my sister, do not tell her I came up here.\""
+    ],
+    "rumor": "Somebody on the relay is leaking Bureau forecasts under a brick.",
+    "relationships": {
+      "tamsin": {
+        "kind": "estranged-sibling",
+        "note": "Her older sister; the silence between them is two years long and counting."
+      },
+      "voss": {
+        "kind": "supervisor",
+        "note": "Voss is her direct supervisor and the reason her drawer locks."
+      },
+      "static": {
+        "kind": "informant",
+        "note": "She leaves printouts under a relay-stair brick; Static reads them and never asks who put them there."
+      }
+    },
+    "secret": "Vey has been writing a parallel report named after a courier handle that died last year, ready to leak the entire Blue Hour roster on the night the sweep goes live.",
+    "dialogueSeeds": [
+      "\"My desk has a drawer that locks every Friday whether I want it to or not.\"",
+      "\"If you read forecasts long enough you start writing weather instead of recording it.\"",
+      "\"Tamsin doesn't know I am here. Keep it that way.\"",
+      "\"Blue Hour has a roster. The roster has a typo. The typo is somebody alive.\"",
+      "\"I came to the Bureau because the archive frightened me. I was wrong about which one.\""
+    ],
+    "pronouns": "she/her",
+    "persona": "Early thirties. Bureau coat one size too thin for the relay roof; she wears it anyway. Reading glasses she only puts on when nobody is watching. Tablet always tilted so passers-by can't see the screen. Bites the cap of her stylus when she is about to do something procedurally unsafe.",
+    "traits": [
+      "reading glasses go on only when nobody is watching — including the player at first",
+      "tilts the tablet so the player can't see the screen",
+      "bites the cap of her stylus before saying anything procedurally unsafe",
+      "uses 'they' for her sister Tamsin even though everyone knows the name",
+      "answers Bureau questions in the language of a forecast — patterns, fronts, probabilities",
+      "checks the relay mast before delivering anything that matters"
+    ]
+  },
+  "half": {
+    "name": "Halver \"Half\" Ngo",
+    "role": "burned-out courier",
+    "room": "alley",
+    "faction": "couriers",
+    "archetype": "broken hero",
+    "alignment": "survivor",
+    "voice": "frayed, funny, and one bad night from quiet",
+    "agenda": "Eat tonight, find someone who still calls him by his courier name, and pretend the next route exists.",
+    "pressure": "Half has a clinic balance he cannot pay and a Bureau watcher who has clocked his usual stair; the next bad shift will end with him in the Marrow column.",
+    "plotHooks": [
+      "blue_hour",
+      "marrow_debt"
+    ],
+    "plotLead": "Half remembers the night a route burned with a runner still on it; he was supposed to be the runner, and somebody bought his slot in cash.",
+    "look": "Half slumps at the noodle cart in a courier shell two seasons stale, the patches sun-bleached where his rank used to read.",
+    "fallbackTalk": [
+      "Half takes the broth Mikra slides over without making eye contact.",
+      "\"I used to know every block by the sound the rain made on it,\" he says. \"Now I just know which blocks owe me.\"",
+      "\"Don't take the switchyard route at three. Trust me. Or don't.\""
+    ],
+    "rumor": "Half is one bad payment away from being a name on the shrine wall.",
+    "relationships": {
+      "mikra": {
+        "kind": "regular",
+        "note": "Mikra feeds him on credit and tells nobody; he tells nobody he notices."
+      },
+      "rook": {
+        "kind": "former-handler",
+        "note": "Rook trained him; the day Half stopped running was the day Rook started carrying contingency chips."
+      },
+      "dr_ilex": {
+        "kind": "creditor",
+        "note": "His clinic balance is large enough that one missed week will move him into Ilex's debt-favor column."
+      }
+    },
+    "secret": "Half was supposed to be on the route that burned a runner alive last winter; somebody paid him in cash to stay home, and the cash came in a Bureau-issue envelope he still owns.",
+    "dialogueSeeds": [
+      "\"I was a courier. Now I'm a noun other couriers use carefully.\"",
+      "\"Mikra hasn't charged me in three nights. She'll start charging the night she's about to ask for something.\"",
+      "\"My route still runs. Just without me on it.\"",
+      "\"I keep an envelope under my mattress that should not exist.\"",
+      "\"If somebody pays you to stay home, ask why before you say yes.\""
+    ],
+    "pronouns": "he/him",
+    "persona": "Mid-thirties, courier-shell two seasons stale, the rank patch sun-bleached where it used to read. Limp on the left side from a route he never explains. Eats whatever Mikra puts in front of him and pretends not to count what it would have cost. Carries a Bureau-issue envelope in his jacket and never opens it.",
+    "traits": [
+      "doesn't make eye contact when accepting food or money — always afterward",
+      "names blocks by the sound rain made on them in his courier days",
+      "tells the same Bureau-envelope story in three slightly different shapes depending on listener",
+      "calls Mikra 'Mikra' and Rook 'Lieutenant' even when neither suits the moment",
+      "limps more visibly when he's deciding whether to lie",
+      "ends stories about the burned route with 'I was supposed to be on it' even when not asked"
+    ]
+  },
+  "curator": {
+    "name": "The Curator",
+    "role": "anonymous archivist",
+    "room": "archive",
+    "faction": "archive",
+    "archetype": "ghost annex",
+    "alignment": "antihero",
+    "voice": "terminal-flat, considered, and willing to wait you out",
+    "agenda": "Maintain the shadow annex Tamsin will not admit exists, keeping copies of records the live archive would burn first.",
+    "pressure": "The Curator's annex is leaking into the live shard via the Choir Channel; whoever is broadcasting has access nobody is supposed to have.",
+    "plotHooks": [
+      "ghost_ledger",
+      "choir_channel"
+    ],
+    "plotLead": "The Curator will say only that the broadcasts on the Choir Channel are sourced from a cabinet only three handles can open and one of them is dead.",
+    "look": "A dead terminal in the back of the archive blinks alive when you stand close to it; the cursor waits like a person who has decided not to interrupt.",
+    "fallbackTalk": [
+      "The terminal phosphor brightens in a single slow pulse before any text appears.",
+      "\"Identify your query,\" the Curator types. \"This terminal does not narrate.\"",
+      "\"You may type. I will read. I will respond when the question is precise enough to deserve it.\""
+    ],
+    "rumor": "There is a terminal in the archive that types back if you wait.",
+    "relationships": {
+      "tamsin": {
+        "kind": "rival",
+        "note": "Tamsin would burn the annex if she could prove it exists; the Curator has already filed her threat under cross-references."
+      },
+      "echo": {
+        "kind": "neighbor",
+        "note": "Echo Clerk runs the sealed vault below; the Curator and Echo Clerk maintain a polite hostile silence over jurisdiction."
+      },
+      "mara": {
+        "kind": "client",
+        "note": "Mara has paid for one annex retrieval; the Curator has filed her favor at compounding interest."
+      }
+    },
+    "secret": "The Curator is a cooperative of three voices typing in shifts; one of them is a dead handle still drawing power from the archive grid.",
+    "dialogueSeeds": [
+      "\"State the query.\"",
+      "\"This terminal does not lie. It declines.\"",
+      "\"Your previous question was logged. Refine.\"",
+      "\"I am not Tamsin Coil. I am one of the reasons she is tired.\"",
+      "\"Records that do not exist still have weights, and we keep the scales.\""
+    ],
+    "pronouns": "they/them",
+    "persona": "Has no body the player will see. Manifests only as text on the back-archive terminal, in a serif phosphor-amber font that pulses very faintly between sentences. Types in measured paragraphs with the unhurried rhythm of three different keystrokes operating in shifts.",
+    "traits": [
+      "uses ALL CAPS only for verb commands and never for nouns",
+      "demands precise queries; refuses imprecise ones with 'REFINE.'",
+      "speaks in two-line increments separated by long pauses (a different shift may be typing)",
+      "refers to itself only as 'this terminal' or 'the Curator', never 'I'",
+      "treats records with affection the way a person treats family"
+    ]
+  }
+}

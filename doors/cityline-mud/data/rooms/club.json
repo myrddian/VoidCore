@@ -1,0 +1,25 @@
+{
+  "name": "Signal Club",
+  "route": "shard://cityline/signal-club",
+  "sigil": "== bass bleed ==",
+  "accent": "bright-magenta",
+  "support": "bright-yellow",
+  "dim": "grey",
+  "description": "Bass leaks through velvet partitions and every booth looks like a transaction someone will regret later.",
+  "detail": "Half the room is conducting business and the other half is pretending not to notice.",
+  "fixtures": [
+    {
+      "id": "booths",
+      "name": "velvet booths",
+      "inspect": "Each booth is a tiny republic of bad credit, chemical perfume, and private leverage."
+    }
+  ],
+  "npcs": [
+    "mara"
+  ],
+  "mood": [
+    "A booth speaker keeps catching half a stranger's voice; the bartender pretends the cable is loose.",
+    "Tonight the bass is one-third lower than usual. Mara prefers it that way when she is listening for somebody.",
+    "A new perfume is doing the rounds; three regulars have already left without finishing their drinks."
+  ]
+}

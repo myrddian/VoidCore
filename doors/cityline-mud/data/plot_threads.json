@@ -1,0 +1,229 @@
+{
+  "blue_hour": {
+    "id": "blue_hour",
+    "title": "Blue Hour Sweep",
+    "summary": "The Recovery Bureau is preparing a city-wide signal sweep timed to a courier blackout window known as Blue Hour.",
+    "stakes": "If it lands clean, half the shard's ghost routes and dead drops go live in Bureau custody.",
+    "actors": [
+      "rook",
+      "static",
+      "voss",
+      "nix",
+      "vey",
+      "half"
+    ],
+    "stages": [
+      "Quiet Bureau sampling around the switchyard and relay roofs.",
+      "Ghost routes start going dark in isolated pockets.",
+      "The district realizes Blue Hour is not rumor anymore.",
+      "The sweep is live and every friendly blind spot is up for auction."
+    ],
+    "factionPressure": {
+      "bureau": [
+        0,
+        1,
+        1,
+        2
+      ],
+      "couriers": [
+        0,
+        -1,
+        -1,
+        -2
+      ],
+      "dock": [
+        0,
+        0,
+        -1,
+        -1
+      ],
+      "club": [
+        0,
+        0,
+        0,
+        -1
+      ]
+    },
+    "worldEffects": [
+      {
+        "op": "passive_heat_per_room",
+        "appliesAtStage": 2,
+        "room": "switchyard",
+        "heatPerTick": 1,
+        "tickIntervalSec": 30,
+        "label": "Bureau patrols sweep the switchyard"
+      },
+      {
+        "op": "passive_heat_per_room",
+        "appliesAtStage": 3,
+        "room": "relay",
+        "heatPerTick": 1,
+        "tickIntervalSec": 30,
+        "label": "Relay roof scans cycling on the Blue Hour grid"
+      }
+    ]
+  },
+  "ghost_ledger": {
+    "id": "ghost_ledger",
+    "title": "Ghost Ledger",
+    "summary": "An erased shipping ledger ties Clinic Circle losses, courier routes, and archive blackmail to a single hidden buyer.",
+    "stakes": "Whoever owns the ledger can trade debts, medical leverage, and route access like ammunition.",
+    "actors": [
+      "tamsin",
+      "dr_ilex",
+      "mara",
+      "voss",
+      "curator"
+    ],
+    "stages": [
+      "Fragments of the ledger surface as rumor and half-deleted timestamps.",
+      "Names connected to the ledger start disappearing from public systems.",
+      "Every faction decides the ledger matters more than whatever they said yesterday.",
+      "The buyer behind the ledger starts forcing the district to pick sides."
+    ],
+    "factionPressure": {
+      "archive": [
+        0,
+        1,
+        1,
+        0
+      ],
+      "club": [
+        0,
+        1,
+        0,
+        -1
+      ],
+      "bureau": [
+        0,
+        0,
+        1,
+        2
+      ],
+      "clinic": [
+        0,
+        -1,
+        -1,
+        -1
+      ]
+    }
+  },
+  "marrow_debt": {
+    "id": "marrow_debt",
+    "title": "Marrow Debt",
+    "summary": "Dr. Ilex's patients are being quietly turned into obligations the Clinic Circle can call in later.",
+    "stakes": "The wrong surgery can become indenture, and half the district owes blood they cannot repay.",
+    "actors": [
+      "dr_ilex",
+      "saint",
+      "mikra",
+      "half"
+    ],
+    "stages": [
+      "Clinic debt whispers stay behind curtains and lowered voices.",
+      "Patients start vanishing into favors they never remember agreeing to.",
+      "Mercy-9 begins keeping names and dates in secret.",
+      "The clinic debt machine is visible enough that someone will try to burn it down."
+    ],
+    "factionPressure": {
+      "clinic": [
+        0,
+        1,
+        0,
+        -2
+      ],
+      "couriers": [
+        0,
+        0,
+        -1,
+        -1
+      ],
+      "dock": [
+        0,
+        0,
+        0,
+        1
+      ]
+    },
+    "worldEffects": [
+      {
+        "op": "vendor_price_multiplier",
+        "appliesAtStage": 2,
+        "vendor": "clinic",
+        "multiplier": 1.5,
+        "label": "Clinic stock costs spike under Marrow Debt"
+      }
+    ]
+  },
+  "choir_channel": {
+    "id": "choir_channel",
+    "title": "Choir Channel",
+    "summary": "A pirate signal looping confessions of district fixers, stitched from intercepted comms, has started broadcasting into private booths and shrine speakers.",
+    "stakes": "Whoever controls the channel can ruin a fixer in a single overnight cycle and is teaching the shard to listen for confessions instead of receipts.",
+    "actors": [
+      "mara",
+      "static",
+      "tamsin",
+      "curator",
+      "vey",
+      "widow"
+    ],
+    "stages": [
+      "Booth speakers in the club catch a stranger's voice for two seconds and nobody admits hearing it.",
+      "The channel surfaces a known fixer's private words in public rumor; reputations begin to bleed.",
+      "Three factions claim the channel is theirs and one of them is lying badly.",
+      "The choir hits broadcast schedule and the city begins confessing back."
+    ],
+    "factionPressure": {
+      "club": [
+        0,
+        -1,
+        -1,
+        -2
+      ],
+      "archive": [
+        0,
+        1,
+        1,
+        0
+      ],
+      "dock": [
+        0,
+        0,
+        1,
+        1
+      ],
+      "bureau": [
+        0,
+        0,
+        0,
+        1
+      ]
+    },
+    "worldEffects": [
+      {
+        "op": "ambient_distortion",
+        "appliesAtStage": 1,
+        "room": "club",
+        "fragments": [
+          "a stranger's voice ghosts through booth seven for two seconds: \"...he never paid for the route...\"",
+          "the bass dips; somebody else's confession bleeds in and the bartender pretends the cable is loose",
+          "a name you don't know flickers on the choir feed and three regulars set their drinks down",
+          "the booth speakers stutter; for a heartbeat you hear yourself from earlier tonight"
+        ],
+        "label": "Choir Channel bleed in club booths"
+      },
+      {
+        "op": "ambient_distortion",
+        "appliesAtStage": 2,
+        "room": "shrine",
+        "fragments": [
+          "the candle nearest the relay-spill is guttering on a frequency, not a draft",
+          "Widow Byte mouths a name nobody on the wall has spoken in two years",
+          "one of the access cards above the shelf is warm to the touch when no current should reach it"
+        ],
+        "label": "Choir Channel reaches the shrine wall"
+      }
+    ]
+  }
+}

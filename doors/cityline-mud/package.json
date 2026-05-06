@@ -1,0 +1,13 @@
+{
+  "name": "cityline-mud-door",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Cyberpunk proof-of-concept door for VOIDcore / VOIDcore.",
+  "scripts": {
+    "start": "node index.mjs"
+  },
+  "dependencies": {
+    "@voidcore/door-sdk": "file:../sdk-node"
+  }
+}

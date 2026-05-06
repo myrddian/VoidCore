@@ -1,0 +1,176 @@
+{
+  "cheap_burner": {
+    "id": "cheap_burner",
+    "name": "Cheap Burner",
+    "kind": "tool",
+    "room": "alley",
+    "summary": "A cracked burner handset with half the keypad polished smooth.",
+    "use": null
+  },
+  "route_credstick": {
+    "id": "route_credstick",
+    "name": "Route Credstick",
+    "kind": "tool",
+    "room": "switchyard",
+    "summary": "Courier scrip carrying more trust than actual credits.",
+    "use": null
+  },
+  "synthblood_ampule": {
+    "id": "synthblood_ampule",
+    "name": "Synthblood Ampule",
+    "kind": "consumable",
+    "room": "clinic",
+    "summary": "A warm ampule that patches the leaking parts of a bad night.",
+    "use": {
+      "hpDelta": 3,
+      "stressDelta": -1,
+      "message": "The synthblood goes hot in your veins and drags you a little closer to functional."
+    }
+  },
+  "hush_patch": {
+    "id": "hush_patch",
+    "name": "Hush Patch",
+    "kind": "consumable",
+    "room": "alley",
+    "summary": "A street patch that shaves the edge off adrenaline without asking questions.",
+    "use": {
+      "stressDelta": -2,
+      "message": "The hush patch dulls the panic without touching the memory."
+    }
+  },
+  "bleach_tabs": {
+    "id": "bleach_tabs",
+    "name": "Bleach Tabs",
+    "kind": "consumable",
+    "room": "club",
+    "summary": "Counter-surveillance tabs meant to scrub a little attention off your trail.",
+    "use": {
+      "heatDelta": -1,
+      "message": "You ghost your route through enough bad cameras to cool the district's interest."
+    }
+  },
+  "signal_jammer": {
+    "id": "signal_jammer",
+    "name": "Signal Jammer",
+    "kind": "prep",
+    "room": "switchyard",
+    "summary": "Pocket hardware that fuzzes the next operation's surveillance envelope.",
+    "use": {
+      "prep": {
+        "heatBuffer": 1,
+        "note": "Signal Jammer primed"
+      },
+      "message": "You arm the jammer and keep it ready for the next time the shard needs to forget you."
+    }
+  },
+  "ghost_mesh": {
+    "id": "ghost_mesh",
+    "name": "Ghost Mesh",
+    "kind": "prep",
+    "room": "archive",
+    "summary": "A throwaway cloak of spoofed tags and dirty signatures for one clean slip.",
+    "use": {
+      "prep": {
+        "statBoosts": {
+          "ghost": 1
+        },
+        "note": "Ghost Mesh wrapped"
+      },
+      "message": "You drape the ghost mesh over your profile and feel your edges blur in the system."
+    }
+  },
+  "wiretap_kit": {
+    "id": "wiretap_kit",
+    "name": "Wiretap Kit",
+    "kind": "prep",
+    "room": "market",
+    "summary": "Disposable probes and cracked firmware built to make systems a little more talkative.",
+    "use": {
+      "prep": {
+        "statBoosts": {
+          "wire": 1
+        },
+        "note": "Wiretap Kit packed"
+      },
+      "message": "You pocket the wiretap kit and sketch the next intrusion in your head."
+    }
+  },
+  "shock_baton": {
+    "id": "shock_baton",
+    "name": "Shock Baton",
+    "kind": "prep",
+    "room": "market",
+    "summary": "Compact street persuasion with a battery meaner than its casing.",
+    "use": {
+      "prep": {
+        "statBoosts": {
+          "body": 1
+        },
+        "note": "Shock Baton palmed"
+      },
+      "message": "You palm the baton and let the weight settle into your timing."
+    }
+  },
+  "ration_gel": {
+    "id": "ration_gel",
+    "name": "Ration Gel",
+    "kind": "consumable",
+    "room": "docks",
+    "summary": "Protein sludge in a squeeze tube that keeps you upright if not dignified.",
+    "use": {
+      "hpDelta": 1,
+      "stressDelta": -1,
+      "message": "The ration gel tastes like surrender and keeps you moving anyway."
+    }
+  },
+  "dock_token": {
+    "id": "dock_token",
+    "name": "Dock Token",
+    "kind": "tool",
+    "room": "docks",
+    "summary": "Stamped freight brass that opens one conversation in ten and closes the other nine.",
+    "use": null
+  },
+  "lockspike_set": {
+    "id": "lockspike_set",
+    "name": "Lockspike Set",
+    "kind": "prep",
+    "room": "underpass",
+    "summary": "Slim bypass spikes cut for utility hatches and bad intentions.",
+    "use": {
+      "prep": {
+        "statBoosts": {
+          "edge": 1,
+          "wire": 1
+        },
+        "note": "Lockspike set ready"
+      },
+      "message": "You settle the lockspikes into your sleeve and feel every sealed thing get slightly less certain."
+    }
+  },
+  "saint_token": {
+    "id": "saint_token",
+    "name": "Saint Token",
+    "kind": "prep",
+    "room": "shrine",
+    "summary": "A resin-sealed dead handle worn as protection, threat, or witness depending on who sees it.",
+    "use": {
+      "prep": {
+        "statBoosts": {
+          "ghost": 1,
+          "edge": 1
+        },
+        "note": "Saint token carried"
+      },
+      "message": "You pocket the saint token and the district feels briefly willing to remember your name kindly."
+    }
+  },
+  "black_index": {
+    "id": "black_index",
+    "name": "Black Index Shard",
+    "kind": "tool",
+    "room": "vault",
+    "summary": "A carbon-black storage shard full of names that were never meant to share a room.",
+    "use": null
+  }
+}

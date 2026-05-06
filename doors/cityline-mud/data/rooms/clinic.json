@@ -1,0 +1,26 @@
+{
+  "name": "Backroom Clinic",
+  "route": "shard://cityline/backroom-clinic",
+  "sigil": "[ sterile debt ]",
+  "accent": "bright-blue",
+  "support": "bright-red",
+  "dim": "grey",
+  "description": "Blue-white lamps flatten everything into anatomy, invoice lines, and consequences.",
+  "detail": "Instrument trays gleam under a patched surgical feed. Even the silence smells expensive.",
+  "fixtures": [
+    {
+      "id": "surgical-feed",
+      "name": "surgical feed",
+      "inspect": "The patched surgical feed flickers between anatomy overlays and unpaid account notices."
+    }
+  ],
+  "npcs": [
+    "dr_ilex",
+    "saint"
+  ],
+  "mood": [
+    "A new sharps bin is sitting unsealed under the chair, which means somebody is still on the table behind the curtain.",
+    "Tonight Dr. Ilex's task lamp is set bluer than usual; she does that when she is angry and counting.",
+    "Saint Mercy-9 has been rolling and unrolling the same length of gauze for ten minutes."
+  ]
+}

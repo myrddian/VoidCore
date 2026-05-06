@@ -1,0 +1,37 @@
+{
+  "name": "Handle Shrine",
+  "route": "shard://cityline/handle-shrine",
+  "sigil": ":: dead handles ::",
+  "accent": "white",
+  "support": "bright-magenta",
+  "dim": "grey",
+  "description": "Candles gutter beside dead access cards and spray-painted handles that the living still say under their breath.",
+  "detail": "The shrine sits under the relay spill where grief, superstition, and packet noise can all pretend to be one thing.",
+  "fixtures": [
+    {
+      "id": "wall",
+      "name": "handle wall",
+      "inspect": "Hundreds of dead handles stare back from cards, tags, and resin-sealed slips of thermal paper."
+    },
+    {
+      "id": "candles",
+      "name": "candle shelf",
+      "inspect": "The candle shelf is made from an old rack switch. It still smells faintly of ozone under the wax."
+    }
+  ],
+  "npcs": [
+    "widow"
+  ],
+  "mood": [
+    "The candles are guttering on a draught that does not match the wind outside.",
+    "Tonight one card on the wall has a fresh thumbprint over a name that is supposed to be three years dead.",
+    "A booth speaker somewhere is bleeding the choir channel into the shrine air; Widow Byte has not turned it off."
+  ],
+  "scavenge": {
+    "note": "You search the shrine carefully enough not to insult the dead or the people who still invoice them.",
+    "reward": {
+      "itemId": "saint_token"
+    },
+    "message": "A forgotten saint token sits behind the candle shelf like it was waiting for a handle with bad timing."
+  }
+}

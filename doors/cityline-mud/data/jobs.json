@@ -1,0 +1,368 @@
+[
+  {
+    "id": "switchyard_watch",
+    "title": "Watch the Switchyard Route",
+    "giver": "Rook Null",
+    "room": "switchyard",
+    "faction": "couriers",
+    "difficulty": "low",
+    "summary": "Rook wants an extra set of eyes while a live courier handoff crosses Bureau territory.",
+    "hooks": [
+      "ghost",
+      "wire",
+      "edge"
+    ],
+    "salvage": [
+      "signal_jammer"
+    ],
+    "plot": "blue_hour",
+    "reward": {
+      "credits": 55,
+      "rep": {
+        "couriers": 2
+      },
+      "heat": 0,
+      "stress": 1
+    },
+    "risk": {
+      "heat": 1,
+      "hp": -1,
+      "debt": 0
+    }
+  },
+  {
+    "id": "clinic_stock",
+    "title": "Recover Missing Clinic Stock",
+    "giver": "Dr. Ilex",
+    "room": "clinic",
+    "faction": "clinic",
+    "difficulty": "medium",
+    "summary": "The clinic lost a crate of synthblood and wants it back before the district starts smelling weakness.",
+    "hooks": [
+      "body",
+      "ghost",
+      "edge"
+    ],
+    "salvage": [
+      "synthblood_ampule"
+    ],
+    "plot": "marrow_debt",
+    "reward": {
+      "credits": 70,
+      "rep": {
+        "clinic": 2
+      },
+      "heat": 0,
+      "stress": 1
+    },
+    "risk": {
+      "heat": 1,
+      "hp": -2,
+      "debt": 0
+    }
+  },
+  {
+    "id": "archive_scrub",
+    "title": "Scrub a Dead Record",
+    "giver": "Tamsin Coil",
+    "room": "archive",
+    "faction": "archive",
+    "difficulty": "medium",
+    "summary": "A family wants an old board record erased before the Bureau rediscovers it.",
+    "hooks": [
+      "wire",
+      "ghost",
+      "edge"
+    ],
+    "salvage": [
+      "ghost_mesh"
+    ],
+    "plot": "ghost_ledger",
+    "reward": {
+      "credits": 80,
+      "rep": {
+        "archive": 2
+      },
+      "heat": -1,
+      "stress": 1
+    },
+    "risk": {
+      "heat": 2,
+      "hp": 0,
+      "debt": 0
+    }
+  },
+  {
+    "id": "club_leverage",
+    "title": "Lean on a Club Debtor",
+    "giver": "Mara Venn",
+    "room": "club",
+    "faction": "club",
+    "difficulty": "low",
+    "summary": "Mara needs a debtor reminded that the shard has a memory and legs.",
+    "hooks": [
+      "edge",
+      "body",
+      "ghost"
+    ],
+    "salvage": [
+      "bleach_tabs"
+    ],
+    "plot": "ghost_ledger",
+    "reward": {
+      "credits": 45,
+      "rep": {
+        "club": 2
+      },
+      "heat": 1,
+      "stress": 0
+    },
+    "risk": {
+      "heat": 2,
+      "hp": -1,
+      "debt": -15
+    }
+  },
+  {
+    "id": "dock_manifest",
+    "title": "Lift a Dock Manifest",
+    "giver": "Pox",
+    "room": "market",
+    "faction": "dock",
+    "difficulty": "medium",
+    "summary": "A dockside shipping ledger is changing hands tonight. Pox wants it borrowed before the Bureau can price the names inside.",
+    "hooks": [
+      "ghost",
+      "wire",
+      "body"
+    ],
+    "salvage": [
+      "wiretap_kit"
+    ],
+    "plot": "ghost_ledger",
+    "reward": {
+      "credits": 68,
+      "rep": {
+        "dock": 2
+      },
+      "heat": 1,
+      "stress": 1
+    },
+    "risk": {
+      "heat": 2,
+      "hp": -1,
+      "debt": 0
+    }
+  },
+  {
+    "id": "relay_blackout",
+    "title": "Blind the Relay Sweep",
+    "giver": "Brother Static",
+    "room": "relay",
+    "faction": "archive",
+    "difficulty": "medium",
+    "summary": "Static wants a Bureau scan window muddied long enough for an old ghost-route to pass unseen.",
+    "hooks": [
+      "wire",
+      "ghost",
+      "edge"
+    ],
+    "salvage": [
+      "ghost_mesh"
+    ],
+    "plot": "blue_hour",
+    "reward": {
+      "credits": 72,
+      "rep": {
+        "archive": 2
+      },
+      "heat": -1,
+      "stress": 1
+    },
+    "risk": {
+      "heat": 2,
+      "hp": 0,
+      "debt": 0
+    }
+  },
+  {
+    "id": "bureau_tail",
+    "title": "Turn a Bureau Tail",
+    "giver": "Mara Venn",
+    "room": "club",
+    "faction": "club",
+    "operation": "hunt",
+    "difficulty": "high",
+    "summary": "A Bureau watcher has been leaning too close to the club. Mara wants them misled, embarrassed, or carried away from her clients.",
+    "hooks": [
+      "edge",
+      "ghost",
+      "wire"
+    ],
+    "target": {
+      "name": "Helix Dane",
+      "role": "bureau watcher",
+      "look": "Helix Dane wears a Bureau rain shell over office shoes and carries the sort of stillness that gets people catalogued.",
+      "motive": "Build a case around the club by leaning on debtors, couriers, and anyone desperate enough to talk.",
+      "threat": "Procedural cruelty, backup not far behind, and the confidence of somebody who thinks the city files on their side."
+    },
+    "salvage": [
+      "bleach_tabs",
+      "signal_jammer"
+    ],
+    "plot": "blue_hour",
+    "reward": {
+      "credits": 90,
+      "rep": {
+        "club": 3
+      },
+      "heat": 1,
+      "stress": 1
+    },
+    "risk": {
+      "heat": 3,
+      "hp": -2,
+      "debt": 0
+    }
+  },
+  {
+    "id": "dock_cold_chain",
+    "title": "Escort a Cold Chain",
+    "giver": "Chain Ferryman",
+    "room": "docks",
+    "faction": "dock",
+    "difficulty": "medium",
+    "summary": "A sealed crate needs to move through the flood docks before dawn and nobody sane wants to ask what hums inside it.",
+    "hooks": [
+      "body",
+      "ghost",
+      "edge"
+    ],
+    "salvage": [
+      "dock_token"
+    ],
+    "plot": "marrow_debt",
+    "reward": {
+      "credits": 76,
+      "rep": {
+        "dock": 2
+      },
+      "heat": 1,
+      "stress": 1
+    },
+    "risk": {
+      "heat": 2,
+      "hp": -1,
+      "debt": 0
+    }
+  },
+  {
+    "id": "underpass_hatch",
+    "title": "Open the Wrong Hatch",
+    "giver": "Sable Quoin",
+    "room": "underpass",
+    "faction": "dock",
+    "operation": "hunt",
+    "difficulty": "high",
+    "summary": "Sable wants eyes inside a maintenance hatch the Bureau has started visiting too often for coincidence.",
+    "hooks": [
+      "ghost",
+      "wire",
+      "body"
+    ],
+    "target": {
+      "name": "Ravel Cinder",
+      "role": "maintenance butcher",
+      "look": "Ravel Cinder is a contract cutter in a maintenance slicker, all bolt-croppers, insulated gloves, and a smile that sounds rented.",
+      "motive": "Keep the hatch routes open for whoever is moving clinic freight and ghosted names through the underpass.",
+      "threat": "Tunnel familiarity, dirty tools, and zero hesitation about collapsing a route with you inside it."
+    },
+    "salvage": [
+      "lockspike_set"
+    ],
+    "plot": "blue_hour",
+    "reward": {
+      "credits": 94,
+      "rep": {
+        "dock": 2
+      },
+      "heat": 1,
+      "stress": 2
+    },
+    "risk": {
+      "heat": 3,
+      "hp": -2,
+      "debt": 0
+    }
+  },
+  {
+    "id": "shrine_namewatch",
+    "title": "Watch the Name Wall",
+    "giver": "Widow Byte",
+    "room": "shrine",
+    "faction": "archive",
+    "difficulty": "medium",
+    "summary": "A dead handle is flashing live somewhere. Widow Byte wants proof before the shrine turns it into theology.",
+    "hooks": [
+      "wire",
+      "ghost",
+      "edge"
+    ],
+    "salvage": [
+      "saint_token"
+    ],
+    "plot": "ghost_ledger",
+    "reward": {
+      "credits": 74,
+      "rep": {
+        "archive": 2
+      },
+      "heat": 0,
+      "stress": 1
+    },
+    "risk": {
+      "heat": 2,
+      "hp": 0,
+      "debt": 0
+    }
+  },
+  {
+    "id": "vault_index",
+    "title": "Lift a Vault Index",
+    "giver": "Echo Clerk",
+    "room": "vault",
+    "faction": "archive",
+    "operation": "hunt",
+    "difficulty": "high",
+    "summary": "A buried index in the vault names buyers, debtors, and corpses in the same hand. The Clerk wants to know who sent you before anyone leaves with it.",
+    "hooks": [
+      "wire",
+      "ghost",
+      "edge"
+    ],
+    "target": {
+      "name": "Nine-Knives Orin",
+      "role": "ledger runner",
+      "look": "Nine-Knives Orin moves like a panic attack in a long coat, edges glinting from every seam where metal could hide.",
+      "motive": "Reach the buried index first, strip the buyer names out of it, and sell the remains back as truth.",
+      "threat": "Fast hands, faster exits, and the sort of reputation that arrives one room before the body."
+    },
+    "salvage": [
+      "black_index"
+    ],
+    "plot": "ghost_ledger",
+    "reward": {
+      "credits": 102,
+      "rep": {
+        "archive": 3
+      },
+      "heat": 1,
+      "stress": 2
+    },
+    "risk": {
+      "heat": 3,
+      "hp": -2,
+      "debt": 0
+    }
+  }
+]

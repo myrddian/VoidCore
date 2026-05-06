@@ -1,0 +1,34 @@
+# =============================================================================
+# VOIDcore  --  runtime-only image
+# =============================================================================
+# Used by the production docker-compose. Expects a pre-built fat JAR at
+# `app/app.jar` (placed there by Ansible from the laptop's `./gradlew bootJar`
+# output). No JDK, no Node, no Gradle.
+#
+# Base: eclipse-temurin:21-jre-noble (glibc/Ubuntu Noble), NOT alpine.
+# Reason: de.mkammerer:argon2-jvm ships JNA native libs built against glibc;
+# they segfault on musl. Image is ~210MB instead of ~120MB — worth it for the
+# password hasher actually working.
+#
+# For local source-from-scratch builds, use the original ./Dockerfile instead
+# (it does Gradle + npm + esbuild end-to-end inside the build stage).
+# =============================================================================
+
+FROM eclipse-temurin:21-jre-noble
+
+RUN apt-get update \
+ && apt-get install -y --no-install-recommends wget tini tzdata ca-certificates \
+ && rm -rf /var/lib/apt/lists/* \
+ && groupadd --system voidcore \
+ && useradd  --system --gid voidcore --home-dir /home/voidcore --create-home --shell /usr/sbin/nologin voidcore
+
+WORKDIR /app
+
+COPY --chown=voidcore:voidcore app.jar /app/app.jar
+
+USER voidcore
+
+EXPOSE 8080
+
+ENV JAVA_OPTS=""
+ENTRYPOINT ["/usr/bin/tini","--","sh","-c","exec java $JAVA_OPTS -jar /app/app.jar"]

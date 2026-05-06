@@ -1,0 +1,106 @@
+{
+  "first_blood": {
+    "id": "first_blood",
+    "title": "First Blood",
+    "flavor": "You took your first hit in the City — and gave one back. Survival is a verb here, not a noun.",
+    "points": 5,
+    "category": "combat",
+    "hidden": false
+  },
+  "ghost_hand": {
+    "id": "ghost_hand",
+    "title": "Ghost Hand",
+    "flavor": "You broke contact and walked out of a fight nobody was supposed to walk out of. Couriers will hear about this.",
+    "points": 5,
+    "category": "combat",
+    "hidden": false
+  },
+  "old_hand": {
+    "id": "old_hand",
+    "title": "Old Hand",
+    "flavor": "Five different handles know your face by name. The City has officially logged you.",
+    "points": 10,
+    "category": "social",
+    "hidden": false
+  },
+  "first_tape": {
+    "id": "first_tape",
+    "title": "First Tape",
+    "flavor": "You picked up your first piece of the City's record. The collection has begun.",
+    "points": 5,
+    "category": "lore",
+    "hidden": false
+  },
+  "tape_hoarder": {
+    "id": "tape_hoarder",
+    "title": "Tape Hoarder",
+    "flavor": "Eight pieces of the City's record. Most people never notice these things exist.",
+    "points": 15,
+    "category": "lore",
+    "hidden": false
+  },
+  "first_run": {
+    "id": "first_run",
+    "title": "First Run",
+    "flavor": "You finished your first delve. The next one will be easier. The next one will not be safer.",
+    "points": 10,
+    "category": "delve",
+    "hidden": false
+  },
+  "patient_cartographer": {
+    "id": "patient_cartographer",
+    "title": "Patient Cartographer",
+    "flavor": "You scouted a section that wasn't on yesterday's map. The City breathes; you noticed.",
+    "points": 10,
+    "category": "exploration",
+    "hidden": false
+  },
+  "marrow_owed": {
+    "id": "marrow_owed",
+    "title": "Marrow Owed",
+    "flavor": "Five hundred credits in debt. The clinic has a column for handles like yours, and you're now in it.",
+    "points": 10,
+    "category": "shadow",
+    "hidden": true
+  },
+  "shard_bender": {
+    "id": "shard_bender",
+    "title": "Shard Bender",
+    "flavor": "You pushed a plot thread to its third stage. The District is going to remember whose handle was on the wire.",
+    "points": 20,
+    "category": "story",
+    "hidden": true
+  },
+  "in_with_couriers": {
+    "id": "in_with_couriers",
+    "title": "In with the Couriers",
+    "flavor": "Couriers Guild reputation +3. Rook's people will speak in front of you now. Some of them will even tell you the truth.",
+    "points": 15,
+    "category": "faction",
+    "hidden": false
+  },
+  "in_with_bureau": {
+    "id": "in_with_bureau",
+    "title": "In with the Bureau",
+    "flavor": "Recovery Bureau reputation +3. Voss will not say it but you've stopped being a name in his file and started being a name in his desk drawer.",
+    "points": 15,
+    "category": "faction",
+    "hidden": false
+  },
+  "cartographer": {
+    "id": "cartographer",
+    "title": "Cartographer",
+    "flavor": "You walked every room in the District. Most handles never make it past their own deck. The City has logged your route.",
+    "points": 20,
+    "category": "exploration",
+    "hidden": false
+  },
+  "quiet_listener": {
+    "id": "quiet_listener",
+    "title": "Quiet Listener",
+    "flavor": "You read every narrative fragment the City has surrendered so far. Most of what's in your head right now is not supposed to be in anyone's head.",
+    "points": 30,
+    "category": "lore",
+    "hidden": true
+  }
+}

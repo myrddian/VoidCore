@@ -1,0 +1,8 @@
+${AnsiColor.BRIGHT_MAGENTA}
+
+         ${voidcore.branding.name:VOIDcore}
+         -----------------------
+         ${voidcore.branding.tagline:typed-document terminal platform}
+         ${voidcore.branding.subtagline:}
+
+${AnsiColor.BRIGHT_CYAN}  net ${voidcore.branding.fido-addr:23:495/0}  -  sysop ${voidcore.branding.sysop-handle:sysop}  -  running VOIDcore/${application.version:dev}${AnsiColor.DEFAULT}

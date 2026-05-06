@@ -1,0 +1,77 @@
+{
+  "reflex_coil": {
+    "id": "reflex_coil",
+    "name": "Reflex Coil",
+    "slot": "arm",
+    "summary": "A twitch-fast motor coil laid in along the forearm to shave lag off ugly decisions.",
+    "price": 85,
+    "debtCost": 20,
+    "surgeryStress": 1,
+    "maxChrome": 1,
+    "effects": {
+      "stats": {
+        "edge": 1
+      }
+    }
+  },
+  "ghostline_dermals": {
+    "id": "ghostline_dermals",
+    "name": "Ghostline Dermals",
+    "slot": "dermal",
+    "summary": "Subdermal spoof layers that teach cheap cameras to remember somebody else.",
+    "price": 95,
+    "debtCost": 25,
+    "surgeryStress": 1,
+    "maxChrome": 1,
+    "effects": {
+      "stats": {
+        "ghost": 1
+      },
+      "heatFloorBonus": 1
+    }
+  },
+  "mnemonic_tap": {
+    "id": "mnemonic_tap",
+    "name": "Mnemonic Tap",
+    "slot": "neural",
+    "summary": "A cranial tap that keeps packet traces and dirty codes from falling out of your head.",
+    "price": 92,
+    "debtCost": 20,
+    "surgeryStress": 1,
+    "maxChrome": 1,
+    "effects": {
+      "stats": {
+        "wire": 1
+      }
+    }
+  },
+  "tendon_weave": {
+    "id": "tendon_weave",
+    "name": "Tendon Weave",
+    "slot": "leg",
+    "summary": "A quiet lattice through the legs and shoulders that makes force feel cheap.",
+    "price": 88,
+    "debtCost": 18,
+    "surgeryStress": 1,
+    "maxChrome": 1,
+    "effects": {
+      "stats": {
+        "body": 1
+      }
+    }
+  },
+  "medigraft_sheath": {
+    "id": "medigraft_sheath",
+    "name": "Medigraft Sheath",
+    "slot": "dermal",
+    "summary": "A layered internal sheath that buys the body a little more time before it gives up.",
+    "price": 110,
+    "debtCost": 30,
+    "surgeryStress": 2,
+    "maxChrome": 1,
+    "effects": {
+      "maxHp": 2,
+      "healOnInstall": 2
+    }
+  }
+}

@@ -1,0 +1,38 @@
+{
+  "name": "Flood Docks",
+  "route": "shard://cityline/flood-docks",
+  "sigil": "~~ black water ~~",
+  "accent": "bright-blue",
+  "support": "bright-green",
+  "dim": "grey",
+  "description": "Black water slaps at concrete pilings while cargo nets sway like they are listening.",
+  "detail": "Someone welded new ladders onto old flood markers. Every barge looks both abandoned and recently paid for.",
+  "fixtures": [
+    {
+      "id": "barge",
+      "name": "moored barge",
+      "inspect": "The barge sits low in the water under a tarp that smells like clinic coolant and wet rope."
+    },
+    {
+      "id": "bollards",
+      "name": "bollards",
+      "inspect": "Every bollard is wrapped in fresh chain and old superstition."
+    }
+  ],
+  "npcs": [
+    "ferryman"
+  ],
+  "mood": [
+    "Black water is slapping the pilings with the kind of regularity that makes timekeepers nervous.",
+    "Tonight a barge has been tied with a knot the docks have not used in years.",
+    "Two of the floodlamps are out; the third is covering for both and pretending."
+  ],
+  "scavenge": {
+    "note": "You check the mooring lines and rotten lockers for anything that floated free and stayed quiet.",
+    "reward": {
+      "itemId": "ration_gel",
+      "credits": 14
+    },
+    "message": "The docks surrender a ration tube, a dock chit, and a fistful of damp notes."
+  }
+}

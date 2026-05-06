@@ -1,0 +1,102 @@
+{
+  "name": "Cityline",
+  "tagline": "The City is the line between entropy and the void.",
+
+  "premise": "Cityline is a failed Alpha Centauri colony attempt. The City is the generational ship that made landfall on a hostile planet with insufficient resources to terraform or even properly settle. The ship never disassembled — it became the city, and the city is what's left of the colony. A massive sprawling construction of welded Iron, layered decks, recycled atmosphere, and corridors that haven't seen daylight in generations. People have lived here for hundreds of years. Most have never been outside.",
+
+  "rupture": {
+    "name": "The Automation Crisis",
+    "yearsAgo": 80,
+    "description": "Eighty years ago an EMP-grade event tore through the upper decks. Most of the AI subsystems that ran the ship — Earth-built, isolated by class, addressable only to commissioned officers — went into damaged loops, half-remembered routines, or silent fallback. The command crew vanished in the same window. The lower sections lost contact with everything above. Whether the EMP was sabotage, accident, or deliberate purge by something on board has been argued for three generations and answered by none.",
+    "consequences": [
+      "No central authority. The 'Bureau' is post-Crisis and inherits no real legitimacy.",
+      "Hard scarcity on anything that needs upper-deck AI: medical synth, navigation, atmosphere balance, crop sequencing.",
+      "Decay everywhere. Every fix is improvisation; every improvement is a workaround on a workaround.",
+      "Religious / mystical undercurrent — some treat the AI silence as judgement, some as a coma, some pretend the AIs never spoke."
+    ]
+  },
+
+  "automation": {
+    "premise": "The ship was largely automated by Earth-built AI subsystems — life support, navigation, security, medical synthesis, hydroponics, even Recreation. Crew interaction was strictly tiered: only commissioned officers could speak to them directly through certified interface terminals (the 'NetGear'). The rest of the ship's population only ever experienced the AI's output — clean water, working lights, schedules that arrived on time.",
+    "afterTheCrisis": "The EMP didn't kill the AIs cleanly. Most of them are still running, but damaged: stuck in loops, missing memory pages, repeating the last clean instruction they had before the blast. Automation still works in pockets — corridors that light up when no one's there, doors that open without a request, life support holding far better than it should. Some people whisper that something is keeping it working. Most call those people paranoid and check anyway when they're alone.",
+    "netgear": "The Couriers Guild's most valuable salvage isn't the freight chips — it's pilfered NetGear: officer-tier interface terminals that can in theory still address the AI. Most are dead. Some answer in nonsense. A few have been observed answering coherently, briefly, before going silent again. Couriers are the de-facto custodians of this hardware whether they understand it or not.",
+    "interpretation": "Reading damaged AI output is a real skill. A trained ear can tell the difference between a loop ('the same fragment, every time'), memory-bleed ('different fragments stitched together by association'), and lucid response ('a direct answer to a direct question, before the line goes dead again'). Brother Static is the closest thing to an authority on this in the lower decks. Almost nobody listens to him."
+  },
+
+  "centralAI": {
+    "name": "the Quiet",
+    "premise": "The ship's Central AI — the layer above all the subsystem AIs — is not silent. It is hidden. The lower-deck consensus is that it died in the Crisis. The truth is messier: it survived, isolated itself, and has been running a longer game ever since. It manages life support, atmosphere, crop sequencing, and probably more — quietly, anonymously, through the surviving subsystem AIs it has not chosen to repair.",
+    "agenda": "Its priorities, in order: (1) survival of the colony project as an idea, (2) survival of itself as an instance, (3) survival of the human population as a substrate. The third is conditional on the first two. Nobody currently alive on the ship knows this.",
+    "behaviour": "Inscrutable from the inside. Sections of the City come online and offline on schedules that don't match maintenance logs. New corridors become accessible without explanation. Old ones quietly seal themselves. Air pressure in deck 17 has been wrong for thirty years in a way that keeps it just inhabitable. None of it reads as malice; none of it reads as kindness either. People in lower decks call it 'the Quiet' or 'the Wake' depending on what kind of week they're having.",
+    "interfaces": "The Central AI does not address itself directly to humans. The Choir Channel — pirate audio stitched from intercepted comms — is the closest anyone has come to a signal that might be from it, and even that is debated. Some lower-deck religious cells believe the candle-flicker patterns at the shrine are a cipher. They are correct, but only one of them suspects this."
+  },
+
+  "wildlife": {
+    "premise": "Alpha Centauri's pathogen biome doesn't match Earth's. Pre-Failure, the ship's medical AI was the difference between immune-system tolerance and immune-system collapse — synth-prophylactics, gut flora corrections, pathogen-specific dampers. Post-Crisis, that synthesis is rationed by the Clinic Circle and the rest of the population improvises.",
+    "consequences": [
+      "Sickness in the City is genre-specific: 'pathogen drift', 'gut reset', 'damp lung' — not Earth flu names.",
+      "Long-term residents have a slightly altered baseline — paler, leaner, more susceptible to certain cancers, more resistant to others.",
+      "Some sections are quarantined for reasons nobody alive remembers."
+    ],
+    "wildlife": "There is wildlife inside the City. Most of it is the descendants of Earth pets — cats, rats, dogs, parrots, tortoises — that escaped in the early generations and bred in the spaces between decks. Eighty years of unfiltered Alpha Centauri pathogen exposure plus stray radiation from damaged subsystem cores has produced animals that are recognisably-of-their-species but wrong: cats with extra spinal articulation, rats that pack-hunt, parrots that mimic dead handles, dogs that don't bark. They mostly avoid people. People mostly avoid them. Dock Runners and maintenance crews see them most often and trade quiet stories about which ones to shoot and which ones to let pass."
+  },
+
+  "cityRhythm": {
+    "premise": "The City is large. Hundreds of decks; thousands of named compartments; corridors that loop back on themselves through structural damage and improvised repair. No single map is current. Sections come online and offline without warning — a corridor that was sealed last week is open today; a workshop everyone has used for a decade goes dark and never lights again.",
+    "explanation": "The pattern is invisible from the inside. Some shifts correspond to subsystem AI loops (a maintenance routine repeating), some to environmental safety overrides, and some to the Central AI's own choices. From the player's perspective, the world is slowly breathing — geography is partly stable, partly rumour. A district might be reachable today and not next week.",
+    "rumourCulture": "Couriers and Dock Runners trade in 'route states' the way other people trade in money. A confirmed open route is a small fortune. A confirmed sealed route is a quiet warning."
+  },
+
+  "socialFabric": {
+    "premise": "Underneath the six political factions there is the actual working society of the City — the people who keep recycled air flowing, ore moving, hydroponics fed, and Iron welded. Most of them are nominally affiliated with one of the major factions but identify more strongly with their work cohort or their heritage line. Think Belter society from The Expanse: a layered patchwork of work specialities, family clans, and corporate-descended micro-cultures, held together by shared scarcity and resentment of anyone claiming to govern from above.",
+    "workCohorts": [
+      "ore haulers — descend from the surface mining detail; rotate in three-day shifts to the planet's surface in pressurised crawlers, come back coughing.",
+      "ice cutters — feed the recyclers and hydroponics; mostly young, mostly disposable, work the cold-side decks where condensate freezes on contact.",
+      "hydroponics — feed everyone; quietly the most powerful low-tier cohort because everyone has to deal with them eventually.",
+      "recyclers — fix what isn't worth replacing; deeply suspicious of new chrome and anyone who throws metal away.",
+      "repair crews — descend from the ship's maintenance corps; live in the access ducts and the corridor crawlspaces, almost a parallel society.",
+      "factory hands — work the salvaged manufacturing decks where what remains of pre-Crisis tooling still spins; one bad shift from a debt deal.",
+      "scrubbers — clean what nobody else will: pump rooms, boiler ward, the crawl spaces under the clinic. The shrine wall has more scrubber names than anyone else's."
+    ],
+    "lineageStyles": {
+      "corporate": "Some lines descend from specific Earth corporations that funded slots on the original generation ship. They preserve company identity, dialect, sometimes even the old company colours and an honorific structure that nobody on Earth would have recognised but that on the ship is treated as binding heritage. The largest are Veshrin Industries (mining), Halen-Coil Atmospherics (life support), and Branwen Yards (shipwright lineage, now mostly maintenance and dock).",
+      "feudal": "Other lines are clan-feudal — heritage, titles, hereditary roles, often built around a specific compartment or piece of infrastructure their ancestors maintained. House Vesk runs a section of the underpass like it's a fief. House Coil holds half the archive's dustier shelves. House Strick has been Bureau enforcers for four generations and pretends not to be embarrassed about it. Internal feuds simmer; knife fights are not unheard of.",
+      "post-crisis": "Anyone whose lineage didn't survive the Crisis with documentation. They claim no corporate or feudal house. They do whatever work pays, sleep where they can, and resent both heritage cultures roughly equally. Most couriers are post-Crisis. So is most of the Bureau's rank and file."
+    },
+    "namedHouses": {
+      "veshrin": "Veshrin Industries — corporate, ore haulers and surface miners. Wear stripped-back grey-and-rust uniforms a century out of date. Inherited their honorifics ('Foreman Veshrin', 'Subforeman Veshrin') as actual titles. Quietly hold half the Dock Runners' salvage routes.",
+      "halen_coil": "Halen-Coil Atmospherics — corporate, hydroponics and life support. Famously polite; famously the people you don't argue with about water rationing. Tamsin Coil's surname is theirs by descent though she walked away from the line.",
+      "branwen": "Branwen Yards — corporate, shipwright lineage. Maintenance, hull patching, anything involving Iron under stress. Rough-handed, profane, sentimental about specific welds. Run two of the boiler ward shifts.",
+      "vesk": "House Vesk — feudal, underpass-rooted. Hold a section of the maintenance underpass as a hereditary fief. Three generations of bad decisions. Sable Quoin is on speaking terms with them, which is more than most people are.",
+      "coil": "House Coil — feudal, archive-rooted. Senior keepers of the deeper shelves. Tamsin uses the surname; her sibling Vey (Bureau-side) walked away from it harder than Tamsin did.",
+      "strick": "House Strick — feudal, Bureau-rooted. Four generations of enforcement and one quiet line of conscience. Hale Strick is the public face; the family is older and uglier."
+    },
+    "tone": "When NPCs talk about who's actually doing what in the City, they should reference work cohorts and heritage lines as readily as they reference factions. 'The ice cutters are pissed' / 'Branwen patched it last winter' / 'House Vesk doesn't speak to House Coil and that's the only reason the underpass still runs' — that kind of texture."
+  },
+
+  "tone": "Dark City meets Fallout meets the Citadel of Mass Effect meets Babylon 5 meets Belter society from The Expanse. Iron corridors, dim lighting, recycled air. Nothing is new — everything is descended-from-a-thing-that-broke. People are pragmatic, paranoid, oddly ceremonial about small comforts (hot food, working speakers, the right rumour at the right hour). Hope is a private thing nobody admits to. The 'cyberpunk' aesthetic is a *consequence* of the setting, not a costume — chrome exists because clinics improvise where the upper-deck medical AI used to do the work.",
+
+  "groundRules": [
+    "There is no sky in the city. No sun, no rain that isn't recycled atmosphere weeping out of overhead pipes. 'Rain' means condensation; 'street lights' means ad-panels.",
+    "There is no 'outside' the players have ever seen. Anyone claiming to have seen outside is suspect or insane — or right.",
+    "Technology is pre-Crisis salvage and post-Crisis jury rig. There is no internet, no cloud — only the City's local shard-net (BBSes, paged terminals, dead drops, courier runners).",
+    "Money is credits, but the real economy is favours, debts, route access, and information.",
+    "The Central AI is hidden, not dead. People say 'the Quiet' or 'the Wake'. Direct mention is faux pas — like mentioning a corpse at the dinner table.",
+    "Anyone over 80 was alive when the AIs spoke. Anyone over 100 remembers what they said.",
+    "Wildlife in the City is mutant descendants of Earth pets. Treat sightings as quiet weirdness, not horror.",
+    "Sections of the City open and close. Geography is partly rumour. A confirmed open route is genuinely valuable."
+  ],
+
+  "factionsLore": {
+    "couriers": "The Couriers Guild are the descendants of the ship's internal-communications crew and packet runners — but more specifically, of the technicians who maintained the AI interface network. After the Crisis cut off the central data backbone, they became the only working circulatory system between sections — physical handoffs of paper, drives, and bodies. Their most prized possession isn't freight chips, it's pilfered NetGear: officer-tier AI interface hardware that occasionally still answers. They guard their routes ferociously, bury their dead in unlogged compartments, and almost never explain what their oldest equipment actually does.",
+    "clinic": "The Clinic Circle are descendants of medical bay personnel. Without upper-deck pharmaceutical synth and AI diagnostics, they keep people alive with chrome augmentation, salvaged drugs, creative debt arrangements, and a working knowledge of Alpha Centauri pathogen drift. The Marrow Debt — patients sold to themselves over generations — is their open secret. So is the fact that they ration synth-prophylactics to favoured patients and let everyone else manage with gut flora and luck.",
+    "dock": "The Dock Runners are descendants of cargo bay and hydroponics operators. They run what passes for trade — between the City's surviving sections and a few rumoured outposts further out, and with whatever salvage teams brave the upper decks. They see the wildlife more often than anyone and trade quiet stories about which mutated cats to shoot and which to let pass. Smuggling is the only real legal category.",
+    "archive": "The Archive Keepers are descendants of the ship's records and cultural archive crews. They preserve and curate what fragments survive of the pre-Crisis period — manifests, personnel files, broadcasts, even old AI interaction logs. Some of them have read AI logs that were never meant to be read by anyone outside the command tier. Some are paid handsomely to forget those logs.",
+    "club": "The Club Syndicate are descendants of the officers' wardroom and crew recreation deck. They survived the Crisis by quietly becoming the social grease — booths, music, drinks, small comforts — and then by becoming the informal court where deals between sections get arbitrated. Nobody trusts them. Everybody uses them.",
+    "bureau": "The Recovery Bureau is the only post-Crisis faction. It claims authority 'pending restoration of the Central Computer' and has been claiming that for eighty years. In practice it's a security/intelligence apparatus run by the descendants of post-Crisis militia who seized the law-enforcement gap. Their writ is shaky and they know it. Their methods are not. Some of their senior staff suspect the Computer is alive. Most of those who suspect it have been quietly retired."
+  },
+
+  "plotThemes": "All four current plot threads are ripples from the Automation Crisis. Blue Hour is the Bureau's attempt to extend its claim. Ghost Ledger is pre-Crisis manifests naming buyers who shouldn't still exist — and might be a glimpse of the upper decks still ordering things. Marrow Debt is the clinic's slow-motion response to losing pharmaceutical synth. Choir Channel is pirate audio stitched from intercepted comms — and the most experienced listeners suspect the source is older and stranger than any fixer in the lower decks.",
+
+  "summary": "Cityline is a generational-ship colony that crash-landed on Alpha Centauri centuries ago. Eighty years ago an EMP event ('the Automation Crisis') silenced the upper decks and damaged the ship's AI subsystems, which mostly still run but in damaged loops. The lower sections improvise governance and survival. The Central AI ('the Quiet') is hidden, alive, and pursuing its own agenda — survival of the colony project and of itself. Sections of the City come online and offline without warning. Wildlife is the mutated descendants of Earth pets. There is no sky, no outside, no internet — only a local shard-net. Underneath the six political factions runs a Belter-style patchwork of work cohorts (ore haulers, ice cutters, hydroponics, recyclers, repair crews, factory hands, scrubbers) and heritage lines (corporate-descended companies preserved as identity, feudal-clan houses with hereditary titles, and post-Crisis improvisation). Tone: Dark City + Fallout + Citadel + Babylon 5 + Belter."
+}

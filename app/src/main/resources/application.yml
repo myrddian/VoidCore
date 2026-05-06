@@ -1,0 +1,136 @@
+spring:
+  application:
+    name: voidcore
+  threads:
+    virtual:
+      enabled: true
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/voidcore}
+    username: ${SPRING_DATASOURCE_USERNAME:voidcore_app}
+    password: ${SPRING_DATASOURCE_PASSWORD:}
+    hikari:
+      maximum-pool-size: 20
+      minimum-idle: 5
+      pool-name: voidcore-pool
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+    baseline-on-migrate: false
+  jackson:
+    default-property-inclusion: non_null
+    deserialization:
+      fail-on-unknown-properties: false
+
+server:
+  port: 8080
+  address: 0.0.0.0
+  forward-headers-strategy: ${VOIDCORE_FORWARD_HEADERS:framework}
+  shutdown: graceful
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+  endpoint:
+    health:
+      show-details: never
+
+voidcore:
+  public-url: ${VOIDCORE_PUBLIC_URL:http://localhost:8080}
+  trust-proxy: ${VOIDCORE_TRUST_PROXY:false}
+  protocol-version: voidcore-node-v1
+  branding:
+    name: ${BBS_NAME:VOIDcore}
+    tagline: ${BBS_TAGLINE:typed-document terminal platform}
+    description: ${BBS_DESCRIPTION:a self-hosted typed-document community platform}
+    subtagline: ${BBS_SUBTAGLINE:}
+    sysop-handle: ${BBS_SYSOP_HANDLE:${VOIDCORE_SYSOP_HANDLE:sysop}}
+    fido-addr: ${BBS_FIDO_ADDR:23:495/0}
+    dial-number: ${BBS_DIAL_NUMBER:0398675309}
+    connect-rate: ${BBS_CONNECT_RATE:14400/ARQ/V42BIS}
+  instance:
+    disabled-screens: ${BBS_DISABLED_SCREENS:}
+  ws:
+    # Heartbeat tolerance is generous (5 misses × 30s = 150s) because in
+    # dev environments the pong-receive path can race against the
+    # heartbeat scheduler — a pong sent by the browser may arrive in
+    # Tomcat's frame buffer just AFTER the scheduler decides to close.
+    # User-reported symptom: every session closing at exactly the
+    # missed-pong threshold, with the pong then arriving on the next log
+    # line ("session-known=false"). Bumping tolerance + adding a
+    # last-ditch isOpen-recheck in HeartbeatScheduler handles the race
+    # without false-closing healthy sessions. Real half-open detection
+    # is still possible (sessions truly silent for 150s+ get closed),
+    # just less aggressive about timing.
+    heartbeat-seconds: ${VOIDCORE_WS_HEARTBEAT_SECONDS:30}
+    max-missed-pongs: ${VOIDCORE_WS_MAX_MISSED_PONGS:5}
+    # ADR-033: when a post-auth WebSocket disconnects, the actor moves
+    # to a detached pool and stays alive for this many seconds so the
+    # client can reconnect (auth.resume with the same token) and resume
+    # in place — in-flight composes / breadcrumbs / phase stack all
+    # preserved. After the TTL fires the actor is shut down; reconnects
+    # past the window fall back to the DB-backed `auth.resume` path
+    # (which restores the persisted `current_screen` skeleton only).
+    #
+    # 1800s (30 min) = survives a phone-lock + reopen, an alt-tab
+    # throttling window, a wifi-network handover, a coffee break.
+    # Used to be 60s — too aggressive; users came back from any
+    # non-trivial pause to find their session reaped. The cost of
+    # keeping a dead actor in memory for 30 min is single-digit KB
+    # per session — fine at v1 scale.
+    session-detach-ttl-seconds: ${VOIDCORE_WS_SESSION_DETACH_TTL_SECONDS:1800}
+    # How often the registry sweeps the detached pool. The worst-case
+    # lifetime of an expired actor is `detach-ttl + sweep-interval`.
+    session-sweep-seconds: ${VOIDCORE_WS_SESSION_SWEEP_SECONDS:10}
+  session:
+    ttl-days: ${VOIDCORE_SESSION_TTL_DAYS:30}
+  argon2:
+    memory-kb: ${VOIDCORE_ARGON2_MEMORY_KB:65536}
+    iterations: ${VOIDCORE_ARGON2_ITERATIONS:3}
+    parallelism: ${VOIDCORE_ARGON2_PARALLELISM:4}
+  rate-limit:
+    login-failures-per-window: ${VOIDCORE_RL_LOGIN_FAILURES:5}
+    login-window-minutes:      ${VOIDCORE_RL_LOGIN_WINDOW_MIN:15}
+    login-lockout-minutes:     ${VOIDCORE_RL_LOGIN_LOCKOUT_MIN:15}
+    registrations-per-hour:    ${VOIDCORE_RL_REG_PER_HOUR:3}
+    posts-per-minute:          ${VOIDCORE_RL_POSTS_PER_MIN:10}
+    post-burst-per-second:     ${VOIDCORE_RL_POST_BURST_SEC:1}
+  sysop:
+    handle: ${VOIDCORE_SYSOP_HANDLE:}
+    initial-password: ${VOIDCORE_SYSOP_INITIAL_PASSWORD:}
+  llm:
+    enabled: ${VOIDCORE_LLM_ENABLED:false}
+    base-url: ${VOIDCORE_LLM_BASE_URL:}
+    chat-model: ${VOIDCORE_LLM_CHAT_MODEL:}
+    api-key: ${VOIDCORE_LLM_API_KEY:}
+    timeouts:
+      blocking-seconds: ${VOIDCORE_LLM_BLOCKING_TIMEOUT_SECONDS:60}
+      streaming-seconds: ${VOIDCORE_LLM_STREAMING_TIMEOUT_SECONDS:90}
+    retry:
+      max-attempts: ${VOIDCORE_LLM_RETRY_MAX_ATTEMPTS:2}
+      initial-backoff-ms: ${VOIDCORE_LLM_RETRY_INITIAL_BACKOFF_MS:500}
+  doors:
+    # Optional dedicated internal listener for sidecar doors. Leave port at 0
+    # to keep /ws/door on the main app listener (dev default). In deploys, set
+    # a separate internal-only port and do not route it through the reverse
+    # proxy; /ws/door will then 404 on the public app port.
+    port: ${VOIDCORE_DOOR_PORT:0}
+    address: ${VOIDCORE_DOOR_ADDRESS:127.0.0.1}
+    # Doors may receive a low-frequency wall-clock sync for timers and
+    # terminal effects. Keep this at 5s or higher; it is not meant to become a
+    # high-rate per-message timestamp stream.
+    time-tick-seconds: ${VOIDCORE_DOOR_TIME_TICK_SECONDS:5}
+  worker:
+    llm:
+      pool-size: ${VOIDCORE_WORKER_LLM_POOL_SIZE:1}
+    shutdown-timeout-seconds: ${VOIDCORE_WORKER_SHUTDOWN_TIMEOUT_SECONDS:30}
+
+logging:
+  level:
+    root: INFO
+    # Default for our packages is INFO. The ws-trace DEBUG lines are
+    # firehose-grade noise; keep them off unless explicitly enabled via
+    # VOIDCORE_LOG_LEVEL=DEBUG (or by overriding a sub-package, e.g.
+    # `io.aeyer.voidcore.doors: DEBUG` to chase a specific subsystem).
+    io.aeyer.voidcore: ${VOIDCORE_LOG_LEVEL:INFO}

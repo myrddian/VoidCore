@@ -1,0 +1,602 @@
+/* =============================================================================
+ * VOIDcore theme — lifted near-verbatim from reference/v0-artifact-demo.html
+ * per reference/README.md ("Lift the CSS verbatim or near-verbatim"). 16-color
+ * CGA palette, VT323 + IBM Plex Mono fallback, scanlines, vignette, flicker,
+ * noise overlay. Aesthetic invariants in SPEC §6.10.
+ * ============================================================================ */
+/* Self-hosted fonts. Sourced from @fontsource/* npm packages and copied into
+ * static/fonts/ by the frontend build. font-display:block prevents the FOUT
+ * flicker where the banner art briefly renders in a fallback metric. */
+@font-face {
+  font-family: 'VT323';
+  font-style: normal;
+  font-weight: 400;
+  font-display: block;
+  src: url('/fonts/vt323-latin-400-normal.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'IBM Plex Mono';
+  font-style: normal;
+  font-weight: 400;
+  font-display: block;
+  src: url('/fonts/ibm-plex-mono-latin-400-normal.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'IBM Plex Mono';
+  font-style: normal;
+  font-weight: 700;
+  font-display: block;
+  src: url('/fonts/ibm-plex-mono-latin-700-normal.woff2') format('woff2');
+}
+
+:root {
+  --bg: #0a0a0a;
+  --fg: #c0c0c0;
+  --bright: #ffffff;
+  --black: #000000;
+  --dark-grey: #555555;
+  --grey: #aaaaaa;
+  --red: #aa0000;
+  --bright-red: #ff5555;
+  --green: #00aa00;
+  --bright-green: #55ff55;
+  --yellow: #aa5500;
+  --bright-yellow: #ffff55;
+  --blue: #0000aa;
+  --bright-blue: #5555ff;
+  --magenta: #aa00aa;
+  --bright-magenta: #ff55ff;
+  --cyan: #00aaaa;
+  --bright-cyan: #55ffff;
+
+  /* Region row counts — v1 fixed layout per SPEC §4.3 */
+  --rows-banner: 8;
+  --rows-main: 14;
+  --rows-notifications: 1;
+  --rows-status: 1;
+}
+
+/* ---------- Theme variants per SPEC §6.9 ----------------------------------
+ * Selectable via [T] from the main menu; the choice persists to
+ * users.preferences.theme. Each theme overrides the base palette set above;
+ * only colours change — fonts / scanlines / bezel stay constant.
+ */
+
+/* phosphor (default) — already set above. Re-declare for explicitness so
+ * cycling away and back works without depending on whether earlier
+ * overrides were cleared. */
+body[data-theme="phosphor"] {
+  --bg: #0a0a0a;
+  --fg: #c0c0c0;
+  --bright: #ffffff;
+  --bright-cyan: #55ffff;
+  --bright-yellow: #ffff55;
+  --bright-magenta: #ff55ff;
+}
+
+/* amber — single-colour amber CRT (Plato / DEC vt100 vibe) */
+body[data-theme="amber"] {
+  --bg: #110700;
+  --fg: #ffaa33;
+  --bright: #ffd966;
+  --grey: #cc7722;
+  --dark-grey: #663311;
+  --bright-cyan: #ffd966;
+  --bright-yellow: #ffe899;
+  --bright-magenta: #ffaa55;
+  --bright-green: #ffcc66;
+  --bright-red: #ff7733;
+  --bright-blue: #ffaa66;
+  --magenta: #aa6622;
+  --green: #aa6611;
+  --cyan: #ddaa44;
+  --blue: #885500;
+  --red: #aa3311;
+  --yellow: #aa5500;
+}
+
+/* cga — sharper neon RGB straight from a 1990 PC */
+body[data-theme="cga"] {
+  --bg: #000000;
+  --fg: #aaaaaa;
+  --bright: #ffffff;
+  --grey: #aaaaaa;
+  --dark-grey: #555555;
+  --bright-cyan: #55ffff;
+  --bright-magenta: #ff55ff;
+  --bright-yellow: #ffff55;
+  --bright-green: #55ff55;
+  --bright-red: #ff5555;
+  --bright-blue: #5555ff;
+  --cyan: #00aaaa;
+  --magenta: #aa00aa;
+  --green: #00aa00;
+  --red: #aa0000;
+  --blue: #0000aa;
+  --yellow: #aa5500;
+}
+
+/* modern — minimal dark, fewer effects, easier on eyes */
+body[data-theme="modern"] {
+  --bg: #0d0d10;
+  --fg: #cccccc;
+  --bright: #ffffff;
+  --grey: #888888;
+  --dark-grey: #444444;
+  --bright-cyan: #66bbcc;
+  --bright-yellow: #d4b95e;
+  --bright-magenta: #c885c8;
+  --bright-green: #88cc77;
+  --bright-red: #d97070;
+  --bright-blue: #6e8fd0;
+  --cyan: #4a8893;
+  --magenta: #8b5d8b;
+  --green: #5e8e58;
+  --red: #a05050;
+  --blue: #4a679e;
+  --yellow: #aa884c;
+}
+body[data-theme="modern"] .crt::before { display: none; } /* no scanlines */
+body[data-theme="modern"] .crt::after  { animation: none; opacity: 1; }
+body[data-theme="modern"] .noise       { display: none; }
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  background: #000;
+  color: var(--fg);
+  /* VT323 first for the CRT pixel feel. With banners/frames now drawn in
+   * pure ASCII (+ - |) every glyph lives inside VT323's coverage, so
+   * there's no per-character fallback to Plex and column alignment holds.
+   * Plex Mono kept as a fallback for any future Unicode that VT323 lacks. */
+  font-family: 'VT323', 'IBM Plex Mono', monospace;
+  font-size: 20px;
+  line-height: 1.15;
+  height: 100%;
+  overflow: hidden;
+}
+
+body {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  background: radial-gradient(ellipse at center, #0a0a0a 0%, #000 70%, #000 100%);
+}
+
+.crt {
+  width: 100%;
+  max-width: 920px;
+  height: 100%;
+  max-height: 700px;
+  position: relative;
+  background: #000;
+  border: 2px solid #1a1a1a;
+  border-radius: 12px;
+  box-shadow:
+    inset 0 0 80px rgba(0,0,0,0.9),
+    0 0 60px rgba(85, 255, 255, 0.05),
+    0 0 2px rgba(255,255,255,0.1);
+  padding: 1.5rem 1.75rem 1.25rem;
+  overflow: hidden;
+}
+
+.crt::before {
+  /* scanlines */
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    to bottom,
+    rgba(0,0,0,0) 0px,
+    rgba(0,0,0,0) 2px,
+    rgba(0,0,0,0.18) 3px,
+    rgba(0,0,0,0.18) 3px
+  );
+  pointer-events: none;
+  z-index: 10;
+  border-radius: 12px;
+}
+
+.crt::after {
+  /* vignette + flicker */
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at center, rgba(0,0,0,0) 60%, rgba(0,0,0,0.5) 100%);
+  pointer-events: none;
+  z-index: 11;
+  border-radius: 12px;
+  animation: flicker 4s infinite;
+}
+
+@keyframes flicker {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.97; }
+  52% { opacity: 1; }
+}
+
+.noise {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 12;
+  opacity: 0.04;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)' opacity='0.6'/></svg>");
+}
+
+.bezel {
+  position: relative;
+  z-index: 5;
+  height: 100%;
+  display: grid;
+  grid-template-rows: auto 1fr auto auto;
+  gap: 0.25rem;
+  text-shadow: 0 0 2px currentColor;
+}
+
+.region {
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.region a {
+  color: var(--bright-cyan);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.region a:hover { color: var(--bright); }
+.region a:visited { color: var(--cyan); }
+
+/* PR-7: ~slug cross-reference render. Same colour as URL anchors so
+ * the visual semantics stay coherent ("this is a link"); not <a>
+ * because it's not clickable in v1 — just an affordance indicating
+ * a relationship. */
+.region .slug-link {
+  color: var(--bright-cyan);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.region-main {
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding-right: 4px;
+  outline: none;
+  min-height: 0;
+}
+
+.region-main::-webkit-scrollbar { width: 6px; }
+.region-main::-webkit-scrollbar-track { background: transparent; }
+.region-main::-webkit-scrollbar-thumb { background: #333; }
+
+.region-notifications {
+  border-top: 1px solid var(--dark-grey);
+  padding-top: 2px;
+  min-height: 1.2em;
+  color: var(--bright-yellow);
+}
+
+.region-notifications.level-warn  { color: var(--bright-yellow); }
+.region-notifications.level-alert { color: var(--bright-red); }
+.region-notifications.level-info  { color: var(--bright-cyan); }
+
+.region-status {
+  border-top: 1px solid var(--dark-grey);
+  padding-top: 2px;
+  display: flex;
+  align-items: baseline;
+  gap: 0;
+  min-height: 1.2em;
+}
+
+.status-text { color: var(--fg); white-space: pre; }
+
+/* Theme-specific status bar (info: bar) colours so editor mode text is
+ * readable and on-brand for each palette. */
+body[data-theme="phosphor"] .status-text { color: #00d364; }
+body[data-theme="amber"]    .status-text { color: #ffb000; }
+body[data-theme="cga"]      .status-text { color: #55ffff; }
+body[data-theme="modern"]   .status-text { color: #cccccc; }
+
+/* Bracket patterns [X] are parsed into spans: status-bracket and status-key.
+ * Each theme gives status-key the accent colour (bold) and dims brackets. */
+body[data-theme="phosphor"] .status-key      { color: #ffd966; font-weight: bold; }
+body[data-theme="phosphor"] .status-bracket  { opacity: 0.45; }
+
+body[data-theme="amber"] .status-key      { color: #ffe88a; font-weight: bold; }
+body[data-theme="amber"] .status-bracket  { opacity: 0.45; }
+
+body[data-theme="cga"] .status-key      { color: #ffff55; font-weight: bold; }
+body[data-theme="cga"] .status-bracket  { opacity: 0.45; }
+
+body[data-theme="modern"] .status-key      { color: #d7ba7d; font-weight: bold; }
+body[data-theme="modern"] .status-bracket  { opacity: 0.45; }
+
+.status-input {
+  background: transparent;
+  border: none;
+  outline: none;
+  color: var(--bright);
+  font-family: inherit;
+  font-size: inherit;
+  padding: 0;
+  text-shadow: 0 0 2px currentColor;
+  /* Native caret in line/password modes — sits right where the user types
+   * instead of being pushed to the row's right edge by the flex:1 input.
+   * In keystroke mode the input is hidden and we render our own block
+   * cursor right after the prompt (see .status-input.hidden below). */
+  caret-color: var(--bright);
+  flex: 1;
+  min-width: 0;
+}
+.status-input:focus { outline: none; }
+/*
+ * In keystroke mode the input is taken out of the visual flow but kept
+ * focusable so mobile users can still pop the on-screen keyboard. Using
+ * display:none would make .focus() a no-op and lock mobile users out of
+ * keystroke menus (#42).
+ */
+.status-input.hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+  /* When the input is hidden (keystroke mode), push it to the end of the
+   * flex row so .status-text and .cursor sit adjacent. Otherwise the input
+   * still occupies a flex track and visually separates them. */
+  order: 99;
+}
+
+.cursor {
+  display: inline-block;
+  width: 0.5em;
+  height: 1.05em;
+  background: var(--bright);
+  vertical-align: text-bottom;
+  margin-left: 1px;
+  animation: blink 1s steps(2, start) infinite;
+}
+.cursor.hidden { display: none; }
+
+@keyframes blink { to { visibility: hidden; } }
+
+/* Span colour utility classes — applied by the renderer per SPEC §4.4 */
+.fg-default        { color: var(--fg); }
+.fg-bright         { color: var(--bright); }
+.fg-grey           { color: var(--grey); }
+.fg-dark-grey      { color: var(--dark-grey); }
+.fg-black          { color: var(--black); }
+.fg-red            { color: var(--red); }
+.fg-bright-red     { color: var(--bright-red); }
+.fg-green          { color: var(--green); }
+.fg-bright-green   { color: var(--bright-green); }
+.fg-yellow         { color: var(--yellow); }
+.fg-bright-yellow  { color: var(--bright-yellow); }
+.fg-blue           { color: var(--blue); }
+.fg-bright-blue    { color: var(--bright-blue); }
+.fg-magenta        { color: var(--magenta); }
+.fg-bright-magenta { color: var(--bright-magenta); }
+.fg-cyan           { color: var(--cyan); }
+.fg-bright-cyan    { color: var(--bright-cyan); }
+.fg-white          { color: var(--bright); }
+
+.bg-blue   { background: var(--blue);   color: var(--bright); padding: 0 4px; }
+.bg-cyan   { background: var(--cyan);   color: var(--black);  padding: 0 4px; }
+.bg-red    { background: var(--red);    color: var(--bright); padding: 0 4px; }
+.bg-yellow { background: var(--yellow); color: var(--black);  padding: 0 4px; }
+
+.span.bold { font-weight: 700; }
+
+/* Mobile — 64-column layout per SPEC §6.7 ----------------------------- */
+@media (max-width: 640px) {
+  html, body { font-size: 16px; }
+  body { padding: 0.25rem; }
+  .crt {
+    max-width: 100%;
+    max-height: 100%;
+    padding: 0.5rem 0.6rem;
+    border-radius: 6px;
+  }
+  /* Tighter scanlines + dialed-back vignette so they're not noisy on a
+   * small screen. */
+  .crt::before {
+    background: repeating-linear-gradient(
+      to bottom,
+      rgba(0,0,0,0) 0px,
+      rgba(0,0,0,0) 1px,
+      rgba(0,0,0,0.12) 2px,
+      rgba(0,0,0,0.12) 2px
+    );
+  }
+  /* Larger tap target for the input, even though it's off-screen most of
+   * the time — when visible (line/password mode) make it easy to focus. */
+  .status-input { font-size: inherit; min-height: 1.4em; }
+  .region-status { padding-top: 4px; gap: 4px; }
+}
+
+/* Touch-only — disable user-select on the bezel chrome but allow text
+ * selection inside main so users can copy NFO content / chat / netmail. */
+@media (pointer: coarse) {
+  .crt, .bezel, .region-banner, .region-status, .region-notifications {
+    user-select: none;
+    -webkit-user-select: none;
+  }
+  .region-main { user-select: text; -webkit-user-select: text; }
+}
+
+/* Reduced-motion: honour user preference per SPEC §6.8 */
+@media (prefers-reduced-motion: reduce) {
+  .crt::after { animation: none; }
+  .cursor    { animation: none; }
+}
+
+/* ============================================================================
+ * Widget theming for editor, tokens, status modes, text fields, headers, menus
+ * ============================================================================ */
+
+/* phosphor — green accent */
+body[data-theme="phosphor"] .widget-editor                         { color: var(--fg, #00d364); }
+body[data-theme="phosphor"] .widget-editor-line-num                { color: #466e54; }
+body[data-theme="phosphor"] .widget-editor-cursor                  { background: #00d364; color: #0a0d0a; }
+body[data-theme="phosphor"] .widget-editor-mode.mode-normal,
+body[data-theme="phosphor"] .widget-status-mode.mode-normal        { background: #ffd966; color: #0a0d0a; padding: 0 4px; font-weight: bold; }
+body[data-theme="phosphor"] .widget-editor-mode.mode-insert,
+body[data-theme="phosphor"] .widget-status-mode.mode-insert        { background: #6cb6ff; color: #0a0d0a; padding: 0 4px; font-weight: bold; }
+body[data-theme="phosphor"] .widget-editor-mode.mode-command,
+body[data-theme="phosphor"] .widget-status-mode.mode-command       { background: #466e54; color: #0a0d0a; padding: 0 4px; font-weight: bold; }
+body[data-theme="phosphor"] .widget-editor-mode.mode-read-only,
+body[data-theme="phosphor"] .widget-status-mode.mode-read-only     { background: #ff6677; color: #0a0d0a; padding: 0 4px; font-weight: bold; }
+body[data-theme="phosphor"] .tok-heading { color: #ffd966; font-weight: bold; }
+body[data-theme="phosphor"] .tok-bold    { font-weight: bold; }
+body[data-theme="phosphor"] .tok-italic  { color: #466e54; }
+body[data-theme="phosphor"] .tok-code    { color: #5dd7e0; }
+body[data-theme="phosphor"] .tok-fence   { color: #5dd7e0; }
+body[data-theme="phosphor"] .tok-link    { color: #6cb6ff; font-weight: bold; }
+body[data-theme="phosphor"] .tok-url     { color: #466e54; }
+body[data-theme="phosphor"] .tok-slug    { color: #d77adc; }
+body[data-theme="phosphor"] .tok-bullet  { color: #ffd966; }
+body[data-theme="phosphor"] .tok-plain   { color: var(--fg); }
+body[data-theme="phosphor"] .widget-text-field                     { color: var(--fg); }
+body[data-theme="phosphor"] .widget-text-field-focused             { outline: 1px dashed #ffd966; outline-offset: 1px; }
+body[data-theme="phosphor"] .widget-text-field-cursor              { background: #ffd966; color: #0a0d0a; }
+body[data-theme="phosphor"] .widget-header-title                   { color: #ffd966; font-weight: bold; }
+body[data-theme="phosphor"] .widget-header-right                   { opacity: 0.7; }
+body[data-theme="phosphor"] .widget-key-menu-key                   { color: #ffd966; font-weight: bold; }
+body[data-theme="phosphor"] .widget-key-menu-bracket               { opacity: 0.5; }
+body[data-theme="phosphor"] .widget-key-menu-label                 { opacity: 0.85; }
+
+/* amber — orange accent */
+body[data-theme="amber"] .widget-editor                         { color: #ffb000; }
+body[data-theme="amber"] .widget-editor-line-num                { color: #6e4d00; }
+body[data-theme="amber"] .widget-editor-cursor                  { background: #ffb000; color: #0a0a05; }
+body[data-theme="amber"] .widget-editor-mode.mode-normal,
+body[data-theme="amber"] .widget-status-mode.mode-normal        { background: #ffd966; color: #0a0a05; padding: 0 4px; font-weight: bold; }
+body[data-theme="amber"] .widget-editor-mode.mode-insert,
+body[data-theme="amber"] .widget-status-mode.mode-insert        { background: #ffe88a; color: #0a0a05; padding: 0 4px; font-weight: bold; }
+body[data-theme="amber"] .widget-editor-mode.mode-command,
+body[data-theme="amber"] .widget-status-mode.mode-command       { background: #6e4d00; color: #0a0a05; padding: 0 4px; font-weight: bold; }
+body[data-theme="amber"] .widget-editor-mode.mode-read-only,
+body[data-theme="amber"] .widget-status-mode.mode-read-only     { background: #ff6644; color: #0a0a05; padding: 0 4px; font-weight: bold; }
+body[data-theme="amber"] .tok-heading { color: #ffd966; font-weight: bold; }
+body[data-theme="amber"] .tok-bold    { font-weight: bold; }
+body[data-theme="amber"] .tok-italic  { color: #6e4d00; }
+body[data-theme="amber"] .tok-code    { color: #ffe88a; }
+body[data-theme="amber"] .tok-fence   { color: #ffe88a; }
+body[data-theme="amber"] .tok-link    { color: #ffd966; font-weight: bold; }
+body[data-theme="amber"] .tok-url     { color: #6e4d00; }
+body[data-theme="amber"] .tok-slug    { color: #ffaa44; }
+body[data-theme="amber"] .tok-bullet  { color: #ffd966; }
+body[data-theme="amber"] .tok-plain   { color: var(--fg); }
+body[data-theme="amber"] .widget-text-field                     { color: var(--fg); }
+body[data-theme="amber"] .widget-text-field-focused             { outline: 1px dashed #ffd966; outline-offset: 1px; }
+body[data-theme="amber"] .widget-text-field-cursor              { background: #ffd966; color: #0a0a05; }
+body[data-theme="amber"] .widget-header-title                   { color: #ffd966; font-weight: bold; }
+body[data-theme="amber"] .widget-header-right                   { opacity: 0.7; }
+body[data-theme="amber"] .widget-key-menu-key                   { color: #ffd966; font-weight: bold; }
+body[data-theme="amber"] .widget-key-menu-bracket               { opacity: 0.5; }
+body[data-theme="amber"] .widget-key-menu-label                 { opacity: 0.85; }
+
+/* cga — cyan/magenta palette */
+body[data-theme="cga"] .widget-editor                         { color: #55ffff; }
+body[data-theme="cga"] .widget-editor-line-num                { color: #555555; }
+body[data-theme="cga"] .widget-editor-cursor                  { background: #55ffff; color: #000; }
+body[data-theme="cga"] .widget-editor-mode.mode-normal,
+body[data-theme="cga"] .widget-status-mode.mode-normal        { background: #ffff55; color: #000; padding: 0 4px; font-weight: bold; }
+body[data-theme="cga"] .widget-editor-mode.mode-insert,
+body[data-theme="cga"] .widget-status-mode.mode-insert        { background: #55ff55; color: #000; padding: 0 4px; font-weight: bold; }
+body[data-theme="cga"] .widget-editor-mode.mode-command,
+body[data-theme="cga"] .widget-status-mode.mode-command       { background: #aaaaaa; color: #000; padding: 0 4px; font-weight: bold; }
+body[data-theme="cga"] .widget-editor-mode.mode-read-only,
+body[data-theme="cga"] .widget-status-mode.mode-read-only     { background: #ff5555; color: #000; padding: 0 4px; font-weight: bold; }
+body[data-theme="cga"] .tok-heading { color: #ffff55; font-weight: bold; }
+body[data-theme="cga"] .tok-bold    { font-weight: bold; }
+body[data-theme="cga"] .tok-italic  { color: #aaaaaa; }
+body[data-theme="cga"] .tok-code    { color: #55ffff; }
+body[data-theme="cga"] .tok-fence   { color: #55ffff; }
+body[data-theme="cga"] .tok-link    { color: #5555ff; font-weight: bold; }
+body[data-theme="cga"] .tok-url     { color: #aaaaaa; }
+body[data-theme="cga"] .tok-slug    { color: #ff55ff; }
+body[data-theme="cga"] .tok-bullet  { color: #ffff55; }
+body[data-theme="cga"] .tok-plain   { color: var(--fg); }
+body[data-theme="cga"] .widget-text-field                     { color: var(--fg); }
+body[data-theme="cga"] .widget-text-field-focused             { outline: 1px dashed #ffff55; outline-offset: 1px; }
+body[data-theme="cga"] .widget-text-field-cursor              { background: #ffff55; color: #000; }
+body[data-theme="cga"] .widget-header-title                   { color: #ffff55; font-weight: bold; }
+body[data-theme="cga"] .widget-header-right                   { opacity: 0.7; }
+body[data-theme="cga"] .widget-key-menu-key                   { color: #ffff55; font-weight: bold; }
+body[data-theme="cga"] .widget-key-menu-bracket               { opacity: 0.5; }
+body[data-theme="cga"] .widget-key-menu-label                 { opacity: 0.85; }
+
+/* modern — neutral on dark */
+body[data-theme="modern"] .widget-editor                         { color: #d4d4d4; }
+body[data-theme="modern"] .widget-editor-line-num                { color: #5a5a5a; }
+body[data-theme="modern"] .widget-editor-cursor                  { background: #d4d4d4; color: #1e1e1e; }
+body[data-theme="modern"] .widget-editor-mode.mode-normal,
+body[data-theme="modern"] .widget-status-mode.mode-normal        { background: #d7ba7d; color: #1e1e1e; padding: 0 4px; font-weight: bold; }
+body[data-theme="modern"] .widget-editor-mode.mode-insert,
+body[data-theme="modern"] .widget-status-mode.mode-insert        { background: #569cd6; color: #1e1e1e; padding: 0 4px; font-weight: bold; }
+body[data-theme="modern"] .widget-editor-mode.mode-command,
+body[data-theme="modern"] .widget-status-mode.mode-command       { background: #6a6a6a; color: #d4d4d4; padding: 0 4px; font-weight: bold; }
+body[data-theme="modern"] .widget-editor-mode.mode-read-only,
+body[data-theme="modern"] .widget-status-mode.mode-read-only     { background: #f48771; color: #1e1e1e; padding: 0 4px; font-weight: bold; }
+body[data-theme="modern"] .tok-heading { color: #4ec9b0; font-weight: bold; }
+body[data-theme="modern"] .tok-bold    { font-weight: bold; }
+body[data-theme="modern"] .tok-italic  { color: #9cdcfe; font-style: italic; }
+body[data-theme="modern"] .tok-code    { color: #ce9178; }
+body[data-theme="modern"] .tok-fence   { color: #ce9178; }
+body[data-theme="modern"] .tok-link    { color: #569cd6; font-weight: bold; }
+body[data-theme="modern"] .tok-url     { color: #6a6a6a; }
+body[data-theme="modern"] .tok-slug    { color: #c586c0; }
+body[data-theme="modern"] .tok-bullet  { color: #d7ba7d; }
+body[data-theme="modern"] .tok-plain   { color: var(--fg); }
+body[data-theme="modern"] .widget-text-field                     { color: var(--fg); }
+body[data-theme="modern"] .widget-text-field-focused             { outline: 1px dashed #d7ba7d; outline-offset: 1px; }
+body[data-theme="modern"] .widget-text-field-cursor              { background: #d7ba7d; color: #1e1e1e; }
+body[data-theme="modern"] .widget-header-title                   { color: #d7ba7d; font-weight: bold; }
+body[data-theme="modern"] .widget-header-right                   { opacity: 0.7; }
+body[data-theme="modern"] .widget-key-menu-key                   { color: #d7ba7d; font-weight: bold; }
+body[data-theme="modern"] .widget-key-menu-bracket               { opacity: 0.5; }
+body[data-theme="modern"] .widget-key-menu-label                 { opacity: 0.85; }
+
+/* Generic widget structural styles (theme-independent) */
+.widget-editor,
+.widget-editor-body,
+.widget-editor-line,
+.widget-editor-line-num,
+.widget-editor-status,
+.widget-editor-cmd {
+  font-family: inherit;
+  font-size: inherit;
+  line-height: inherit;
+}
+.widget-editor-line { display: flex; white-space: pre; }
+.widget-editor-body { display: block; }
+.widget-editor-status { display: flex; gap: 1ch; padding-top: 0.5em; }
+.widget-editor-pos { color: inherit; }
+.widget-editor-cmd { padding-top: 0.25em; }
+.widget-text-field { padding: 1px 0; }
+.widget-text-field-label { opacity: 0.7; }
+.widget-text-field-value {
+  display: inline-block;
+  min-width: 30ch;            /* visible "input cell" width */
+  border-bottom: 1px solid currentColor;
+  padding: 0 0.25ch;
+}
+.widget-text-field-readonly .widget-text-field-value {
+  border-bottom: 1px dotted #888;   /* dimmer for read-only */
+}
+.widget-form { display: block; }
+.widget-vstack > * + * { margin-top: 0.25em; }
+.widget-key-menu { padding-top: 0.5em; }
+.widget-header { display: flex; gap: 1ch; align-items: baseline; padding-bottom: 0.25em; }
+.widget-status-line { display: flex; gap: 1ch; padding-top: 0.5em; }
+.widget-status-right { margin-left: auto; opacity: 0.7; }
+.widget-rule {
+  height: 0;
+  margin: 0.25em 0;
+  border-top: 1px solid currentColor;
+  opacity: 0.25;
+}

@@ -1,0 +1,170 @@
+{
+  "razor_choke": {
+    "id": "razor_choke",
+    "name": "Razor Choke",
+    "rank": 1,
+    "appliesToKinds": ["weapon"],
+    "requiresTags": ["ranged"],
+    "namePrefix": null,
+    "nameSuffix": "(razor)",
+    "effects": { "damage": 1, "aoe": -1, "accuracy": 1 },
+    "flavor": "Tightens the shot pattern to a single brutal line."
+  },
+  "spread_amp": {
+    "id": "spread_amp",
+    "name": "Spread Amplifier",
+    "rank": 1,
+    "appliesToKinds": ["weapon"],
+    "requiresTags": ["ranged"],
+    "namePrefix": null,
+    "nameSuffix": "(spread)",
+    "effects": { "aoe": 2, "damage": -1, "accuracy": -1 },
+    "flavor": "Blooms the cone wide enough to sweep a corridor."
+  },
+  "hush_shroud": {
+    "id": "hush_shroud",
+    "name": "Hush Shroud",
+    "rank": 2,
+    "appliesToKinds": ["weapon"],
+    "requiresTags": ["ranged"],
+    "namePrefix": "hushed ",
+    "nameSuffix": null,
+    "effects": { "noise": -2, "damage": -1 },
+    "flavor": "Polymer-baffled barrel sleeve. Quiet enough that the rumour wire doesn't pick it up."
+  },
+  "precision_bore": {
+    "id": "precision_bore",
+    "name": "Precision Bore",
+    "rank": 2,
+    "appliesToKinds": ["weapon"],
+    "requiresTags": ["ranged"],
+    "namePrefix": null,
+    "nameSuffix": "(precision)",
+    "effects": { "damage": 1, "accuracy": 2, "crit": 1 },
+    "flavor": "Hand-rifled inner. Unpopular with armourers, beloved by patient shooters."
+  },
+  "void_resonator": {
+    "id": "void_resonator",
+    "name": "Void Resonator",
+    "rank": 3,
+    "appliesToKinds": ["weapon"],
+    "requiresTags": ["ranged"],
+    "namePrefix": "void ",
+    "nameSuffix": null,
+    "effects": { "damage": 2, "aoe": 1, "stress_inflict": 2, "noise": 2 },
+    "flavor": "Salvaged from upper-deck security. The shot makes a sound that doesn't belong on this ship."
+  },
+
+  "rivet_edge": {
+    "id": "rivet_edge",
+    "name": "Rivet Edge",
+    "rank": 1,
+    "appliesToKinds": ["weapon"],
+    "requiresTags": ["melee"],
+    "namePrefix": null,
+    "nameSuffix": "(riveted)",
+    "effects": { "damage": 1, "reach": 0 },
+    "flavor": "Branwen-style edge work. Holds a line through Iron and bone alike."
+  },
+  "ghost_grip": {
+    "id": "ghost_grip",
+    "name": "Ghost Grip",
+    "rank": 2,
+    "appliesToKinds": ["weapon"],
+    "requiresTags": ["melee"],
+    "namePrefix": null,
+    "nameSuffix": "(ghost)",
+    "effects": { "ghost_bonus": 1, "damage": 1, "vibe": 1 },
+    "flavor": "Polymer wrap that doesn't catch on cloth or memory."
+  },
+  "marrow_thread": {
+    "id": "marrow_thread",
+    "name": "Marrow Thread",
+    "rank": 3,
+    "appliesToKinds": ["weapon", "armor"],
+    "requiresTags": [],
+    "namePrefix": "marrow ",
+    "nameSuffix": null,
+    "effects": { "healing_passive": 2, "debt_drift": 1 },
+    "flavor": "Clinic-grade neural fibre woven through the lining. Heals you. Quietly bills you."
+  },
+
+  "weight_shed_mesh": {
+    "id": "weight_shed_mesh",
+    "name": "Weight-Shed Mesh",
+    "rank": 1,
+    "appliesToKinds": ["armor"],
+    "requiresTags": [],
+    "namePrefix": null,
+    "nameSuffix": "(shed)",
+    "effects": { "ghost_bonus": 1, "defense": -1 },
+    "flavor": "Strip-mesh lining. Trades a little protection for a little less mass."
+  },
+  "iron_plate_layer": {
+    "id": "iron_plate_layer",
+    "name": "Iron Plate Layer",
+    "rank": 2,
+    "appliesToKinds": ["armor"],
+    "requiresTags": [],
+    "namePrefix": "plated ",
+    "nameSuffix": null,
+    "effects": { "defense": 2, "ghost_bonus": -1 },
+    "flavor": "Branwen-cut Iron sewn into the lining. Heavy. Reassuring."
+  },
+  "vibe_layer": {
+    "id": "vibe_layer",
+    "name": "Vibe Layer",
+    "rank": 2,
+    "appliesToKinds": ["armor"],
+    "requiresTags": [],
+    "namePrefix": null,
+    "nameSuffix": "(vibe)",
+    "effects": { "vibe": 2, "rep_passive_club": 1 },
+    "flavor": "Cut and dye that reads to the Club Syndicate as 'I belong in this booth, do not ask'."
+  },
+
+  "subdermal_cooler": {
+    "id": "subdermal_cooler",
+    "name": "Subdermal Cooler",
+    "rank": 1,
+    "appliesToKinds": ["weapon", "armor", "cyberware"],
+    "requiresTags": [],
+    "namePrefix": null,
+    "nameSuffix": "(cooled)",
+    "effects": { "heat_buffer": 1 },
+    "flavor": "Active heat-sink layer. Costs a little, hides a lot."
+  },
+  "wiretap_inset": {
+    "id": "wiretap_inset",
+    "name": "Wiretap Inset",
+    "rank": 2,
+    "appliesToKinds": ["weapon", "armor", "cyberware"],
+    "requiresTags": [],
+    "namePrefix": null,
+    "nameSuffix": "(tapped)",
+    "effects": { "wire_bonus": 1, "hacking": 1 },
+    "flavor": "Embedded courier tap. Half illegal, half indispensable."
+  },
+  "edge_bias": {
+    "id": "edge_bias",
+    "name": "Edge Bias",
+    "rank": 2,
+    "appliesToKinds": ["cyberware"],
+    "requiresTags": [],
+    "namePrefix": null,
+    "nameSuffix": "(edge)",
+    "effects": { "edge_bonus": 1, "stress_inflict": 1 },
+    "flavor": "Reflex calibration biased for the bad option, slightly faster than the good one."
+  },
+  "halen_coil_signature": {
+    "id": "halen_coil_signature",
+    "name": "Halen-Coil Signature",
+    "rank": 3,
+    "appliesToKinds": ["cyberware", "armor"],
+    "requiresTags": [],
+    "namePrefix": "halen-coil ",
+    "nameSuffix": null,
+    "effects": { "healing_passive": 1, "maxHp_bonus": 1, "rep_passive_clinic": 1 },
+    "flavor": "Halen-Coil pre-Crisis manufacturing mark. Anyone who knows what it means treats you slightly better."
+  }
+}

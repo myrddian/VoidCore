@@ -1,0 +1,11 @@
+{
+  "name": "@voidcore/door-sdk",
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Node SDK for VOIDcore / VOIDcore door sidecars.",
+  "exports": {
+    ".": "./index.mjs",
+    "./protocol": "./protocol.mjs",
+    "./ui": "./ui.mjs"
+  }
+}

@@ -1,0 +1,32 @@
+{
+  "name": "Grey Market",
+  "route": "shard://cityline/grey-market",
+  "sigil": "-- salvage bloom --",
+  "accent": "bright-green",
+  "support": "yellow",
+  "dim": "dark-grey",
+  "description": "Tarps snap overhead while scavenged hardware glints from folding tables and open crates.",
+  "detail": "Everything here looks one firmware patch away from betrayal, including the sellers.",
+  "fixtures": [
+    {
+      "id": "crates",
+      "name": "open crates",
+      "inspect": "Crates of stripped hardware sit open to the rain like the district has given up pretending theft needs a wrapper."
+    }
+  ],
+  "npcs": [
+    "pox"
+  ],
+  "mood": [
+    "Half the tarps are down; the vendors are pretending the wind did it.",
+    "A stack of new clinic-sealed crates is sitting where it shouldn't, and nobody is meeting eyes near it.",
+    "A buyer in a Bureau-issue raincoat just walked the row twice and bought nothing."
+  ],
+  "scavenge": {
+    "note": "You sift the market's spillover for anything too cheap to guard and too useful to leave.",
+    "reward": {
+      "itemId": "wiretap_kit"
+    },
+    "message": "A vendor's throwaway crate gives up a usable wiretap kit and no clean explanation."
+  }
+}

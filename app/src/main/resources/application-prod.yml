@@ -1,0 +1,20 @@
+spring:
+  jackson:
+    deserialization:
+      fail-on-unknown-properties: true
+
+server:
+  forward-headers-strategy: framework
+
+management:
+  endpoint:
+    health:
+      show-details: never
+
+logging:
+  level:
+    root: INFO
+    io.aeyer.voidcore: INFO
+    org.springframework.web: WARN
+  pattern:
+    console: "%d{ISO8601} %-5level [%thread] %logger{36} - %msg%n"

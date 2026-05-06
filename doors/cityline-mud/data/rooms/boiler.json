@@ -1,0 +1,30 @@
+{
+  "name": "Boiler Ward",
+  "route": "shard://cityline/boiler-ward",
+  "sigil": "[ steam debt ]",
+  "accent": "bright-red",
+  "support": "bright-yellow",
+  "dim": "grey",
+  "description": "Steam pulses through old pump lines while the floor plates sweat rust and bad insulation.",
+  "detail": "This used to be maintenance space. Now it feels like the district's backup throat, swallowing heat, waste, and anyone too slow to leave.",
+  "fixtures": [
+    {
+      "id": "valves",
+      "name": "pressure valves",
+      "inspect": "The valves are marked in red chalk and prayer knots. Somebody learned the hard way which ones open like murder."
+    },
+    {
+      "id": "pumps",
+      "name": "pump housings",
+      "inspect": "The pump housings throb like a bad heartbeat pushed through iron."
+    }
+  ],
+  "npcs": [
+    "hatch"
+  ],
+  "mood": [
+    "The pumps are running a half-step faster than rated and the floor plates are warmer than they ought to be.",
+    "Tonight a clinic-sealed bag has been stuffed behind the third valve and nobody has named it.",
+    "The red-chalk warnings have been refreshed in the last hour by a hand that doesn't usually visit."
+  ]
+}

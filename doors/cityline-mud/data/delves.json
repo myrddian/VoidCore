@@ -1,0 +1,224 @@
+{
+  "sealed_17b": {
+    "id": "sealed_17b",
+    "title": "Sealed Corridor 17-B",
+    "summary": "Branwen Yards wants a maintenance corridor reopened — sealed eight years ago, never re-cycled. They'll pay for what's still in the toolracks.",
+    "operator": "Branwen Yards",
+    "room": "boiler",
+    "faction": "couriers",
+    "difficulty": "low",
+    "entry": "ingress",
+    "rumour": "wire:// somebody pushed past Branwen's old seal on 17-B and didn't come straight back.",
+    "stages": {
+      "ingress": {
+        "narrate": [
+          "Branwen's mark on the seal is two decades old, half-painted-over. The crack is fresh.",
+          "Beyond, the corridor exhales: coolant-sour, dust like old skin, the kind of dark that doesn't read as empty."
+        ],
+        "choices": [
+          {
+            "id": "push",
+            "label": "Push the seal wide and walk in clean",
+            "next": "midsection",
+            "effects": [{ "op": "update_stress", "delta": 1 }]
+          },
+          {
+            "id": "listen",
+            "label": "Crack the seal narrow; listen before stepping",
+            "next": "midsection_alert",
+            "effects": []
+          },
+          {
+            "id": "back",
+            "label": "Reseal and walk back",
+            "next": "abort_clean",
+            "effects": []
+          }
+        ]
+      },
+      "midsection": {
+        "narrate": [
+          "Halfway down 17-B your light catches three cats, or what cats become after eighty unfiltered years.",
+          "They are not afraid of you. They are the wrong shape for cats. One of them is breathing with the wrong rhythm."
+        ],
+        "choices": [
+          {
+            "id": "force",
+            "label": "Push through hard. Body.",
+            "next": "approach_door",
+            "skillCheck": {
+              "stat": "body",
+              "dc": 3,
+              "tag": "force the corridor",
+              "onSuccess": [{ "op": "update_stress", "delta": -1 }],
+              "onFailure": [{ "op": "update_hp", "delta": -2 }, { "op": "update_stress", "delta": 1 }]
+            }
+          },
+          {
+            "id": "slip",
+            "label": "Slip past along the cabling. Ghost.",
+            "next": "approach_door",
+            "skillCheck": {
+              "stat": "ghost",
+              "dc": 2,
+              "tag": "slip past the wildlife",
+              "onSuccess": [],
+              "onFailure": [{ "op": "update_hp", "delta": -1 }, { "op": "update_heat", "delta": 1 }]
+            }
+          },
+          {
+            "id": "retreat",
+            "label": "Back to the seal. Try again next week.",
+            "next": "abort_clean",
+            "effects": []
+          }
+        ]
+      },
+      "midsection_alert": {
+        "narrate": [
+          "You stand in the seal-crack and listen.",
+          "Three small breaths in 17-B's dark — close together, not synchronised. Something is awake further down.",
+          "Knowing first costs less than learning second."
+        ],
+        "choices": [
+          {
+            "id": "ghost_in",
+            "label": "Slip in lit-low. You know where they are now.",
+            "next": "approach_door",
+            "skillCheck": {
+              "stat": "ghost",
+              "dc": 2,
+              "tag": "slip past pre-marked",
+              "onSuccess": [{ "op": "update_stress", "delta": -1 }],
+              "onFailure": [{ "op": "update_hp", "delta": -1 }]
+            }
+          },
+          {
+            "id": "wire_call",
+            "label": "Burner-page the dock; ask if anyone owes Branwen a favour",
+            "next": "approach_door",
+            "skillCheck": {
+              "stat": "wire",
+              "dc": 2,
+              "tag": "page for cover",
+              "onSuccess": [{ "op": "update_rep", "faction": "dock", "delta": -1 }, { "op": "update_stress", "delta": -1 }],
+              "onFailure": [{ "op": "update_heat", "delta": 1 }]
+            }
+          },
+          {
+            "id": "withdraw",
+            "label": "Reseal. Tell Branwen the corridor isn't ready.",
+            "next": "abort_clean",
+            "effects": []
+          }
+        ]
+      },
+      "approach_door": {
+        "narrate": [
+          "The maintenance bay door is at the corridor's far end — keyed lock, a Branwen-blue paint stripe along the seam.",
+          "The keypad isn't dead. It's looping, cycling the same three lights in the same order every four seconds."
+        ],
+        "choices": [
+          {
+            "id": "wire",
+            "label": "Patch the keypad's cycle. Wire.",
+            "next": "loot_chamber",
+            "skillCheck": {
+              "stat": "wire",
+              "dc": 3,
+              "tag": "ride the keypad loop",
+              "onSuccess": [{ "op": "set_lead", "text": "The keypad on 17-B was looping pre-Crisis security — somebody locked it that way on purpose." }],
+              "onFailure": [{ "op": "update_stress", "delta": 1 }, { "op": "update_heat", "delta": 1 }]
+            }
+          },
+          {
+            "id": "edge",
+            "label": "Force the seam. Edge.",
+            "next": "loot_chamber",
+            "skillCheck": {
+              "stat": "edge",
+              "dc": 3,
+              "tag": "force the bay door",
+              "onSuccess": [],
+              "onFailure": [{ "op": "update_hp", "delta": -1 }, { "op": "update_stress", "delta": 1 }]
+            }
+          },
+          {
+            "id": "leave",
+            "label": "Leave the door. The corridor itself paid out enough.",
+            "next": "abort_partial",
+            "effects": []
+          }
+        ]
+      },
+      "loot_chamber": {
+        "narrate": [
+          "Branwen's tool bay. Iron racks bolted floor to ceiling. Most stripped two decades ago.",
+          "One rack isn't. Pre-Crisis hand tools, sealed in a Branwen Yards crate that hasn't been opened.",
+          "There's also a Branwen-blue maintenance log on the bench, three pages thick, dated nine days before the Crisis."
+        ],
+        "choices": [
+          {
+            "id": "tools_only",
+            "label": "Take the tools. Leave the log; don't owe the Archive.",
+            "next": "complete_clean",
+            "effects": [
+              { "op": "update_credits", "delta": 70 },
+              { "op": "grant_item", "itemId": "wiretap_kit" },
+              { "op": "roll_loot", "baseId": "branwen_pry_bar", "rank": 2 },
+              { "op": "update_rep", "faction": "couriers", "delta": 2 }
+            ]
+          },
+          {
+            "id": "tools_and_log",
+            "label": "Take both. Tamsin will pay for nine days before the Crisis.",
+            "next": "complete_archive",
+            "effects": [
+              { "op": "update_credits", "delta": 70 },
+              { "op": "grant_item", "itemId": "wiretap_kit" },
+              { "op": "update_rep", "faction": "couriers", "delta": 2 },
+              { "op": "update_rep", "faction": "archive", "delta": 1 },
+              { "op": "set_lead", "text": "A Branwen Yards maintenance log dated nine days before the Crisis is now in your hands. Tamsin Coil will want to read this. So will somebody else." },
+              { "op": "trigger_rumor", "text": "wire:// a sealed Branwen log surfaced and didn't go through the usual Archive channels." }
+            ]
+          }
+        ]
+      },
+      "complete_clean": {
+        "narrate": [
+          "You reseal the corridor with Branwen's blue. Tools clean, payment routed, no questions.",
+          "Hatch behind you holds. Whatever was breathing in there is breathing in there still."
+        ],
+        "terminal": true,
+        "effects": []
+      },
+      "complete_archive": {
+        "narrate": [
+          "You reseal the corridor. The log is folded against your ribs.",
+          "Tamsin will not say thank you. She will know you brought it. The next time you ask her something, the silence before she answers will be a little shorter."
+        ],
+        "terminal": true,
+        "effects": []
+      },
+      "abort_clean": {
+        "narrate": [
+          "You back out and lock the seal. Branwen will be told the corridor isn't ready.",
+          "Nothing taken. Nothing lost."
+        ],
+        "terminal": true,
+        "effects": []
+      },
+      "abort_partial": {
+        "narrate": [
+          "You back out at the bay door. Whatever's inside stays inside.",
+          "Branwen will pay something for the partial scout. Half what they could have."
+        ],
+        "terminal": true,
+        "effects": [
+          { "op": "update_credits", "delta": 25 },
+          { "op": "update_rep", "faction": "couriers", "delta": 1 }
+        ]
+      }
+    }
+  }
+}

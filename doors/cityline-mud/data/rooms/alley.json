@@ -1,0 +1,40 @@
+{
+  "name": "Rain Alley",
+  "route": "shard://cityline/rain-alley",
+  "sigil": "/// rain ///",
+  "accent": "bright-cyan",
+  "support": "magenta",
+  "dim": "dark-grey",
+  "description": "Rain hisses on chrome ducts while ad-light breaks itself apart in the puddles below your boots.",
+  "detail": "A clinic bill has been pinned to a payphone with a knife. Steam crawls around the noodle cart and the service ladder up to the relay roofs.",
+  "fixtures": [
+    {
+      "id": "payphone",
+      "name": "payphone",
+      "inspect": "The payphone's receiver is slick with rain and someone else's grease. A clinic bill is pinned to it with a knife labelled in courier blue."
+    },
+    {
+      "id": "ladder",
+      "name": "service ladder",
+      "inspect": "The ladder to the relay roofs buzzes when the weather turns mean. Tonight it sounds impatient."
+    }
+  ],
+  "npcs": [
+    "mikra",
+    "nix",
+    "half"
+  ],
+  "mood": [
+    "The rain has the steady, professional rhythm of someone who is not stopping for you.",
+    "Two of the alley's ad-lights are out; the surviving one keeps cycling a clinic discount nobody believes.",
+    "Tonight the puddles smell of clinic detergent and somebody is pretending not to notice."
+  ],
+  "scavenge": {
+    "note": "You work the puddles, bill edges, and payphone housing for anything the rain missed.",
+    "reward": {
+      "credits": 10,
+      "itemId": "hush_patch"
+    },
+    "message": "You pull a damp hush patch and a few loose credits out of the alley's excuses."
+  }
+}

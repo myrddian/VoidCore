@@ -1,0 +1,139 @@
+{
+  "wire_bulletin": {
+    "id": "wire_bulletin",
+    "title": "Wire Bulletin",
+    "kind": "procedural",
+    "form": "bulletin",
+    "weight": 3,
+    "appliesIn": ["alley", "switchyard", "underpass", "docks", "market"],
+    "tags": ["bulletin", "current"],
+    "body": "WIRE://BULLETIN — {AUTHOR}\n\n{HEADLINE}\n\n{BODY}\n\n— end transmission —",
+    "slots": {
+      "AUTHOR": ["DOCK-OPS-2", "COURIER-LIEUT-NULL", "VESHRIN-FOREMAN-3", "BUREAU-DESK-7", "BRANWEN-SHIFT-4"],
+      "HEADLINE": [
+        "Switchyard rail seven timing irregular for sixth shift running.",
+        "Three handles failed to file return-routes overnight.",
+        "Maintenance section 17-D sealed for the second time this week.",
+        "Ore haulers reporting longer pre-dawn cycles than scheduled.",
+        "Boiler ward reports red-chalk warnings refreshed by an unknown hand.",
+        "Underpass service light stuck on red. Chalk crossings unauthorised."
+      ],
+      "BODY": [
+        "Halen-Coil atmospherics flagged minor pressure drift in adjacent decks. No public alert. Couriers Guild advises caution.",
+        "Bureau watch is aware. Hydroponics holding the line on rations until further notice.",
+        "House Branwen welders refused the call-out. No public reason given.",
+        "Veshrin Industries surface-mining detail returned with two haulers fewer than departed. No comment from the Foreman.",
+        "Recovery Bureau acknowledges receipt. Recommends 'continued passive observation'. Hydroponics declines to comment.",
+        "Patch this once, file it twice. Repair crews have been instructed to leave the second filing blank."
+      ]
+    }
+  },
+
+  "alley_notice": {
+    "id": "alley_notice",
+    "title": "Notice Nailed to the Payphone",
+    "kind": "procedural",
+    "form": "note",
+    "weight": 2,
+    "appliesIn": ["alley"],
+    "tags": ["alley", "notice"],
+    "body": "NOTICE — found pinned to the payphone with a knife\n\n{NOTICE}\n\n— {SIGNED}",
+    "slots": {
+      "NOTICE": [
+        "REWARD for the return of a Branwen-issue toolkit lost near the boiler ward last shift. Tools are sentimental, not valuable. Bring them to Mikra; she'll know.",
+        "If you see Halver Ngo, tell him the cart's open and the broth is still warm. Don't tell him I asked.",
+        "The clinic has revised its synthblood ration schedule. Effective immediately. Patients with active chrome should consult.",
+        "Anyone with a confirmed sighting of the rust-mite cloud near the underpass: come find me. I pay in dock tokens.",
+        "Bureau handles are no longer welcome at this cart. The broth pot is for people who pay in something other than questions."
+      ],
+      "SIGNED": ["H. Branwen", "M.", "Saint Mercy-9", "Pox", "Mikra (do not contradict)"]
+    }
+  },
+
+  "overheard_fragment": {
+    "id": "overheard_fragment",
+    "title": "Overheard at the Cart",
+    "kind": "procedural",
+    "form": "transcript",
+    "weight": 2,
+    "appliesIn": ["alley"],
+    "tags": ["alley", "overheard", "current"],
+    "body": "OVERHEARD — at Mikra's cart, {WHEN}\n\n\"{OVERHEARD}\"\n\nThe speaker was {SPEAKER}. They didn't realise the cart's burner was within range of their handle.",
+    "slots": {
+      "WHEN": ["before dawn", "between shifts", "after the fourth bell", "during the Bureau patrol shift change"],
+      "OVERHEARD": [
+        "Three runners short tonight. Either the Bureau took them or they're hiding from somebody worse.",
+        "Half's still asking about the envelope. Pretend you didn't hear me. Tell him the cart's closed if he comes by.",
+        "Tamsin's been pulling shelves out of the deeper archive for two weeks. Don't ask why; you don't want to be on her list.",
+        "Mara's pricing routes again. Bad sign. Last time she did that, half of us couldn't go home for a week.",
+        "I heard Static actually got an answer. After the seven. He won't say what. He won't say WHO.",
+        "Vey came down off the relay stair without her tablet. I've never seen her without that tablet."
+      ],
+      "SPEAKER": [
+        "a courier in faded Veshrin grey",
+        "a clinic orderly with iron-stained sleeves",
+        "a Branwen welder pretending not to be on shift",
+        "a House Strick lieutenant who shouldn't have been there",
+        "a scrubber on her break, not making eye contact with anyone"
+      ]
+    }
+  },
+
+  "bureau_memo": {
+    "id": "bureau_memo",
+    "title": "Bureau Internal Memo",
+    "kind": "procedural",
+    "form": "memo",
+    "weight": 1,
+    "appliesIn": ["switchyard", "underpass", "boiler", "docks"],
+    "tags": ["bureau", "memo", "surveillance"],
+    "body": "BUREAU INTERNAL MEMO — DO NOT REPRODUCE\n\nSubject: {SUBJECT}\nClassification: ROUTINE\n\n{BODY}\n\n— Inspector V., Recovery Bureau",
+    "slots": {
+      "SUBJECT": [
+        "Pattern of unauthorised maintenance access — Section 17-D",
+        "Surveillance of unregistered courier traffic — Switchyard rail 7",
+        "Monitoring of clinic stock movement — Backroom Clinic",
+        "Inventory discrepancy — Veshrin surface-mining detail",
+        "Handle activity flagged for review — Choir Channel correlations"
+      ],
+      "BODY": [
+        "Subject of interest: handle 'COURIER-LIEUT-NULL'. Recommend continued passive observation. Direct intervention not authorised at this time.",
+        "Three returns of interest. No formal action. The Bureau prefers patterns to interventions.",
+        "Halen-Coil filtration logs flag a discrepancy. Source unconfirmed. Continue routine monitoring.",
+        "Discrepancy of two handles between manifest and return roster. Veshrin foreman declined to comment. Memo retained for pattern analysis.",
+        "Three booth-bleed incidents flagged. Not one matches a registered audio source. The Recovery Bureau notes that this is, technically, a non-event."
+      ]
+    }
+  },
+
+  "archive_marginalia": {
+    "id": "archive_marginalia",
+    "title": "Archive Marginalia",
+    "kind": "procedural",
+    "form": "note",
+    "weight": 2,
+    "appliesIn": ["archive", "vault"],
+    "tags": ["archive", "tamsin", "marginalia"],
+    "body": "MARGINALIA — found in the back of {WHERE}\n\nThe note is in {HAND}.\n\n{NOTE}",
+    "slots": {
+      "WHERE": [
+        "Archive shelf D, sleeve 19",
+        "a personnel file marked DECEASED",
+        "a manifest sleeve dated three years before the Crisis",
+        "a binding in the buried vault no one was supposed to read"
+      ],
+      "HAND": [
+        "Tamsin Coil's careful archivist hand",
+        "an older hand that pre-dates the Coil family",
+        "a hand that signs nothing — but the ink-pressure pattern matches a known Curator shift",
+        "Echo Clerk's flat unmoving script"
+      ],
+      "NOTE": [
+        "'cross-reference KIROV-T-CLEAR with Halen-Coil priority manifests pre-Crisis. The buyer should not exist.'",
+        "'do not repair this. it is meant to be unreadable. the unreadable is the record.'",
+        "'Vey came in. We did not speak. She left the file open at the page I would not have shown her.'",
+        "'the choir channel runs through here too. I will not say where. I will not.'"
+      ]
+    }
+  }
+}

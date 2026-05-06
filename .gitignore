@@ -1,0 +1,38 @@
+# Secrets
+.env
+.env.local
+*.pem
+*.key
+*.bak
+
+# Build artifacts
+app/build/
+app/.gradle/
+app/.gradle-home/
+app/bin/
+app/app.jar
+**/.venv/
+**/__pycache__/
+**/*.pyc
+**/*.pyo
+**/*.egg-info/
+**/node_modules/
+**/dist/
+**/target/
+
+# Frontend outputs
+app/src/main/resources/static/main.js
+app/src/main/resources/static/main.js.map
+app/src/main/resources/static/index.html
+app/src/main/resources/static/theme.css
+app/src/main/resources/static/fonts/
+
+# IDE
+.idea/
+.vscode/
+*.iml
+.DS_Store
+
+# Logs
+*.log
+logs/

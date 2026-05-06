@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="dark">
+<title>VOIDcore</title>
+<link rel="stylesheet" href="theme.css">
+</head>
+<body>
+<div class="crt" id="crt">
+  <div class="noise" aria-hidden="true"></div>
+  <div class="bezel" id="bezel" role="application" aria-label="VOIDcore terminal">
+    <div class="region" data-region="banner" id="region-banner"
+         role="banner" aria-label="banner"></div>
+    <!-- No tabindex: making region-main keyboard-focusable causes the focus
+         shift on mousedown to collapse selection mid-drag, killing copy-paste
+         from chat/NFOs. Mouse-wheel and PageUp/PageDown still scroll. -->
+    <div class="region region-main" data-region="main" id="region-main"
+         role="main" aria-label="main content"></div>
+    <div class="region region-notifications" data-region="notifications" id="region-notifications"
+         role="status" aria-live="polite" aria-label="notifications"></div>
+    <div class="region region-status" data-region="status" id="region-status">
+      <span class="status-text" id="status-text" aria-label="prompt"></span>
+      <input class="status-input" id="status-input" type="text"
+             autocomplete="off" autocapitalize="off" autocorrect="off"
+             spellcheck="false" inputmode="text"
+             aria-label="terminal input">
+      <span class="cursor" id="cursor" aria-hidden="true"></span>
+    </div>
+  </div>
+</div>
+<script type="module" src="main.js"></script>
+</body>
+</html>

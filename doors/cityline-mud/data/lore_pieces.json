@@ -1,0 +1,81 @@
+{
+  "preCrisis_log_branwen_seal_17b": {
+    "id": "preCrisis_log_branwen_seal_17b",
+    "title": "Branwen Yards Maintenance Log — 17-B",
+    "kind": "narrative",
+    "form": "log",
+    "attribution": "Foreman Cael Branwen — pre-Crisis",
+    "tags": ["pre-crisis", "branwen", "sealed-corridor", "17-b"],
+    "body": "// MAINTENANCE LOG — BRANWEN YARDS\n// SECTION 17-B / DECK NINETEEN\n// Logged by: Foreman Cael Branwen, Day 84 of the year of the second pass\n\nSecond shift report. The corridor's atmospheric flow keeps reading wrong on the Halen-Coil sensors but the actual readings on the calibration kit say clean. I've sent it back twice. The ship doesn't want me here.\n\nLost Eddins yesterday. He went to check the filtration on the third compartment in and didn't come back for three hours. When he did he was quiet for the rest of the shift. He didn't lose anything, didn't see anything. He just stopped wanting to talk. He filed his next-shift slip and didn't show up.\n\nI'm sealing 17-B. The compartment is doing something to people. The ship is doing something to people. I don't know which.\n\n— Cael Branwen, sealing this section by my own hand."
+  },
+
+  "voss_daughter_card": {
+    "id": "voss_daughter_card",
+    "title": "Worn Access Card — TARA-V",
+    "kind": "narrative",
+    "form": "object",
+    "attribution": "found at the Handle Shrine, never claimed",
+    "tags": ["bureau", "shrine", "voss", "personal"],
+    "body": "// HANDLE-ACCESS CARD — laminated, edges softened by years of handling\n\nHandle: TARA-V\nIssue: Bureau familial dependent, dependent class A\nClearance: maintenance levels only\n\n// On the back, in small handwriting that doesn't look like Bureau script:\n//\n// 'I told her not to take the relay shift alone.\n//  I told her four times.\n//  She said the work paid double.\n//  I said the Bureau pays double when the risk is real.\n//\n//  This card is all that came back.'\n//\n// — V."
+  },
+
+  "mikra_brother_note": {
+    "id": "mikra_brother_note",
+    "title": "Folded Note in a Wool Coat Pocket",
+    "kind": "narrative",
+    "form": "note",
+    "attribution": "Mikra has it. She has not burned it.",
+    "tags": ["mikra", "alley", "bureau-sweep", "personal"],
+    "body": "// On lined paper, the writing tight and small\n\nMika —\n\nIf you're reading this then I didn't make it back to the cart and you found my coat in the underpass like I said you might. I told you I'd stop using my handle on the wire and I didn't. I'm sorry.\n\nThree things, and then this paper goes in the burner because that's how we do it.\n\nOne — I think the Bureau already had me. They wanted to see who'd come asking after I was gone. Don't be the one who comes asking.\n\nTwo — the broth is yours now. You always made it better than I did anyway. You always pretended I didn't notice.\n\nThree — say my handle once. Tonight. Then never again. I want you to be safe more than I want to be remembered.\n\n— Tomek"
+  },
+
+  "ghost_ledger_fragment": {
+    "id": "ghost_ledger_fragment",
+    "title": "Ghost Ledger Fragment",
+    "kind": "narrative",
+    "form": "data-shard",
+    "attribution": "recovered, partially scorched, of disputed provenance",
+    "tags": ["ghost_ledger", "archive", "pre-crisis", "kirov"],
+    "body": "// STORAGE CARD FRAGMENT — recovered, scorched at one edge\n// Original index: shipping manifest 0042-C\n\nBuyer column header (legible): R E F E R E N C E   B U Y E R\nDate column header: {scorched}\nQuantity column header: VARIES\n\n[Row 1] Buyer: 'KIROV-T-CLEAR' — Quantity: 12 sealed crates — Note: 'Officer-tier authorisation, route via Halen-Coil priority lane'\n[Row 2] Buyer: 'KIROV-T-CLEAR' — Quantity: 8 sealed crates — Note: same\n[Row 3] Buyer: 'KIROV-T-CLEAR' — Quantity: 14 sealed crates — Note: same\n[Row 4] {scorched}\n\n// 'KIROV-T-CLEAR' is on no roster anyone in the lower decks has access to.\n// It is also on a roster Tamsin Coil keeps in cotton gloves and never opens for anyone."
+  },
+
+  "static_calibration_psalm": {
+    "id": "static_calibration_psalm",
+    "title": "Brother Static's Prayer Book — First Calibration",
+    "kind": "narrative",
+    "form": "log",
+    "attribution": "tucked between the antenna ribs at the relay roof",
+    "tags": ["static", "relay", "ai-interface", "ritual"],
+    "body": "// HAND-WRITTEN, fountain pen, slightly smudged in places\n\nFirst Calibration:\n\n  Listen for the carrier wave.\n  When the wave is heard, hold the listening.\n  When the listening is held, the wave returns.\n\n  Speak the seven syllables.\n  Wait for the count of seven.\n  If a response comes within the seven, the line is true.\n  If no response comes within the seven, the line is honest.\n  If a response comes after the seven, the line is something else.\n\n  Do not speak again. Mark the time. Walk away.\n\n// Below, in a different ink:\n// '6 February. Heard a response after the seven. I think it was a name.\n//  I will not speak it.'"
+  },
+
+  "choir_first_recording": {
+    "id": "choir_first_recording",
+    "title": "Choir Channel — First Recorded Bleed",
+    "kind": "narrative",
+    "form": "audio-transcript",
+    "attribution": "Mara has the only surviving copy.",
+    "tags": ["choir_channel", "club", "central-ai"],
+    "body": "// AUDIO TRANSCRIPT — booth seven, Signal Club\n// Logged: two seconds of unaccounted bleed during the third set\n\n[silence — 0.3s]\n[fragment, voice unidentified, slow cadence]: '...he never paid for the route...'\n[silence — 0.4s]\n[overlapping voice, also unidentified, lower frequency]: '...the wake is keeping the lights on for those who need...'\n[silence — 0.6s]\n[burst of static — 0.2s]\n[the bartender's recorded voice resumes, asking for an order]\n\n// Mara has a copy. Mara has not shared it. Tamsin has asked twice. Mara has said no twice."
+  },
+
+  "scrubber_wall_psalm": {
+    "id": "scrubber_wall_psalm",
+    "title": "Names on the Pump Wall",
+    "kind": "narrative",
+    "form": "object",
+    "attribution": "found at the boiler ward, scrubber-tier",
+    "tags": ["boiler", "scrubber", "ritual"],
+    "body": "// CARVED INTO IRON, beside the third valve\n// The handles are layered, oldest underneath, newest on top\n\nDOROK-9   ENN-OF-THE-LIFT   FELLA-77   STRAW-BAR-3\nGUTTER-MARI   PIPE-SAINT-2   CARTER-OF-DAWN   HALF-OWED\n\n// Below them, fresher, in a thinner hand:\n// 'These are the scrubber names from the year I came down.\n//  They are not on the shrine. The shrine is for handles whose deaths were noticed.\n//  Scrubbers die quieter.'"
+  },
+
+  "halen_coil_pressure_alert_19": {
+    "id": "halen_coil_pressure_alert_19",
+    "title": "Halen-Coil Pressure Alert — Deck 19",
+    "kind": "narrative",
+    "form": "log",
+    "attribution": "intercepted, photocopied, never officially issued",
+    "tags": ["halen-coil", "automation", "pressure", "central-ai"],
+    "body": "// HALEN-COIL ATMOSPHERICS — INTERNAL ALERT (REDACTED)\n// Sequence: 4517-19-D — generated automatically by subsystem AHC-Δ\n\nNOTE: Subsystem AHC-Δ has been offline since the Crisis.\nNOTE: This alert was generated 38 minutes ago.\n\nDeck 19, Section D — atmospheric pressure has been stable at 0.94 standard for thirty years. Tonight at 03:14 the pressure rose to 1.00 standard for forty seconds, then returned. No leak detected. No source identified.\n\nThe alert was issued by the offline subsystem. The alert is correct. The alert was issued by the offline subsystem. The alert is correct."
+  }
+}

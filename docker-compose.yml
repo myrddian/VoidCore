@@ -1,0 +1,95 @@
+name: voidcore
+
+networks:
+  bbs-public:
+    driver: bridge
+  bbs-private:
+    driver: bridge
+    internal: true
+
+volumes:
+  pgdata:
+
+x-logging: &default-logging
+  driver: json-file
+  options:
+    max-size: "10m"
+    max-file: "3"
+
+services:
+  postgres:
+    image: postgres:17-alpine
+    container_name: voidcore-postgres
+    restart: unless-stopped
+    networks: [bbs-private]
+    environment:
+      POSTGRES_USER: ${PG_SUPERUSER}
+      POSTGRES_PASSWORD: ${PG_SUPERUSER_PASSWORD}
+      POSTGRES_DB: ${PG_DB_NAME}
+      VOIDCORE_APP_USER: ${PG_APP_USER}
+      VOIDCORE_APP_PASSWORD: ${PG_APP_PASSWORD}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./sql/init:/docker-entrypoint-initdb.d:ro
+      - ./config/postgresql.conf:/etc/postgresql/postgresql.conf:ro
+      - ./config/pg_hba.conf:/etc/postgresql/pg_hba.conf:ro
+    command:
+      - postgres
+      - -c
+      - config_file=/etc/postgresql/postgresql.conf
+      - -c
+      - hba_file=/etc/postgresql/pg_hba.conf
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${PG_SUPERUSER} -d ${PG_DB_NAME}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+    logging: *default-logging
+
+  app:
+    build:
+      context: ./app
+      dockerfile: Dockerfile.runtime
+    image: voidcore-app:latest
+    container_name: voidcore-app
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - bbs-private
+      - bbs-public
+    ports:
+      - "${HTTP_BIND_ADDR}:${HTTP_PORT}:8080"
+      - "${DOOR_BIND_ADDR}:${DOOR_PORT}:8081"
+    environment:
+      JAVA_OPTS: >-
+        -XX:+UseZGC
+        -XX:MaxRAMPercentage=60
+        -Djava.net.preferIPv4Stack=true
+      SPRING_PROFILES_ACTIVE: prod
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/${PG_DB_NAME}
+      SPRING_DATASOURCE_USERNAME: ${PG_APP_USER}
+      SPRING_DATASOURCE_PASSWORD: ${PG_APP_PASSWORD}
+      VOIDCORE_PUBLIC_URL: ${PUBLIC_URL}
+      VOIDCORE_SYSOP_HANDLE: ${SYSOP_HANDLE}
+      VOIDCORE_SYSOP_INITIAL_PASSWORD: ${SYSOP_INITIAL_PASSWORD}
+      VOIDCORE_SESSION_TTL_DAYS: ${SESSION_TTL_DAYS:-30}
+      VOIDCORE_TRUST_PROXY: "true"
+      VOIDCORE_DOOR_PORT: ${DOOR_PORT:-8081}
+      VOIDCORE_DOOR_ADDRESS: 0.0.0.0
+      VOIDCORE_LLM_ENABLED: ${VOIDCORE_LLM_ENABLED:-false}
+      VOIDCORE_LLM_BASE_URL: ${VOIDCORE_LLM_BASE_URL:-}
+      VOIDCORE_LLM_CHAT_MODEL: ${VOIDCORE_LLM_CHAT_MODEL:-}
+      VOIDCORE_LLM_API_KEY: ${VOIDCORE_LLM_API_KEY:-}
+      VOIDCORE_ARGON2_MEMORY_KB: ${ARGON2_MEMORY_KB:-65536}
+      VOIDCORE_ARGON2_ITERATIONS: ${ARGON2_ITERATIONS:-3}
+      VOIDCORE_ARGON2_PARALLELISM: ${ARGON2_PARALLELISM:-4}
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:8080/actuator/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 60s
+    logging: *default-logging

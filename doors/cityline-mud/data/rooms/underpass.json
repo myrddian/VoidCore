@@ -1,0 +1,37 @@
+{
+  "name": "Maintenance Underpass",
+  "route": "shard://cityline/maintenance-underpass",
+  "sigil": "// runoff dark //",
+  "accent": "bright-green",
+  "support": "bright-cyan",
+  "dim": "dark-grey",
+  "description": "Runoff drips from broken concrete seams while the service lights stutter like a bored witness.",
+  "detail": "The underpass is all lockboxes, dead conduits, and graffiti warning you away from hatches that look recently used.",
+  "fixtures": [
+    {
+      "id": "hatch",
+      "name": "service hatch",
+      "inspect": "The hatch has been opened enough times to polish the bolts and frighten everyone with sense."
+    },
+    {
+      "id": "graffiti",
+      "name": "graffiti",
+      "inspect": "The graffiti is layered with route marks, memorial tags, and one warning repeated in three hands: DON'T OPEN ON RED LIGHT."
+    }
+  ],
+  "npcs": [
+    "sable"
+  ],
+  "mood": [
+    "The runoff is louder than usual, which means something upstream is not where it should be.",
+    "Tonight the service light is stuck on red and somebody has crossed it out with chalk anyway.",
+    "Three of the cable trays have been opened and reseated; the seal stickers do not match."
+  ],
+  "scavenge": {
+    "note": "You probe the underpass seams and cable trays for whatever the city forgot to retrieve.",
+    "reward": {
+      "itemId": "lockspike_set"
+    },
+    "message": "Behind a loose conduit plate you find a wrapped lockspike set and a reason not to mention it upstairs."
+  }
+}

@@ -1,0 +1,86 @@
+{
+  "rooms": {
+    "alley": {
+      "exits": [
+        "club",
+        "market",
+        "clinic",
+        "relay"
+      ]
+    },
+    "club": {
+      "exits": [
+        "alley",
+        "switchyard",
+        "archive"
+      ]
+    },
+    "market": {
+      "exits": [
+        "alley",
+        "clinic",
+        "docks",
+        "underpass"
+      ]
+    },
+    "switchyard": {
+      "exits": [
+        "club",
+        "relay",
+        "underpass"
+      ]
+    },
+    "clinic": {
+      "exits": [
+        "alley",
+        "market",
+        "boiler"
+      ]
+    },
+    "archive": {
+      "exits": [
+        "club",
+        "vault"
+      ]
+    },
+    "relay": {
+      "exits": [
+        "alley",
+        "switchyard",
+        "shrine"
+      ]
+    },
+    "docks": {
+      "exits": [
+        "market",
+        "underpass"
+      ]
+    },
+    "underpass": {
+      "exits": [
+        "market",
+        "switchyard",
+        "docks",
+        "boiler",
+        "shrine"
+      ]
+    },
+    "boiler": {
+      "exits": [
+        "clinic",
+        "underpass"
+      ]
+    },
+    "shrine": {
+      "exits": [
+        "relay",
+        "underpass"
+      ]
+    },
+    "vault": {
+      "exits": [
+        "archive"
+      ]
+    }
+  }
+}

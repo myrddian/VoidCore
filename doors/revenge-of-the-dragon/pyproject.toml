@@ -1,0 +1,17 @@
+[project]
+name = "revenge-of-the-dragon-door"
+version = "0.1.0"
+description = "Fantasy multiplayer door prototype for VOIDcore."
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = []
+
+[project.scripts]
+revenge-of-the-dragon = "revenge_of_the_dragon.main:run_cli"
+
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+packages = ["revenge_of_the_dragon"]

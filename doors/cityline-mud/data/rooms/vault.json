@@ -1,0 +1,38 @@
+{
+  "name": "Buried Vault",
+  "route": "shard://cityline/buried-vault",
+  "sigil": "## sealed index ##",
+  "accent": "bright-white",
+  "support": "bright-red",
+  "dim": "dark-grey",
+  "description": "The vault hums with dead cooling lines and the kind of silence that only exists where records were buried on purpose.",
+  "detail": "Dustless terminal glass and locked index drawers suggest somebody still curates this place, even if nobody admits it upstairs.",
+  "fixtures": [
+    {
+      "id": "terminal",
+      "name": "dead terminal",
+      "inspect": "The dead terminal still throws a faint phosphor ghost if you stare long enough at the blank glass."
+    },
+    {
+      "id": "drawers",
+      "name": "index drawers",
+      "inspect": "The drawers are numbered in a sequence that skips the integers most likely to contain scandal."
+    }
+  ],
+  "npcs": [
+    "echo"
+  ],
+  "mood": [
+    "The cooling lines are silent in the way only places that were quiet on purpose can be.",
+    "Tonight one of the index drawers is one centimetre further open than the seal will admit.",
+    "There is a dust pattern on the floor that suggests somebody walked here, paused, and walked back."
+  ],
+  "scavenge": {
+    "note": "You search the vault under the suspicion that even the dust here would rather be classified.",
+    "reward": {
+      "itemId": "black_index",
+      "credits": 22
+    },
+    "message": "A cracked index drawer yields a black shard and old money that still smells like institutional panic."
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "name": "Switchyard",
+  "route": "shard://cityline/switchyard",
+  "sigil": "++ freight hum ++",
+  "accent": "bright-cyan",
+  "support": "bright-green",
+  "dim": "grey",
+  "description": "Cargo rails vibrate through the grating while floodlamps try and fail to make the fog honest.",
+  "detail": "Every shadow here could be a courier, a thief, or someone paid to confuse the difference.",
+  "fixtures": [
+    {
+      "id": "rails",
+      "name": "cargo rails",
+      "inspect": "The rails hum with enough freight and rumor to make the whole district feel temporary."
+    }
+  ],
+  "npcs": [
+    "rook",
+    "voss"
+  ],
+  "mood": [
+    "The freight bell is ringing on a schedule nobody recognises.",
+    "Tonight a Bureau van has been parked at the long curve for an hour with its lights off.",
+    "A fresh chalk mark on rail seven means a courier is praying to the timing again."
+  ]
+}

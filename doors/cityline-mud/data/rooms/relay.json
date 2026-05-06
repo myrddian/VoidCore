@@ -1,0 +1,31 @@
+{
+  "name": "Relay Roofs",
+  "route": "shard://cityline/relay-roofs",
+  "sigil": "^^ wind shear ^^",
+  "accent": "bright-yellow",
+  "support": "bright-cyan",
+  "dim": "grey",
+  "description": "The rooftop relay farm crackles under wet wind and the city below looks like it is trying to fake being infinite.",
+  "detail": "Antenna ribs creak overhead. Bad signal and bad ideas both travel quickly here.",
+  "fixtures": [
+    {
+      "id": "antenna",
+      "name": "antenna ribs",
+      "inspect": "The antenna ribs creak like old saints arguing over bandwidth and burial rights."
+    },
+    {
+      "id": "stair-brick",
+      "name": "stair brick",
+      "inspect": "One brick on the stair has been worked loose more than once. There is dust on it that suggests a hand recently checked it."
+    }
+  ],
+  "npcs": [
+    "static",
+    "vey"
+  ],
+  "mood": [
+    "The wind is turning the antenna mast in a register most weather doesn't reach.",
+    "Tonight there is a printed Bureau forecast wedged under the stair brick, half-folded over a courier handle.",
+    "The relay light has been amber for an hour and amber is a colour the relay does not officially have."
+  ]
+}

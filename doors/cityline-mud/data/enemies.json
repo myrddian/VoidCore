@@ -1,0 +1,62 @@
+{
+  "wildlife_pack": {
+    "id": "wildlife_pack",
+    "name": "feral cat-pack",
+    "tier": 1,
+    "hp": 5,
+    "defense": 1,
+    "tags": ["wildlife", "mutant"],
+    "attacks": [
+      { "name": "rake", "damage": 2, "accuracy": 1 },
+      { "name": "snap", "damage": 1, "accuracy": 2 }
+    ],
+    "flavor": "Three of them in the dark, breathing wrong. Their eyes catch your light at angles cats' eyes shouldn't.",
+    "deathFlavor": "The pack scatters back into the maintenance ducts. The biggest one doesn't stand up.",
+    "fleeFlavor": "You back to the seal-crack before they commit. They watch you go and don't follow."
+  },
+  "loop_drone": {
+    "id": "loop_drone",
+    "name": "looped maintenance drone",
+    "tier": 2,
+    "hp": 7,
+    "defense": 2,
+    "tags": ["machine", "looped"],
+    "attacks": [
+      { "name": "arc tool", "damage": 2, "accuracy": 2 },
+      { "name": "cycle slam", "damage": 3, "accuracy": 0 }
+    ],
+    "flavor": "A maintenance drone running pre-Crisis security routines. It does not know which century it is.",
+    "deathFlavor": "Its servos fold. The arm-mount makes one last cycle motion against the floor and stops.",
+    "fleeFlavor": "You back into the seal. The drone resumes its loop, three steps and a turn, three steps and a turn."
+  },
+  "rust_swarm": {
+    "id": "rust_swarm",
+    "name": "rust-mite swarm",
+    "tier": 1,
+    "hp": 4,
+    "defense": 0,
+    "tags": ["wildlife", "swarm"],
+    "attacks": [
+      { "name": "bite cloud", "damage": 1, "accuracy": 3 },
+      { "name": "rust-cling", "damage": 1, "accuracy": 1 }
+    ],
+    "flavor": "A scrap-cloud of mites that survive on iron oxide and bad ideas. They are very small. There are very many.",
+    "deathFlavor": "The cloud thins, sags, settles. They are easier to kill than they are to ignore.",
+    "fleeFlavor": "You step out of the cloud. They don't pursue. They are already feeding on the wall."
+  },
+  "bureau_watcher": {
+    "id": "bureau_watcher",
+    "name": "Bureau watcher",
+    "tier": 3,
+    "hp": 10,
+    "defense": 3,
+    "tags": ["bureau", "human", "armed"],
+    "attacks": [
+      { "name": "service pistol", "damage": 3, "accuracy": 2 },
+      { "name": "shock baton", "damage": 2, "accuracy": 3 }
+    ],
+    "flavor": "Bureau-issue rain shell. Calm posture. Knows who you are because that's their job.",
+    "deathFlavor": "The watcher folds slowly, the way the Bureau has trained them to fold. The rain shell stays clean.",
+    "fleeFlavor": "You break contact. The watcher does not chase. The Bureau has files for what comes next."
+  }
+}

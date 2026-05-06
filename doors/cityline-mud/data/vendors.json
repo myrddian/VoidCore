@@ -1,0 +1,62 @@
+{
+  "alley": {
+    "name": "Mikra's Cart",
+    "npc": "mikra",
+    "stock": [
+      {
+        "itemId": "hush_patch",
+        "price": 18
+      },
+      {
+        "itemId": "bleach_tabs",
+        "price": 24
+      }
+    ]
+  },
+  "market": {
+    "name": "Pox's Grey Rack",
+    "npc": "pox",
+    "stock": [
+      {
+        "itemId": "wiretap_kit",
+        "price": 38
+      },
+      {
+        "itemId": "shock_baton",
+        "price": 42
+      },
+      {
+        "itemId": "ghost_mesh",
+        "price": 46
+      }
+    ]
+  },
+  "clinic": {
+    "name": "Dr. Ilex Supply Drawer",
+    "npc": "dr_ilex",
+    "stock": [
+      {
+        "itemId": "synthblood_ampule",
+        "price": 28
+      },
+      {
+        "itemId": "signal_jammer",
+        "price": 34
+      }
+    ]
+  },
+  "docks": {
+    "name": "Ferryman's Dry Locker",
+    "npc": "ferryman",
+    "stock": [
+      {
+        "itemId": "ration_gel",
+        "price": 12
+      },
+      {
+        "itemId": "lockspike_set",
+        "price": 44
+      }
+    ]
+  }
+}

@@ -1,0 +1,2 @@
+-- Minimal public seed placeholder for VoidCore.
+-- Replace with generic seed data during the sanitisation pass.
