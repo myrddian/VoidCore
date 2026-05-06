@@ -57,61 +57,42 @@ class FlywayMigrationIntegrationTest {
         assertThat(migrateResult.success).isTrue();
         assertThat(migrateResult.migrations)
                 .extracting(m -> m.version)
-                .contains("1", "2", "3");
+                .contains("1", "24");
     }
 
     @Test
-    void seedMessageBasesArePresent() throws SQLException {
+    void messageBasesStartEmptyByDefault() throws SQLException {
         try (Connection c = connect();
              Statement s = c.createStatement();
              ResultSet rs = s.executeQuery(
-                     "SELECT slug FROM message_bases ORDER BY sort_order")) {
-            Set<String> slugs = new HashSet<>();
-            while (rs.next()) slugs.add(rs.getString(1));
-            assertThat(slugs).containsExactlyInAnyOrder(
-                    "general", "production", "releases", "meta");
+                     "SELECT count(*) FROM message_bases")) {
+            assertThat(rs.next()).isTrue();
+            assertThat(rs.getInt(1)).isZero();
         }
     }
 
     @Test
-    void seedFilesArePresent() throws SQLException {
+    void releaseDocsAreNotSeededByDefault() throws SQLException {
         try (Connection c = connect();
              Statement s = c.createStatement();
              ResultSet rs = s.executeQuery(
-                     "SELECT frontmatter->>'filename' " +
+                     "SELECT count(*) " +
                      "FROM documents " +
-                     "WHERE type_slug = 'release' AND deleted_at IS NULL " +
-                     "ORDER BY created_at DESC")) {
-            Set<String> filenames = new HashSet<>();
-            while (rs.next()) filenames.add(rs.getString(1));
-            assertThat(filenames).hasSize(7).containsExactlyInAnyOrder(
-                    "CTRLTHRY.ZIP", "DANSECYB.ZIP", "PINTOSON.ZIP",
-                    "DUERMVJO.ZIP", "VHSDREAM.ZIP", "SHENZHEN.ZIP",
-                    "VOIDNULL.ZIP");
+                     "WHERE type_slug = 'release' AND deleted_at IS NULL")) {
+            assertThat(rs.next()).isTrue();
+            assertThat(rs.getInt(1)).isZero();
         }
     }
 
     @Test
-    void seedBulletinsArePresent() throws SQLException {
+    void articleDocsAreNotSeededByDefault() throws SQLException {
         try (Connection c = connect();
              Statement s = c.createStatement();
              ResultSet rs = s.executeQuery(
                      "SELECT count(*) FROM documents " +
                      "WHERE type_slug = 'article' AND deleted_at IS NULL")) {
-            rs.next();
-            assertThat(rs.getInt(1)).isEqualTo(3);
-        }
-        // Welcome bulletin retains the {{call_no}} placeholder for the
-        // bulletin viewer to substitute at render time.
-        try (Connection c = connect();
-             Statement s = c.createStatement();
-             ResultSet rs = s.executeQuery(
-                     "SELECT body FROM documents " +
-                     "WHERE type_slug = 'article' " +
-                     "  AND frontmatter->>'pinned' = 'true' " +
-                     "  AND deleted_at IS NULL")) {
             assertThat(rs.next()).isTrue();
-            assertThat(rs.getString(1)).contains("{{call_no}}");
+            assertThat(rs.getInt(1)).isZero();
         }
     }
 
@@ -133,12 +114,16 @@ class FlywayMigrationIntegrationTest {
                 "acl_grants",
                 "roles", "user_roles",
                 "door_state",
+                "instance_features",
                 "documents", "document_editors", "document_links",
                 "document_revisions", "schemas",
                 "message_bases", "threads", "posts", "thread_read",
                 "chat_messages", "chat_rooms", "chat_room_members", "chat_room_messages",
+                "activity_events", "reactions", "achievements", "user_achievements",
+                "sysop_notes", "watch_list", "pending_content", "fortunes",
+                "polls", "poll_options", "poll_votes",
                 "oneliners", "netmail",
-                "last_callers", "counters", "sysop_actions", "app_state"
+                "last_callers", "counters", "sysop_actions"
         );
         Set<String> actual = new HashSet<>();
         try (Connection c = connect();

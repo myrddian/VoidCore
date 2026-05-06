@@ -107,12 +107,10 @@ class SysopBootstrapFreshDbIntegrationTest {
     }
 
     @Test
-    void v6BackfilledDocumentsPointAtTheRealSysop() {
-        // V6 created documents with author_id = sentinel.id. The bootstrap
-        // must have repointed those refs to the new sysop, otherwise the
-        // sentinel deletion would have failed with an FK violation (or, if
-        // skipped, the docs would point at a non-existent user). Verify
-        // every backfilled document now points at the real SYSOP user.
+    void anyBackfilledDocumentsPointAtTheRealSysop() {
+        // Fresh VOIDcore doesn't seed bulletins/files anymore, so this may be
+        // zero rows. When documents do exist, they must point at the real
+        // SYSOP user rather than the placeholder sentinel account.
         Long sysopId = jdbc.queryForObject(
                 "SELECT id FROM users WHERE handle = 'SYSOP'",
                 new MapSqlParameterSource(), Long.class);
@@ -124,9 +122,6 @@ class SysopBootstrapFreshDbIntegrationTest {
         Integer totalDocs = jdbc.queryForObject(
                 "SELECT count(*)::int FROM documents",
                 new MapSqlParameterSource(), Integer.class);
-        // V2 seeds 3 bulletins + 7 files → 10 backfilled docs, all
-        // attributed to the (formerly sentinel, now SYSOP) sysop.
-        assertThat(totalDocs).isPositive();
         assertThat(docsWithSysopAuthor).isEqualTo(totalDocs);
     }
 }

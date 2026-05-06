@@ -13,6 +13,7 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -39,10 +40,40 @@ class DocumentsMigrationV11IntegrationTest {
     static MigrateResult migrateResult;
 
     @BeforeAll
-    static void migrate() {
+    static void migrate() throws SQLException {
+        Flyway phase1 = Flyway.configure()
+                .dataSource(postgres.getJdbcUrl(), postgres.getUsername(), postgres.getPassword())
+                .locations("classpath:db/migration")
+                .target("5")
+                .load();
+        phase1.migrate();
+
+        try (Connection c = connect();
+             Statement s = c.createStatement()) {
+            int updated = s.executeUpdate(
+                    "UPDATE users " +
+                    "SET handle = 'SYSOP', pw_hash = 'x' " +
+                    "WHERE pw_hash = 'BOOTSTRAP_SENTINEL'");
+            if (updated == 0) {
+                s.executeUpdate(
+                        "INSERT INTO users (handle, pw_hash, is_sysop) " +
+                        "VALUES ('SYSOP', 'x', true)");
+            }
+
+            s.executeUpdate(
+                    "INSERT INTO bulletins (title, body, pinned) " +
+                    "VALUES ('Welcome to VOIDcore', 'Hello world', true)");
+
+            s.executeUpdate(
+                    "INSERT INTO files (filename, title, size_bytes, uploader_id, nfo_text) " +
+                    "SELECT 'PATTERN9.ZIP', 'Pattern Nine', 1234, id, 'NFO body' " +
+                    "FROM users WHERE handle = 'SYSOP'");
+        }
+
         Flyway flyway = Flyway.configure()
                 .dataSource(postgres.getJdbcUrl(), postgres.getUsername(), postgres.getPassword())
                 .locations("classpath:db/migration")
+                .target("11")
                 .load();
         migrateResult = flyway.migrate();
     }
@@ -109,14 +140,18 @@ class DocumentsMigrationV11IntegrationTest {
         try (Connection c = connect();
              PreparedStatement ps = c.prepareStatement(
                      "SELECT MIN(rev), MAX(rev), COUNT(*), " +
-                     "       COUNT(*) FILTER (WHERE deleted_at IS NOT NULL) " +
+                     "       COUNT(*) FILTER (WHERE deleted_at IS NOT NULL), " +
+                     "       COUNT(*) FILTER (WHERE type_slug = 'article'), " +
+                     "       COUNT(*) FILTER (WHERE type_slug = 'release') " +
                      "FROM documents");
              ResultSet rs = ps.executeQuery()) {
             assertThat(rs.next()).isTrue();
             assertThat(rs.getInt(1)).isEqualTo(1);
             assertThat(rs.getInt(2)).isEqualTo(1);
-            assertThat(rs.getLong(3)).isEqualTo(10L);
+            assertThat(rs.getLong(3)).isEqualTo(2L);
             assertThat(rs.getLong(4)).isZero();
+            assertThat(rs.getLong(5)).isEqualTo(1L);
+            assertThat(rs.getLong(6)).isEqualTo(1L);
         }
     }
 

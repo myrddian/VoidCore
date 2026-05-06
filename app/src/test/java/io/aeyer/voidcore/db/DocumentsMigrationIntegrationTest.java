@@ -67,15 +67,21 @@ class DocumentsMigrationIntegrationTest {
         MigrateResult r1 = phase1.migrate();
         assertThat(r1.success).isTrue();
 
-        // Phase 2: seed a sysop, a non-sysop, two bulletins, three files
+        // Phase 2: rename the bootstrap placeholder into SYSOP, then seed a
+        // non-sysop, two bulletins, and three files
         // (one .ZIP and one .RAR sharing a base slug to test dedupe; one
         // with NULL uploader_id to test the sysop fallback).
         try (Connection c = connect();
              Statement s = c.createStatement()) {
-
-            s.executeUpdate(
-                "INSERT INTO users (handle, pw_hash, is_sysop) " +
-                "VALUES ('SYSOP', 'x', true)");
+            int updated = s.executeUpdate(
+                "UPDATE users " +
+                "SET handle = 'SYSOP', pw_hash = 'x' " +
+                "WHERE pw_hash = 'BOOTSTRAP_SENTINEL'");
+            if (updated == 0) {
+                s.executeUpdate(
+                    "INSERT INTO users (handle, pw_hash, is_sysop) " +
+                    "VALUES ('SYSOP', 'x', true)");
+            }
             try (ResultSet rs = s.executeQuery(
                     "SELECT id FROM users WHERE handle = 'SYSOP'")) {
                 rs.next();

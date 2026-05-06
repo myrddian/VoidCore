@@ -38,6 +38,35 @@ class LegacyTablesDropV12IntegrationTest {
         Flyway.configure()
                 .dataSource(ds)
                 .locations("classpath:db/migration")
+                .target("5")
+                .load()
+                .migrate();
+
+        try (Connection c = connect();
+             Statement s = c.createStatement()) {
+            int updated = s.executeUpdate(
+                    "UPDATE users " +
+                    "SET handle = 'SYSOP', pw_hash = 'x' " +
+                    "WHERE pw_hash = 'BOOTSTRAP_SENTINEL'");
+            if (updated == 0) {
+                s.executeUpdate(
+                        "INSERT INTO users (handle, pw_hash, is_sysop) " +
+                        "VALUES ('SYSOP', 'x', true)");
+            }
+
+            s.executeUpdate(
+                    "INSERT INTO bulletins (title, body, pinned) " +
+                    "VALUES ('Welcome to VOIDcore', 'Hello world', true)");
+            s.executeUpdate(
+                    "INSERT INTO files (filename, title, size_bytes, uploader_id, nfo_text) " +
+                    "SELECT 'PATTERN9.ZIP', 'Pattern Nine', 1234, id, 'NFO body' " +
+                    "FROM users WHERE handle = 'SYSOP'");
+        }
+
+        Flyway.configure()
+                .dataSource(ds)
+                .locations("classpath:db/migration")
+                .target("12")
                 .load()
                 .migrate();
     }

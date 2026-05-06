@@ -996,9 +996,10 @@ public class DocumentRepository {
             String[] tagsArr = snapshot.tags() == null
                     ? new String[0]
                     : snapshot.tags().toArray(new String[0]);
+            int revisionNumber = nextStoredRevisionNumber(snapshot.id());
             dsl.insertInto(DOCUMENT_REVISIONS)
                     .set(DOCUMENT_REVISIONS.DOCUMENT_ID, snapshot.id())
-                    .set(DOCUMENT_REVISIONS.REV, snapshot.rev())
+                    .set(DOCUMENT_REVISIONS.REV, revisionNumber)
                     .set(DOCUMENT_REVISIONS.TITLE, snapshot.title())
                     .set(DOCUMENT_REVISIONS.BODY, snapshot.body() == null ? "" : snapshot.body())
                     .set(DOCUMENT_REVISIONS.FRONTMATTER, JSONB.valueOf(fmText))
@@ -1015,5 +1016,13 @@ public class DocumentRepository {
             throw new IllegalStateException(
                     "DocumentRepository.snapshotRevision failed: " + e.getMessage(), e);
         }
+    }
+
+    private int nextStoredRevisionNumber(long documentId) {
+        Integer maxRev = dsl.select(DSL.max(DOCUMENT_REVISIONS.REV))
+                .from(DOCUMENT_REVISIONS)
+                .where(DOCUMENT_REVISIONS.DOCUMENT_ID.eq(documentId))
+                .fetchOne(0, Integer.class);
+        return maxRev == null ? 1 : maxRev + 1;
     }
 }

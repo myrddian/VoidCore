@@ -30,7 +30,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Integration test for {@link DocumentRepository}. Boots Postgres 17,
- * runs all migrations (V1..V6), seeds a sysop + a non-sysop, then
+ * runs the full current migration chain, seeds a sysop + a non-sysop, then
  * inserts test documents directly via SQL (skipping the V6 backfill
  * path which is already covered by
  * {@link io.aeyer.voidcore.db.DocumentsMigrationIntegrationTest}). Each
@@ -56,21 +56,27 @@ class DocumentRepositoryIntegrationTest {
 
     @BeforeAll
     static void setup() throws SQLException {
-        // Apply V1..V5, seed sysop, then apply V6 (which needs the sysop).
+        // Apply the current migration chain so the repo and DB schema stay in
+        // lockstep with the committed jOOQ model.
         Flyway.configure()
                 .dataSource(postgres.getJdbcUrl(),
                             postgres.getUsername(),
                             postgres.getPassword())
                 .locations("classpath:db/migration")
-                .target("5")
                 .load()
                 .migrate();
 
         try (Connection c = connect();
              Statement s = c.createStatement()) {
-            s.executeUpdate(
-                "INSERT INTO users (handle, pw_hash, is_sysop) " +
-                "VALUES ('SYSOP', 'x', true)");
+            int updated = s.executeUpdate(
+                "UPDATE users " +
+                "SET handle = 'SYSOP', pw_hash = 'x' " +
+                "WHERE pw_hash = 'BOOTSTRAP_SENTINEL'");
+            if (updated == 0) {
+                s.executeUpdate(
+                    "INSERT INTO users (handle, pw_hash, is_sysop) " +
+                    "VALUES ('SYSOP', 'x', true)");
+            }
             try (ResultSet rs = s.executeQuery(
                     "SELECT id FROM users WHERE handle='SYSOP'")) {
                 rs.next(); sysopId = rs.getLong(1);
@@ -84,19 +90,10 @@ class DocumentRepositoryIntegrationTest {
             }
         }
 
-        Flyway.configure()
-                .dataSource(postgres.getJdbcUrl(),
-                            postgres.getUsername(),
-                            postgres.getPassword())
-                .locations("classpath:db/migration")
-                .target("6")
-                .load()
-                .migrate();
-
-        // V6 backfills bulletins + files (seeded by earlier migrations) into
-        // the documents table. The integration tests below assert against an
-        // exact 4-doc fixture, so wipe the backfill before seeding. The V6
-        // backfill itself has dedicated coverage in DocumentsMigrationIntegrationTest.
+        // The full migration chain may leave zero or more document rows from
+        // seed/compatibility migrations. The integration tests below assert
+        // against an exact 4-doc fixture, so wipe any inherited state before
+        // seeding.
         try (Connection c = connect();
              Statement s = c.createStatement()) {
             s.executeUpdate("DELETE FROM document_links");
@@ -109,7 +106,7 @@ class DocumentRepositoryIntegrationTest {
         try (Connection c = connect()) {
             try (PreparedStatement ps = c.prepareStatement(
                     "INSERT INTO documents " +
-                    "(slug, title, kind, body, frontmatter, tags, " +
+                    "(slug, title, type_slug, body, frontmatter, tags, " +
                     " author_id, visibility, status, " +
                     " created_at, updated_at) " +
                     "VALUES (?, ?, ?, ?, ?::jsonb, '{}', ?, 'public', 'published', " +
@@ -125,7 +122,7 @@ class DocumentRepositoryIntegrationTest {
             }
             try (PreparedStatement ps = c.prepareStatement(
                     "INSERT INTO documents " +
-                    "(slug, title, kind, body, frontmatter, tags, " +
+                    "(slug, title, type_slug, body, frontmatter, tags, " +
                     " author_id, visibility, status, " +
                     " created_at, updated_at) " +
                     "VALUES (?, ?, 'article', ?, '{\"pinned\":false}'::jsonb, '{}', ?, 'public', 'published', " +
@@ -139,7 +136,7 @@ class DocumentRepositoryIntegrationTest {
             }
             try (PreparedStatement ps = c.prepareStatement(
                     "INSERT INTO documents " +
-                    "(slug, title, kind, body, frontmatter, tags, " +
+                    "(slug, title, type_slug, body, frontmatter, tags, " +
                     " author_id, visibility, status, " +
                     " created_at, updated_at) " +
                     "VALUES (?, ?, 'article', ?, '{\"pinned\":true}'::jsonb, '{}', ?, 'public', 'published', " +
@@ -153,7 +150,7 @@ class DocumentRepositoryIntegrationTest {
             }
             try (PreparedStatement ps = c.prepareStatement(
                     "INSERT INTO documents " +
-                    "(slug, title, kind, body, frontmatter, tags, " +
+                    "(slug, title, type_slug, body, frontmatter, tags, " +
                     " author_id, visibility, status, " +
                     " created_at, updated_at) " +
                     "VALUES (?, ?, 'note', '', '{}'::jsonb, '{}', ?, 'private', 'published', " +
@@ -288,7 +285,8 @@ class DocumentRepositoryIntegrationTest {
 
     @Test
     void insertReturnsIdAndRoundTripsViaFindById() {
-        ObjectNode fm = new ObjectMapper().createObjectNode().put("k", "v");
+        ObjectNode fm = new ObjectMapper().createObjectNode()
+                .put("summary", "roundtrip summary");
         long id = repo.insert(
                 "wt-insert-roundtrip", "Insert RT", DocumentKind.NOTE,
                 "body", fm, List.of("a", "b"), sysopId,
@@ -299,7 +297,8 @@ class DocumentRepositoryIntegrationTest {
             assertThat(doc.get().slug()).isEqualTo("wt-insert-roundtrip");
             assertThat(doc.get().kind()).isEqualTo(DocumentKind.NOTE);
             assertThat(doc.get().tags()).containsExactly("a", "b");
-            assertThat(doc.get().frontmatter().path("k").asText()).isEqualTo("v");
+            assertThat(doc.get().frontmatter().path("summary").asText())
+                    .isEqualTo("roundtrip summary");
         } finally {
             repo.delete(id);
         }
@@ -375,46 +374,48 @@ class DocumentRepositoryIntegrationTest {
     }
 
     @Test
-    void deleteCascadesEditorsAndRevisions() throws SQLException {
+    void deleteSoftDeletesDocumentAndRetainsHistory() throws SQLException {
         long id = repo.insert("wt-delete-cascade", "Title",
                 DocumentKind.NOTE, "body",
                 new ObjectMapper().createObjectNode(),
                 List.of(), sysopId, Visibility.PUBLIC, Status.PUBLISHED);
-        repo.addEditor(id, nonSysopId);
-        repo.recordRevision(id, "rev body",
-                new ObjectMapper().createObjectNode(), sysopId);
+        try {
+            repo.addEditor(id, nonSysopId);
+            repo.recordRevision(id, "rev body",
+                    new ObjectMapper().createObjectNode(), sysopId);
 
-        // Pre-condition assertions.
-        assertThat(repo.isEditor(id, nonSysopId)).isTrue();
-        try (Connection c = connect();
-             PreparedStatement ps = c.prepareStatement(
-                     "SELECT count(*) FROM document_revisions WHERE document_id = ?")) {
-            ps.setLong(1, id);
-            try (ResultSet rs = ps.executeQuery()) {
-                rs.next();
-                assertThat(rs.getInt(1)).isEqualTo(1);
+            assertThat(repo.isEditor(id, nonSysopId)).isTrue();
+
+            repo.delete(id);
+
+            assertThat(repo.findById(id)).isEmpty();
+            DocumentRow deleted = repo.findByIdIncludingDeleted(id).orElseThrow();
+            assertThat(deleted.isDeleted()).isTrue();
+
+            try (Connection c = connect();
+                 PreparedStatement ps = c.prepareStatement(
+                         "SELECT count(*) FROM document_revisions WHERE document_id = ?")) {
+                ps.setLong(1, id);
+                try (ResultSet rs = ps.executeQuery()) {
+                    rs.next();
+                    assertThat(rs.getInt(1)).isEqualTo(2);
+                }
             }
-        }
-
-        // Delete cascades.
-        repo.delete(id);
-
-        try (Connection c = connect();
-             PreparedStatement ps = c.prepareStatement(
-                     "SELECT count(*) FROM document_revisions WHERE document_id = ?")) {
-            ps.setLong(1, id);
-            try (ResultSet rs = ps.executeQuery()) {
-                rs.next();
-                assertThat(rs.getInt(1)).isZero();
+            try (Connection c = connect();
+                 PreparedStatement ps = c.prepareStatement(
+                         "SELECT count(*) FROM document_editors WHERE document_id = ?")) {
+                ps.setLong(1, id);
+                try (ResultSet rs = ps.executeQuery()) {
+                    rs.next();
+                    assertThat(rs.getInt(1)).isEqualTo(1);
+                }
             }
-        }
-        try (Connection c = connect();
-             PreparedStatement ps = c.prepareStatement(
-                     "SELECT count(*) FROM document_editors WHERE document_id = ?")) {
-            ps.setLong(1, id);
-            try (ResultSet rs = ps.executeQuery()) {
-                rs.next();
-                assertThat(rs.getInt(1)).isZero();
+        } finally {
+            try (Connection c = connect();
+                 PreparedStatement ps = c.prepareStatement(
+                         "DELETE FROM documents WHERE id = ?")) {
+                ps.setLong(1, id);
+                ps.executeUpdate();
             }
         }
     }
@@ -967,7 +968,7 @@ class DocumentRepositoryIntegrationTest {
     void setFrontmatterFieldIntegerRoundTrip() throws SQLException {
         long id = repo.insert("wt-fm-int", "Title",
                 DocumentKind.RELEASE, "body",
-                new ObjectMapper().createObjectNode(),
+                new ObjectMapper().createObjectNode().put("artist", "SYSOP"),
                 List.of(), sysopId, Visibility.PUBLIC, Status.PUBLISHED);
         try {
             repo.setFrontmatterField(id, "year", "2024");
