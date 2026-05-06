@@ -1416,8 +1416,8 @@ VOIDcore's. Both can evolve independently.
   free, replaces a coordinated two-project boundary with
   uncoordinated framework dependence.
 - *Skip semantic entirely.* Lexical search alone is a 1990s
-  experience. VOIDcore deliberately leaves authenticity-only
-  features off (ADR-019, FEATURE-ANALYSIS.md); leaving semantic
+  experience. VOIDcore deliberately avoids nostalgia-only
+  features when they undermine the product; leaving semantic
   off would be authenticity by accident.
 - *Couple to Anchor's schema directly.* Bidirectional schema
   dependency; both projects break together; loses the clean

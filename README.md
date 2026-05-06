@@ -1,6 +1,10 @@
 # VOIDcore
 
+[![CI](https://github.com/myrddian/VoidCore/actions/workflows/ci.yml/badge.svg)](https://github.com/myrddian/VoidCore/actions/workflows/ci.yml)
+
 > *Signal over noise. Structure over spectacle.*
+
+![VOIDcore preview](docs/social-preview.svg)
 
 VOIDcore is a self-hosted typed-document community platform with terminal
 aesthetics and BBS-flavoured social primitives. It is for communities that
@@ -10,6 +14,14 @@ losing it inside chat silos and SaaS dashboards.
 The substrate is opinionated and small: typed Markdown documents validated
 against operator-definable schemas, with first-class conversation primitives
 (chat, threads, mail, mentions) that stay in their own lane.
+
+## Project status
+
+- public split is live as a standalone repo
+- Docker Compose stack boots with `postgres`, `app`, and `cityline-door`
+- the user-facing surface has started the move from "releases" toward the
+  more generic "files" model
+- the project is usable now, but still in active extraction and polish
 
 ## What you get
 
@@ -68,22 +80,26 @@ own deployment overlay.
 
 ## Documentation
 
-- [SPEC.md](SPEC.md) — wire protocol and screen contracts
-- [SPEC-documents.md](SPEC-documents.md) — typed-document model
-- [SPEC-screens.md](SPEC-screens.md) — screen architecture
-- [SPEC-screen-navigation.md](SPEC-screen-navigation.md) — navigation model
-- [SPEC-doors.md](SPEC-doors.md) — door protocol
-- [SPEC-layout.md](SPEC-layout.md) — layout primitives
+- [SPEC.md](docs/SPEC.md) — wire protocol and screen contracts
+- [SPEC-documents.md](docs/SPEC-documents.md) — typed-document model
+- [SPEC-screens.md](docs/SPEC-screens.md) — screen architecture
+- [SPEC-screen-navigation.md](docs/SPEC-screen-navigation.md) — navigation model
+- [SPEC-doors.md](docs/SPEC-doors.md) — door protocol
+- [SPEC-layout.md](docs/SPEC-layout.md) — layout primitives
 - [docs/extending-voidcore.md](docs/extending-voidcore.md) — extension hooks
-- [DECISIONS.md](DECISIONS.md) — architectural rationale (ADRs)
-- [ROADMAP.md](ROADMAP.md) — direction
+- [DECISIONS.md](docs/DECISIONS.md) — architectural rationale (ADRs)
+- [ROADMAP.md](docs/ROADMAP.md) — direction
 
 End-user and sysop guides are planned but not yet written.
 
+## Community
+
+- [CONTRIBUTING.md](CONTRIBUTING.md)
+- [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md)
+- [SECURITY.md](SECURITY.md)
+- [v0.1.0 release draft](docs/releases/v0.1.0.md)
+
 ## License
 
-VOIDcore will be released under **GPL-3.0-or-later**. The WebSocket wire
-protocol described in `SPEC.md` is a public interface — independent
-client, door, or bot implementations communicating over it are not
-derivative works of VOIDcore. The `LICENSE` and `LICENSE-NOTES.md` files
-will land as part of the first public-release pass.
+VOIDcore is licensed under **GPL-3.0-or-later**. See
+[LICENSE](/Users/enzoreyes/proj/VoidCore/LICENSE).

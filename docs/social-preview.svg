@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 640" role="img" aria-labelledby="title desc">
+  <title id="title">VOIDcore social preview</title>
+  <desc id="desc">Terminal-styled preview card for the VOIDcore repository.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0%" stop-color="#07140d"/>
+      <stop offset="100%" stop-color="#0f2519"/>
+    </linearGradient>
+    <linearGradient id="glow" x1="0" x2="1">
+      <stop offset="0%" stop-color="#6cf2a6"/>
+      <stop offset="100%" stop-color="#c6ffdf"/>
+    </linearGradient>
+    <filter id="soft">
+      <feGaussianBlur stdDeviation="18"/>
+    </filter>
+  </defs>
+  <rect width="1280" height="640" fill="url(#bg)"/>
+  <g opacity="0.18" filter="url(#soft)">
+    <circle cx="210" cy="140" r="140" fill="#6cf2a6"/>
+    <circle cx="1080" cy="500" r="180" fill="#2cbf76"/>
+  </g>
+  <rect x="72" y="72" width="1136" height="496" rx="20" fill="#09120d" stroke="#2e6547" stroke-width="2"/>
+  <rect x="72" y="72" width="1136" height="48" rx="20" fill="#0d1913"/>
+  <circle cx="112" cy="96" r="8" fill="#e36868"/>
+  <circle cx="140" cy="96" r="8" fill="#e6b95d"/>
+  <circle cx="168" cy="96" r="8" fill="#6ad989"/>
+  <text x="208" y="102" fill="#7eb596" font-family="IBM Plex Mono, monospace" font-size="22">voidcore // typed-document terminal platform</text>
+  <text x="112" y="190" fill="url(#glow)" font-family="VT323, IBM Plex Mono, monospace" font-size="112">VOIDcore</text>
+  <text x="116" y="244" fill="#d8f9e6" font-family="IBM Plex Mono, monospace" font-size="28">self-hosted community infrastructure with typed markdown, chat, boards, mail, and doors</text>
+  <text x="116" y="320" fill="#81d1a6" font-family="IBM Plex Mono, monospace" font-size="24">&gt; docker compose up --build</text>
+  <text x="116" y="362" fill="#81d1a6" font-family="IBM Plex Mono, monospace" font-size="24">postgres + app + cityline-door</text>
+  <text x="116" y="404" fill="#81d1a6" font-family="IBM Plex Mono, monospace" font-size="24">spring boot + postgresql + websockets + terminal ui</text>
+  <g transform="translate(766 182)">
+    <rect width="362" height="244" rx="14" fill="#0d1813" stroke="#2d6045"/>
+    <text x="22" y="42" fill="#79c29d" font-family="IBM Plex Mono, monospace" font-size="18">WELCOME, SYSOP.</text>
+    <text x="22" y="82" fill="#dfffee" font-family="IBM Plex Mono, monospace" font-size="22">[F] Files</text>
+    <text x="22" y="114" fill="#dfffee" font-family="IBM Plex Mono, monospace" font-size="22">[M] Message board</text>
+    <text x="22" y="146" fill="#dfffee" font-family="IBM Plex Mono, monospace" font-size="22">[C] Chat</text>
+    <text x="22" y="178" fill="#dfffee" font-family="IBM Plex Mono, monospace" font-size="22">[D] Doors</text>
+    <text x="22" y="210" fill="#8aa997" font-family="IBM Plex Mono, monospace" font-size="18">Cityline MUD connected</text>
+  </g>
+</svg>
