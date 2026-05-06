@@ -46,7 +46,7 @@ public class SysopRoleScreen implements Screen {
         lines.add("  [C] chat rooms");
         lines.add("  [B] message boards");
         lines.add("  [D] documents");
-        lines.add("  [R] releases");
+        lines.add("  [R] files");
         lines.add("  [A] announcements");
         lines.add("");
         lines.add("  [Q] back");

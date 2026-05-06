@@ -1,5 +1,10 @@
 # AGENTS.md — project rules for any agent working on VOIDcore
 
+> **Audience:** AI coding agents and contributors editing the core
+> engine. These are guard-rails for working on the codebase, not
+> user-facing documentation. If you are running VOIDcore as an
+> operator, see [README.md](README.md) instead.
+
 This file holds rules that override default behaviour. Read it at the
 start of every session. The rules here are short on purpose; the
 reasoning lives in `DECISIONS.md` (ADRs) and the relevant SPEC files.

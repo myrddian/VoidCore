@@ -1,82 +1,89 @@
 # VOIDcore
 
+> *Signal over noise. Structure over spectacle.*
+
 VOIDcore is a self-hosted typed-document community platform with terminal
-aesthetics and BBS-flavoured social primitives.
+aesthetics and BBS-flavoured social primitives. It is for communities that
+want their knowledge to be durable, queryable, and theirs — instead of
+losing it inside chat silos and SaaS dashboards.
 
-It is designed for communities that want durable, queryable knowledge instead
-of losing everything inside chat silos. The core model is:
+The substrate is opinionated and small: typed Markdown documents validated
+against operator-definable schemas, with first-class conversation primitives
+(chat, threads, mail, mentions) that stay in their own lane.
 
-- typed Markdown documents with schema-driven frontmatter
-- terminal-native navigation and presentation
-- social primitives that stay in their own lane: chat, message boards,
-  mail, mentions, and doors
+## What you get
 
-This repository is the fresh public-engine split described in the migration
-plan. It already has the copied engine, renamed package tree, and cleaned repo
-structure; the remaining work is public-facing polish and verification.
+- **Typed Markdown documents** with schema-driven frontmatter and revisions
+- **Message boards, chat, mail (VoidMail), and mentions** as separate
+  first-class primitives
+- **Doors** — sidecar processes that hang off the BBS; the bundled
+  Cityline MUD is the worked example
+- **Terminal-native UI in the browser** — no separate client to install,
+  no Electron, no mobile app
 
-## Repo Layout
-
-```text
-VoidCore/
-├── app/                 # Spring Boot application
-├── config/              # core Postgres config
-├── doors/               # door runtimes and SDKs
-├── scripts/             # repo maintenance helpers
-├── sql/init/            # Postgres init scripts
-├── SPEC*.md             # product and protocol contracts
-├── DECISIONS.md         # ADRs
-├── ROADMAP.md           # product direction
-└── AGENTS.md            # project working rules
-```
-
-## Quick Start
+## Quick start
 
 ```sh
-git clone <repo> /opt/voidcore
-cd /opt/voidcore
-cp .env.example .env
-chmod 600 .env
-make secrets
-make env-check
-make up
+git clone <repo-url> voidcore
+cd voidcore
+docker compose up --build
 ```
 
-The default stack is intentionally small:
+Then open <http://localhost:8080>.
 
-- `postgres`
-- `app`
+That's it. The default stack builds the app from source, starts Postgres,
+applies all migrations, boots VOIDcore on `127.0.0.1:8080`, and starts the
+bundled Cityline MUD door on `127.0.0.1:8081`.
 
-No backup sidecars, instance-private deploy automation, or overlay-specific
-ops tooling are carried in this public-engine repo.
+The first user to register is just a regular member. To bootstrap a sysop
+account on first boot, set `SYSOP_HANDLE` and `SYSOP_INITIAL_PASSWORD` in
+`.env` before `docker compose up` — see [.env.example](.env.example).
 
-## Key Docs
+## Configuration
 
-- [SPEC.md](/Users/enzoreyes/proj/VoidCore/SPEC.md): technical contract
-- [SPEC-documents.md](/Users/enzoreyes/proj/VoidCore/SPEC-documents.md):
-  typed-document model
-- [SPEC-screens.md](/Users/enzoreyes/proj/VoidCore/SPEC-screens.md):
-  screen architecture
-- [SPEC-doors.md](/Users/enzoreyes/proj/VoidCore/SPEC-doors.md): door protocol
-- [DECISIONS.md](/Users/enzoreyes/proj/VoidCore/DECISIONS.md): architectural
-  rationale
-- [ROADMAP.md](/Users/enzoreyes/proj/VoidCore/ROADMAP.md): medium-term direction
+All env vars are optional and have working repo defaults. Copy
+`.env.example` to `.env` only if you want to override ports, DB
+credentials, the sysop bootstrap, or Flyway overlay locations.
 
-## Current State
+```sh
+cp .env.example .env
+make secrets >> .env   # generate strong DB and sysop passwords
+```
 
-This repo has already been:
+Useful Make targets: `make up`, `make down`, `make logs`, `make psql`,
+`make secrets`, `make env-check`. Run `make help` for the full list.
 
-- copied into a fresh Git repository
-- renamed to `io.aeyer.voidcore`
-- cleaned of local build junk and instance-only baggage
+## What's running
 
-The remaining work is:
+`docker compose up` brings up three services on the local loopback:
 
-- neutralising residual sample data and example text
-- trimming overlay-history framing from some docs and migration notes
-- verifying the build under the new namespace
+- `postgres` — Postgres 17 with VOIDcore's schema and Flyway migrations
+- `app` — VOIDcore on `127.0.0.1:8080` (HTTP + WebSocket)
+- `cityline-door` — example MUD door, reachable through VOIDcore's door
+  framework on `127.0.0.1:8081`
+
+No backup sidecars, deployment automation, or instance-specific ops
+tooling are carried in this public-engine repo — those belong in your
+own deployment overlay.
+
+## Documentation
+
+- [SPEC.md](SPEC.md) — wire protocol and screen contracts
+- [SPEC-documents.md](SPEC-documents.md) — typed-document model
+- [SPEC-screens.md](SPEC-screens.md) — screen architecture
+- [SPEC-screen-navigation.md](SPEC-screen-navigation.md) — navigation model
+- [SPEC-doors.md](SPEC-doors.md) — door protocol
+- [SPEC-layout.md](SPEC-layout.md) — layout primitives
+- [docs/extending-voidcore.md](docs/extending-voidcore.md) — extension hooks
+- [DECISIONS.md](DECISIONS.md) — architectural rationale (ADRs)
+- [ROADMAP.md](ROADMAP.md) — direction
+
+End-user and sysop guides are planned but not yet written.
 
 ## License
 
-OSS metadata and license files still need to be added as part of the first
-public-release pass.
+VOIDcore will be released under **GPL-3.0-or-later**. The WebSocket wire
+protocol described in `SPEC.md` is a public interface — independent
+client, door, or bot implementations communicating over it are not
+derivative works of VOIDcore. The `LICENSE` and `LICENSE-NOTES.md` files
+will land as part of the first public-release pass.

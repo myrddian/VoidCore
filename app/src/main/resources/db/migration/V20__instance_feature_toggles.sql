@@ -5,7 +5,7 @@ CREATE TABLE instance_features (
 
 INSERT INTO instance_features(feature_slug, enabled) VALUES
   ('announcements', TRUE),
-  ('releases', TRUE),
+  ('files', TRUE),
   ('info_docs', TRUE),
   ('message_board', TRUE),
   ('oneliners', TRUE),

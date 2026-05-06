@@ -131,6 +131,6 @@ INSERT INTO fortunes (text) VALUES
   ('the BBS is older than the web. that''s a feature.'),
   ('you are exactly where you need to be. type [I] to find out where.'),
   ('node 02 dreaming of node 03. the federation begins one socket at a time.'),
-  ('industrial frequencies, civilian receivers.'),
+  ('structure outlasts spectacle.'),
   ('a linkifier is just a wiki dressed in a phosphor coat.'),
   ('14400 baud carries more than its bandwidth budget.');

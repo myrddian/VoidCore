@@ -14,7 +14,11 @@ spring:
       pool-name: voidcore-pool
   flyway:
     enabled: true
-    locations: classpath:db/migration
+    # Core uses classpath migrations only by default. Deployments can opt into
+    # overlay-supplied repeatable migrations by overriding this with a value
+    # such as:
+    #   classpath:db/migration,filesystem:/instance/migrations
+    locations: ${VOIDCORE_FLYWAY_LOCATIONS:classpath:db/migration}
     baseline-on-migrate: false
   jackson:
     default-property-inclusion: non_null

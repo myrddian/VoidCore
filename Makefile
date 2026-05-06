@@ -7,7 +7,7 @@ help: ## Show this help
 	@grep -E '^[a-zA-Z_-]+:.*?## ' $(MAKEFILE_LIST) | sort | \
 	  awk 'BEGIN {FS = ":.*?## "}; {printf "  \033[36m%-16s\033[0m %s\n", $$1, $$2}'
 
-up: env-check ## Bring up the core stack
+up: ## Bring up the core stack from source with repo defaults
 	$(COMPOSE) up -d --build
 
 down: ## Stop and remove containers (volumes preserved)
@@ -35,14 +35,14 @@ psql: ## psql into the app database as the superuser
 shell-app: ## Shell into the app container
 	$(COMPOSE) exec app sh
 
-env-check: ## Sanity-check .env exists and placeholders are gone
-	@test -f .env || (echo "ERROR: .env missing. cp .env.example .env and edit." && exit 1)
-	@if [ "$$(stat -c '%a' .env 2>/dev/null || stat -f '%A' .env)" != "600" ]; then \
-	  echo "WARNING: .env is not 0600. Run: chmod 600 .env"; \
+env-check: ## Report whether compose will use overrides or repo defaults
+	@if [ -f .env ]; then \
+	  echo ".env present: compose will use your local overrides"; \
+	else \
+	  echo ".env missing: compose will use the documented repo defaults"; \
 	fi
-	@grep -q CHANGEME .env && (echo "ERROR: .env still has CHANGEME placeholders." && exit 1) || true
 
-secrets: ## Generate fresh random secrets to paste into .env
+secrets: ## Generate stronger values for optional .env overrides
 	@echo "PG_SUPERUSER_PASSWORD=$$(openssl rand -base64 32 | tr -d '=')"
 	@echo "PG_APP_PASSWORD=$$(openssl rand -base64 32 | tr -d '=')"
 	@echo "SYSOP_INITIAL_PASSWORD=$$(openssl rand -base64 24 | tr -d '=')"

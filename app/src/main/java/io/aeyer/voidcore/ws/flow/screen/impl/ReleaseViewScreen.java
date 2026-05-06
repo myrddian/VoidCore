@@ -24,7 +24,7 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * Release NFO viewer. [Q] returns to the releases list, [L] opens the
+ * File NFO viewer. [Q] returns to the files list, [L] opens the
  * external link and increments the download counter (live-updates every
  * peer in the releases list / view via the bus).
  *
@@ -64,7 +64,7 @@ public class ReleaseViewScreen implements Screen {
 
     @Override
     public Transition onEnter(BbsContext ctx) {
-        if (!ScreenFeatureGate.ensureEnabled(ctx, InstanceFeature.RELEASES, "releases")) {
+        if (!ScreenFeatureGate.ensureEnabled(ctx, InstanceFeature.FILES, "files")) {
             return Transition.None.INSTANCE;
         }
         Long id = ctx.session().currentReleaseId();
@@ -79,7 +79,7 @@ public class ReleaseViewScreen implements Screen {
         DocumentRow doc = maybe.get();
         ctx.persistCurrentScreen("{\"kind\":\"release_nfo\",\"release_id\":" + doc.id() + "}");
         ctx.send(Frames.flow("main", 21, paintRows(doc)));
-        ctx.send(new InputPrompt("keystroke", "release:", null, "QL", null));
+        ctx.send(new InputPrompt("keystroke", "file:", null, "QL", null));
         return Transition.None.INSTANCE;
     }
 
@@ -140,7 +140,7 @@ public class ReleaseViewScreen implements Screen {
                 Frames.span("L", "bright_yellow", true),
                 Frames.span("] listen / open external link    [", "grey"),
                 Frames.span("Q", "bright_yellow", true),
-                Frames.span("] back to releases", "grey")));
+                Frames.span("] back to files", "grey")));
         return rows;
     }
 

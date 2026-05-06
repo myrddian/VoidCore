@@ -1,0 +1,6 @@
+# Keep the image build reproducible and avoid copying host-installed binaries
+# like macOS node_modules into the Linux build context.
+.gradle/
+build/
+src/main/frontend/node_modules/
+src/main/resources/static/

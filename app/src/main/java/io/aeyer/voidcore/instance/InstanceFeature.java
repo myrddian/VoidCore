@@ -8,7 +8,7 @@ import java.util.Arrays;
  */
 public enum InstanceFeature {
     ANNOUNCEMENTS("announcements", "Announcements"),
-    RELEASES("releases", "Releases"),
+    FILES("files", "Files"),
     INFO_DOCS("info_docs", "Info / docs"),
     MESSAGE_BOARD("message_board", "Message board"),
     ONELINERS("oneliners", "One-liners"),
@@ -39,7 +39,7 @@ public enum InstanceFeature {
         if (token == null) return null;
         return switch (token.trim().toLowerCase()) {
             case "", "announcement", "announcements", "bulletin", "bulletins" -> ANNOUNCEMENTS;
-            case "release", "releases", "file", "files" -> RELEASES;
+            case "release", "releases", "file", "files" -> FILES;
             case "info", "docs", "documents", "doc", "info_docs" -> INFO_DOCS;
             case "message", "messages", "message_board", "message-board", "board", "boards" -> MESSAGE_BOARD;
             case "oneliner", "oneliners", "one-liners", "one_liners" -> ONELINERS;

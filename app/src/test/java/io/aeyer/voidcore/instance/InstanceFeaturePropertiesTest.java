@@ -14,7 +14,7 @@ class InstanceFeaturePropertiesTest {
                 List.of("files", "doors", "netmail", "bulletins", "docs", ""));
 
         assertThat(props.disabledFeatures()).containsExactlyInAnyOrder(
-                InstanceFeature.RELEASES,
+                InstanceFeature.FILES,
                 InstanceFeature.DOORS,
                 InstanceFeature.VOIDMAIL,
                 InstanceFeature.ANNOUNCEMENTS,

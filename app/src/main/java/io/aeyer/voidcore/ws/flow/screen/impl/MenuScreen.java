@@ -37,7 +37,7 @@ import java.util.List;
  * <ul>
  *   <li>{@code G} — goodbye / logout (closes session)</li>
  *   <li>{@code B} — announcements (push BULLETINS_LIST)</li>
- *   <li>{@code F} — releases (push RELEASES_LIST)</li>
+ *   <li>{@code F} — files (push RELEASES_LIST)</li>
  *   <li>{@code U}/{@code L}/{@code W} — user list / last callers /
  *       who's online (legacy paint, INFO_VIEW phase)</li>
  *   <li>{@code O} — oneliners (push ONELINERS)</li>
@@ -89,7 +89,7 @@ public class MenuScreen implements Screen {
         ctx.persistCurrentScreen("{\"kind\":\"menu\"}");
         ctx.send(Frames.update("banner", 2, Banner.rows()));
         String theme = ctx.currentTheme();
-        boolean releases = ScreenFeatureGate.enabled(ctx, InstanceFeature.RELEASES);
+        boolean files = ScreenFeatureGate.enabled(ctx, InstanceFeature.FILES);
         boolean boards = ScreenFeatureGate.enabled(ctx, InstanceFeature.MESSAGE_BOARD);
         boolean announcements = ScreenFeatureGate.enabled(ctx, InstanceFeature.ANNOUNCEMENTS);
         boolean chatEnabled = ScreenFeatureGate.enabled(ctx, InstanceFeature.CHAT);
@@ -103,8 +103,8 @@ public class MenuScreen implements Screen {
                 "",
                 "  WELCOME, " + user.handle().toUpperCase() + ".",
                 ""));
-        if (releases || boards) {
-            lines.add("  " + leftEntry(releases, "F", "Releases")
+        if (files || boards) {
+            lines.add("  " + leftEntry(files, "F", "Files")
                     + rightEntry(boards, "M", "Message board"));
         }
         if (announcements || chatEnabled) {
@@ -155,7 +155,7 @@ public class MenuScreen implements Screen {
         List<ServerMessage.Row> menu = Frames.textRows(lines, "default");
         ctx.send(Frames.update("main", 2, menu));
         StringBuilder valid = new StringBuilder("ULWATH+TG");
-        if (releases) valid.append('F');
+        if (files) valid.append('F');
         if (boards) valid.append('M');
         if (announcements) valid.append('B');
         if (chatEnabled) valid.append('C');
@@ -176,7 +176,7 @@ public class MenuScreen implements Screen {
         switch (key) {
             case "G" -> router.onAuthLogout(ctx.session());
             case "B" -> { if (ScreenFeatureGate.enabled(ctx, InstanceFeature.ANNOUNCEMENTS)) ctx.push(Phase.BULLETINS_LIST); }
-            case "F" -> { if (ScreenFeatureGate.enabled(ctx, InstanceFeature.RELEASES)) ctx.push(Phase.RELEASES_LIST); }
+            case "F" -> { if (ScreenFeatureGate.enabled(ctx, InstanceFeature.FILES)) ctx.push(Phase.RELEASES_LIST); }
             // U/L/W all share INFO_VIEW phase but paint different
             // content; the variant rides VoidCoreSession.infoVariant
             // and InfoViewScreen branches on it in onEnter.

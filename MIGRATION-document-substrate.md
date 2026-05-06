@@ -1,5 +1,12 @@
 # MIGRATION — Document Substrate: V10 (typed schemas, revisions, soft delete)
 
+> **Audience:** core engine developers and database operators upgrading
+> through V10. This is an internal technical plan, not user-facing
+> documentation. If you are running VOIDcore as an operator, you do not
+> need to read this — Flyway applies the migration automatically. Start
+> with [README.md](README.md) and [docs/extending-voidcore.md](docs/extending-voidcore.md)
+> instead.
+
 **Status:** Plan, ready to execute
 **Predecessor:** V6 (`db/migration/V6__documents_substrate.sql`) shipped the flat-enum
 documents table. This migration evolves it into a typed-schemas substrate.
@@ -963,7 +970,7 @@ documents backfilled by V6. The right cleanup is:
 
 - **In VoidCore core:** files area becomes a *generic* file area — no music
   metadata, just a generic file-handling screen with title, description,
-  download. (Per the wishlist item 5; deferred to a later phase.)
+  download. (Deferred to a later phase.)
 - **In instance overlay:** the Releases screen (NEW) renders documents of
   `type_slug='release'` with the rich metadata view (artist, year, label, NFO
   body, etc.). Owns the SYSOP music catalogue.
@@ -1081,9 +1088,9 @@ in v2 (per the OSS plan §9) it ships as a proper plugin loaded via the v2
 manifest mechanism. For now: bean wiring, classpath ordering, and screen
 registration discovery — rough but functional.
 
-In VoidCore core, the corresponding screen is the generic `Files` screen
-(per wishlist item 5), which handles real file uploads and downloads with no
-music-specific knowledge.
+In VoidCore core, the corresponding screen is the generic `Files` screen,
+which handles real file uploads and downloads with no music-specific
+knowledge.
 
 ### 10.4 The VoidCore core V10
 

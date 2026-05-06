@@ -20,7 +20,7 @@ final class RolePolicySummary {
                     "  - manage the one-liners wall",
                     "  - manage polls",
                     "  - manage message boards",
-                    "  - manage documents, including releases and announcements",
+                    "  - manage documents, including files and announcements",
                     "  - manage VoidMail access policy",
                     "");
             case "MODERATOR" -> java.util.List.of(

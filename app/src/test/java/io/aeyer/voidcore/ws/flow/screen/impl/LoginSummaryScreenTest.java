@@ -56,7 +56,7 @@ class LoginSummaryScreenTest {
         InstanceFeatureService features = mock(InstanceFeatureService.class);
         when(services.instanceFeatures()).thenReturn(features);
         when(features.enabled(InstanceFeature.ANNOUNCEMENTS)).thenReturn(true);
-        when(features.enabled(InstanceFeature.RELEASES)).thenReturn(true);
+        when(features.enabled(InstanceFeature.FILES)).thenReturn(true);
         when(features.enabled(InstanceFeature.MESSAGE_BOARD)).thenReturn(true);
         when(features.enabled(InstanceFeature.VOIDMAIL)).thenReturn(true);
         when(features.enabled(InstanceFeature.ONELINERS)).thenReturn(true);

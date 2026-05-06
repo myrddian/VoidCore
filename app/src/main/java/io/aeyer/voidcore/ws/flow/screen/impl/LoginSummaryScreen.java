@@ -92,7 +92,7 @@ public class LoginSummaryScreen implements Screen {
         rows.add(Frames.blank(1));
         int rowN = 2;
         boolean announcements = ScreenFeatureGate.enabled(ctx, InstanceFeature.ANNOUNCEMENTS);
-        boolean releases = ScreenFeatureGate.enabled(ctx, InstanceFeature.RELEASES);
+        boolean files = ScreenFeatureGate.enabled(ctx, InstanceFeature.FILES);
         boolean boards = ScreenFeatureGate.enabled(ctx, InstanceFeature.MESSAGE_BOARD);
         boolean voidmail = ScreenFeatureGate.enabled(ctx, InstanceFeature.VOIDMAIL);
         boolean oneliners = ScreenFeatureGate.enabled(ctx, InstanceFeature.ONELINERS);
@@ -100,9 +100,9 @@ public class LoginSummaryScreen implements Screen {
             rows.add(deltaRow(rowN++, "B", s.newArticles(),
                     "new announcement",   "announcements"));
         }
-        if (releases && s.newReleases() > 0) {
+        if (files && s.newReleases() > 0) {
             rows.add(deltaRow(rowN++, "F", s.newReleases(),
-                    "new release",    "releases"));
+                    "new file",    "files"));
         }
         if (boards && s.newThreads() > 0) {
             rows.add(deltaRow(rowN++, "M", s.newThreads(),
@@ -135,7 +135,7 @@ public class LoginSummaryScreen implements Screen {
 
         ctx.send(Frames.update("main", 76, rows));
         ctx.send(new InputPrompt("keystroke", "summary:", null,
-                validKeysFor(s, announcements, releases, boards, voidmail, oneliners), null));
+                validKeysFor(s, announcements, files, boards, voidmail, oneliners), null));
         return Transition.None.INSTANCE;
     }
 
@@ -151,13 +151,13 @@ public class LoginSummaryScreen implements Screen {
 
     private static String validKeysFor(LoginSummary s,
                                        boolean announcements,
-                                       boolean releases,
+                                       boolean files,
                                        boolean boards,
                                        boolean voidmail,
                                        boolean oneliners) {
         StringBuilder sb = new StringBuilder();
         if (announcements && s.newArticles() > 0) sb.append('B');
-        if (releases && s.newReleases() > 0) sb.append('F');
+        if (files && s.newReleases() > 0) sb.append('F');
         if (boards && s.newThreads() > 0) sb.append('M');
         if (voidmail && s.unreadNetmail() > 0) sb.append('N');
         if (oneliners && s.newOneliners() > 0) sb.append('O');
@@ -170,7 +170,7 @@ public class LoginSummaryScreen implements Screen {
         switch (k) {
             case "Q" -> ctx.pop();
             case "B" -> { if (ScreenFeatureGate.enabled(ctx, InstanceFeature.ANNOUNCEMENTS)) jumpTo(ctx, Phase.BULLETINS_LIST); }
-            case "F" -> { if (ScreenFeatureGate.enabled(ctx, InstanceFeature.RELEASES)) jumpTo(ctx, Phase.RELEASES_LIST); }
+            case "F" -> { if (ScreenFeatureGate.enabled(ctx, InstanceFeature.FILES)) jumpTo(ctx, Phase.RELEASES_LIST); }
             case "I" -> { if (ScreenFeatureGate.enabled(ctx, InstanceFeature.INFO_DOCS)) jumpTo(ctx, Phase.DOCS_HUB); }
             case "M" -> { if (ScreenFeatureGate.enabled(ctx, InstanceFeature.MESSAGE_BOARD)) jumpTo(ctx, Phase.BASES_LIST); }
             case "N" -> { if (ScreenFeatureGate.enabled(ctx, InstanceFeature.VOIDMAIL)) jumpTo(ctx, Phase.NETMAIL_INBOX); }

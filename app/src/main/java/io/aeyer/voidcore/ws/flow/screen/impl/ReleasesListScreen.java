@@ -20,7 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Releases listing — picks an entry to view its NFO, [Q] backs out.
+ * Files listing — picks an entry to view its NFO, [Q] backs out.
  *
  * <p>v1.4 PR-A5: extracted as a Screen.
  *
@@ -49,7 +49,7 @@ public class ReleasesListScreen implements Screen {
 
     @Override
     public Transition onEnter(BbsContext ctx) {
-        if (!ScreenFeatureGate.ensureEnabled(ctx, InstanceFeature.RELEASES, "releases")) {
+        if (!ScreenFeatureGate.ensureEnabled(ctx, InstanceFeature.FILES, "files")) {
             return Transition.None.INSTANCE;
         }
         // Clear any prior file selection so [L]isten can't fire on
@@ -61,7 +61,7 @@ public class ReleasesListScreen implements Screen {
         List<DocumentRow> list = releases(ctx);
         ArrayList<Row> rows = new ArrayList<>();
         rows.add(Frames.colored(0,
-                "  == RELEASES ==",
+                "  == FILES ==",
                 "bright_yellow"));
         rows.add(Frames.blank(1));
         rows.add(Frames.colored(2,
@@ -88,7 +88,7 @@ public class ReleasesListScreen implements Screen {
         }
         rows.add(Frames.blank(rowN++));
         rows.add(Frames.row(rowN,
-                Frames.span("  Pick a number to read the release NFO, or [", "grey"),
+                Frames.span("  Pick a number to read the file NFO, or [", "grey"),
                 Frames.span("Q", "bright_yellow", true),
                 Frames.span("] to return.", "grey")));
 
@@ -97,7 +97,7 @@ public class ReleasesListScreen implements Screen {
         StringBuilder validKeys = new StringBuilder();
         for (int i = 0; i < list.size(); i++) validKeys.append(i + 1);
         validKeys.append('Q');
-        ctx.send(new InputPrompt("keystroke", "release:",
+        ctx.send(new InputPrompt("keystroke", "file:",
                 null, validKeys.toString(), null));
         return Transition.None.INSTANCE;
     }

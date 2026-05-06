@@ -40,7 +40,7 @@ public class SysopReleaseDeleteConfirmScreen implements Screen {
         Long fid = ctx.session().selectedSysopId();
         if (fid == null) { ctx.pop(); return Transition.None.INSTANCE; }
         ctx.send(new InputPrompt("line",
-                "type DELETE to confirm permanent deletion of release_id=" + fid + ":",
+                "type DELETE to confirm permanent deletion of file_id=" + fid + ":",
                 16, null, null));
         return Transition.None.INSTANCE;
     }
@@ -61,7 +61,7 @@ public class SysopReleaseDeleteConfirmScreen implements Screen {
         ctx.audit("delete_release",
                 ctx.services().json().createObjectNode().put("release_id", fid));
         ctx.send(Frames.notify("notifications",
-                "release_id=" + fid + " deleted", "info", 3000));
+                "file_id=" + fid + " deleted", "info", 3000));
         // File is gone — clear selection and pop twice (this
         // confirm screen and the now-stale edit-menu) back to the
         // files list. The edit-menu would self-bounce on missing

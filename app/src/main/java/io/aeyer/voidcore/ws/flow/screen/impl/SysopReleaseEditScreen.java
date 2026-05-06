@@ -63,12 +63,12 @@ public class SysopReleaseEditScreen extends MenuFormApp<DocumentRow> {
 
     @Override
     protected String bannerLabel(BbsContext ctx, DocumentRow f) {
-        return "SYSOP/RELEASE · " + filename(f) + "  [#" + f.id() + "]";
+        return "SYSOP/FILE · " + filename(f) + "  [#" + f.id() + "]";
     }
 
     @Override
     protected Element headerElement(BbsContext ctx, DocumentRow f) {
-        return new Element.Header("EDIT RELEASE: " + filename(f), null);
+        return new Element.Header("EDIT FILE: " + filename(f), null);
     }
 
     @Override

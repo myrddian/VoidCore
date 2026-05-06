@@ -17,19 +17,21 @@ runtime), and ADR-018 (v2 session security) in `DECISIONS.md`.
 
 ## v1 — what we're shipping
 
-**A private BBS for ÆYER fans.** It's a feature of the ÆYER website,
-not a product. Scope:
+**A self-hosted BBS engine for a niche community.** A single instance
+serves the community it was deployed for; not yet a multi-tenant
+product. Scope:
 
-- One sysop (Enzo)
-- One self-hosted instance
+- One sysop per instance
+- One self-hosted deployment
 - A few hundred users at most
 - Single fixed BBS layout
 - Single region type (text-cell)
 - Standard session security (TLS + Argon2id + opaque session tokens)
 - The phases laid out in `SPEC.md` §10
 
-v1 success looks like: ÆYER fans use it, it's a recognisable extension
-of the brand, it costs nothing to run, it doesn't fall over.
+v1 success looks like: a community uses it, it's a recognisable
+extension of that community, it costs almost nothing to run, it
+doesn't fall over.
 
 v1 ships when the §13 acceptance criteria pass.
 
@@ -197,7 +199,7 @@ The shift in framing:
 | **Caching** | None | Layouts and content cached by ID + TTL |
 | **Security** | TLS + Argon2 + bearer token | + X25519 KEX + per-message HMAC + forward secrecy |
 | **Doors** | Stub menu entry | First-class via the runtime |
-| **Branding** | ÆYER's BBS | Possibly white-labelable |
+| **Branding** | Single instance | Possibly white-labelable |
 
 v2 is justified only if v1 succeeds and the runtime ambition is real
 — if there's actual demand for "I want to deploy this for *my*
@@ -308,12 +310,12 @@ See ADR-018 for the full design. Short version:
   directly; networked doors are isolated by process boundary.
 - Reserved keystrokes (`Esc`, `Ctrl+]`, `Ctrl+T`) are intercepted
   by the BBS before forwarding to the door. Safety hatch.
-- First door (#47): guess-the-number — exercises every v1 protocol
+- First door: guess-the-number — exercises every v1 protocol
   message. Pure Java, in-process, Normal mode.
 
 **v2+ extensions:**
 
-- Deferred mode (#50): full-screen takeover. Suspend/resume on
+- Deferred mode: full-screen takeover. Suspend/resume on
   notification, force-exit via `Ctrl+]`.
 - DOS-shim (#51+): DOSBox sidecar wrapping classic DOS doors;
   speaks `voidcore-door-v1` outward, looks like a regular door to the
@@ -351,9 +353,9 @@ duplication. See **ADR-021** for the full rationale.
 - Does **not** replace the Makefile — container/infra ops
   (`make backup-full`, `make logs`, `make psql`) need shell
   access to the VM and stay shell-side.
-- Default endpoint is the public Cloudflare-fronted URL so a
-  sysop can run ops from anywhere; `--endpoint` flag overrides
-  for LAN-direct.
+- Default endpoint is the operator's public BBS URL (typically
+  CDN-fronted) so a sysop can run ops from anywhere; `--endpoint`
+  flag overrides for LAN-direct.
 
 ### Federated chat via Matrix bridge
 
@@ -376,8 +378,8 @@ for chat and voidmail. See **ADR-022** for the full rationale.
 - Matrix user → BBS chat: bridge injects as `<matrix:user@host>`
   prefixed handle so terminal clients can visually distinguish.
 - Mentions cross the bridge: `@SYSOP` in Matrix pings the BBS user;
-  `@matrix:enzo` in BBS pings the Matrix user.
-- VoidMail (#34) maps to Matrix DMs: 1:1 BBS voidmail thread ↔ 1:1
+  `@matrix:alice` in BBS pings the Matrix user (example handle).
+- VoidMail maps to Matrix DMs: 1:1 BBS voidmail thread ↔ 1:1
   Matrix room.
 - Homeserver: bridge can register against an operator-run Conduit
   (lightest option — single Rust binary, sqlite, ~50MB RAM, fits
@@ -402,8 +404,8 @@ typed events; the bulk is on the Matrix side.
 
 ### Multi-tenancy (possibly)
 
-v2's "external product" framing implies someone other than Enzo might
-deploy it. That's not the same as multi-tenancy, but it might evolve
+v2's "external product" framing implies someone other than the original
+maintainer might deploy it. That's not the same as multi-tenancy, but it might evolve
 into it.
 
 **If multi-tenancy is in scope:**

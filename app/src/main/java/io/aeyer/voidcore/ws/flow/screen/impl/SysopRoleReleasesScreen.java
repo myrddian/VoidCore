@@ -27,7 +27,7 @@ public class SysopRoleReleasesScreen implements Screen {
         var list = ctx.services().documents().findByFilter(
                 DocumentFilter.empty().withKind(DocumentKind.RELEASE),
                 ctx.session(), 0, 9);
-        return SysopRoleDocumentsScreen.render(ctx, list, "ROLE · RELEASES", "role release:");
+        return SysopRoleDocumentsScreen.render(ctx, list, "ROLE · FILES", "role file:");
     }
 
     @Override

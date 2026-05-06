@@ -44,7 +44,7 @@ public class SysopReleaseNewScreen extends WizardFormApp<SysopReleaseNewScreen.D
     public Transition onEnter(BbsContext ctx) {
         if (!canCreate(ctx)) {
             ctx.send(Frames.notify("notifications",
-                    "you do not have permission to create releases", "warn", 3000));
+                    "you do not have permission to create files", "warn", 3000));
             ctx.pop();
             return Transition.None.INSTANCE;
         }
@@ -123,7 +123,7 @@ public class SysopReleaseNewScreen extends WizardFormApp<SysopReleaseNewScreen.D
                 .put("nfo_lines", nfoLines));
         ctx.publish(DocumentView.TOPIC);
         ctx.send(Frames.notify("notifications",
-            "release added: " + d.filename, "info", 3000));
+            "file added: " + d.filename, "info", 3000));
     }
 
     private ObjectNode buildFrontmatter(BbsContext ctx, Draft d, long sizeBytes) {

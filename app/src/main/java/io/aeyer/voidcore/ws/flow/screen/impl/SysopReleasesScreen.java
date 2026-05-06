@@ -52,7 +52,7 @@ public class SysopReleasesScreen implements Screen {
         ctx.persistCurrentScreen("{\"kind\":\"sysop_releases\"}");
         var list = manageableReleases(ctx);
         ArrayList<Row> rows = new ArrayList<>();
-        rows.add(Frames.colored(0, "  == SYSOP · RELEASES ==   " + list.size(), "bright_yellow"));
+        rows.add(Frames.colored(0, "  == SYSOP · FILES ==   " + list.size(), "bright_yellow"));
         rows.add(Frames.blank(1));
         int rowN = 2;
         for (int i = 0; i < list.size(); i++) {
@@ -74,14 +74,14 @@ public class SysopReleasesScreen implements Screen {
         rows.add(Frames.row(rowN,
                 Frames.span("  [", "grey"),
                 Frames.span(canCreate(ctx) ? "N" : "-", canCreate(ctx) ? "bright_yellow" : "dark_grey", canCreate(ctx)),
-                Frames.span("] new release   pick number to edit   [", "grey"),
+                Frames.span("] new file      pick number to edit   [", "grey"),
                 Frames.span("Q", "bright_yellow", true),
                 Frames.span("] back", "grey")));
         ctx.send(Frames.update("main", 74, rows));
         StringBuilder valid = new StringBuilder("Q");
         if (canCreate(ctx)) valid.append('N');
         for (int i = 0; i < list.size(); i++) valid.append(i + 1);
-        ctx.send(new InputPrompt("keystroke", "release:", null, valid.toString(), null));
+        ctx.send(new InputPrompt("keystroke", "file:", null, valid.toString(), null));
         return Transition.None.INSTANCE;
     }
 

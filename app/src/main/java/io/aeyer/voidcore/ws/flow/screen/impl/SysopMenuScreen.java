@@ -15,7 +15,7 @@ import io.aeyer.voidcore.ws.protocol.ServerMessage.InputPrompt;
 
 import java.util.List;
 
-/** Sysop tools menu — gateway to user / announcement / release / chat / broadcast tools. */
+/** Sysop tools menu — gateway to user / announcement / file / chat / broadcast tools. */
 @ScreenComponent
 public class SysopMenuScreen implements Screen {
 
@@ -48,7 +48,7 @@ public class SysopMenuScreen implements Screen {
             valid.append('B');
         }
         if (canManageReleases(ctx)) {
-            lines.add("  [F] releases     edit external url");
+            lines.add("  [F] files        edit external url");
             valid.append('F');
         }
         if (canManageChatRooms(ctx)) {

@@ -64,7 +64,7 @@ class OnelinersScreenTest {
         when(features.enabled(InstanceFeature.ONELINERS)).thenReturn(true);
         when(session.userId()).thenReturn(7L);
         when(repo.recent(40)).thenReturn(List.of(
-                new Oneliner(1L, "enzo", "hello", OffsetDateTime.now())));
+                new Oneliner(1L, "alice", "hello", OffsetDateTime.now())));
 
         screen = new OnelinersScreen(repo, acl, rateLimiter, reactions);
     }

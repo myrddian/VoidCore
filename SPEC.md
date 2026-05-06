@@ -1,9 +1,8 @@
 # VOIDcore — Technical Specification
 
 **Version:** 1.2
-**Author:** Enzo (sysop)
 **Status:** Draft for implementation
-**Target:** Self-hosted on home infrastructure (FTTP + static IP, Hyper-V box)
+**Target:** Self-hosted on operator-controlled infrastructure (Linux host with public network access)
 
 > **Changes since v1.1:** Client architecture is now **smart-terminal with
 > named regions**, not a thick client. The protocol carries layout
@@ -29,10 +28,11 @@ black screen with a connect sequence and a `login:` prompt. The aesthetic is
 1992 dial-up bulletin board: CP437 character set, 16-colour DOS palette,
 scanlines, monospace, keyboard-first navigation.
 
-The board functions as a small private hangout for fans of ÆYER and people
-adjacent to industrial/dark-electronic music. It is intentionally low-traffic,
-intentionally weird, and intentionally not Discord. The gimmick *is* the
-product.
+A VOIDcore instance functions as a small self-hosted hangout for a niche
+community — music scenes, tabletop groups, indie dev, retrocomputing, or any
+group that wants its knowledge durable and queryable instead of locked in a
+chat silo. It is intentionally low-traffic, intentionally weird, and
+intentionally not Discord. The gimmick *is* the product.
 
 ### Design commitments
 
@@ -1222,13 +1222,13 @@ JAVA_OPTS=-XX:+UseZGC -XX:MaxRAMPercentage=60 -Djava.net.preferIPv4Stack=true
 
 ### 9.2 Deployment
 
-Target: the Hyper-V box on home FTTP with static IP, via the Docker
+Target: a Linux host with a public network address, via the Docker
 Compose stack in the deploy artifact.
 
-- BBS VM runs the compose stack: postgres + app + pgbackrest (+ optional
-  restic).
-- DMZ Caddy on a separate host (managed by a separate Ansible repo)
-  terminates TLS via Let's Encrypt and reverse-proxies to the BBS VM.
+- BBS host runs the compose stack: postgres + app (deployment overlays
+  may add backup sidecars such as pgbackrest or restic).
+- A reverse proxy on a separate host (e.g. Caddy in a DMZ) terminates
+  TLS via Let's Encrypt and reverse-proxies to the BBS host.
 - Process supervision: Docker's `restart: unless-stopped` on each service.
   Docker daemon under systemd.
 - Database: PostgreSQL 17 in container, data on a Docker volume. Schema
@@ -1350,12 +1350,13 @@ original artifact but with a real backend, real DB, and live presence.
 
 ### v1 / v2 boundary
 
-This spec is for **v1**: a private BBS as a feature of the ÆYER
-website. Scope is bounded by the design commitments in §1 and the
-acceptance criteria in §13. v1 is finished when those criteria pass.
+This spec is for **v1**: a self-hosted BBS engine deployable as a
+single instance for a niche community. Scope is bounded by the design
+commitments in §1 and the acceptance criteria in §13. v1 is finished
+when those criteria pass.
 
 **v2 is a major uplift, not a feature addition.** It reframes the
-project from "ÆYER's BBS" into a terminal-aesthetic application
+project from "a single instance" into a terminal-aesthetic application
 runtime that could be packaged as an external product. v2's defining
 features:
 

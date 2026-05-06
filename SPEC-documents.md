@@ -239,7 +239,7 @@ Term + definition + see-also. Body is the long-form definition.
 
 ### 3.5 `release`
 
-The current "files" recast. ÆYER discography catalog rows.
+The current "files" recast. Music release catalog rows.
 
 ```jsonc
 {

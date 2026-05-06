@@ -27,8 +27,8 @@ RUN chmod +x gradlew && ./gradlew --version
 
 # Frontend deps cached separately from sources so source-only edits don't
 # blow away node_modules.
-COPY src/main/frontend/package.json src/main/frontend/package.json
-RUN cd src/main/frontend && npm install --no-audit --no-fund
+COPY src/main/frontend/package.json src/main/frontend/package-lock.json src/main/frontend/
+RUN cd src/main/frontend && npm ci --no-audit --no-fund
 
 # Copy the rest of the sources and build (Gradle calls esbuild for us).
 COPY src ./src
@@ -39,10 +39,13 @@ RUN mkdir -p /workspace/extracted \
  && java -Djarmode=layertools -jar build/libs/*.jar extract --destination /workspace/extracted
 
 # ---------- Runtime stage ----------------------------------------------------
-FROM eclipse-temurin:21-jre-alpine
+FROM eclipse-temurin:21-jre-noble
 
-RUN apk add --no-cache wget tini tzdata \
- && addgroup -S voidcore && adduser -S -G voidcore -h /home/voidcore voidcore
+RUN apt-get update \
+ && apt-get install -y --no-install-recommends wget tini tzdata ca-certificates \
+ && rm -rf /var/lib/apt/lists/* \
+ && groupadd --system voidcore \
+ && useradd --system --gid voidcore --home-dir /home/voidcore --create-home --shell /usr/sbin/nologin voidcore
 
 WORKDIR /app
 
@@ -57,4 +60,4 @@ USER voidcore
 EXPOSE 8080
 
 ENV JAVA_OPTS=""
-ENTRYPOINT ["/sbin/tini","--","sh","-c","exec java $JAVA_OPTS org.springframework.boot.loader.launch.JarLauncher"]
+ENTRYPOINT ["/usr/bin/tini","--","sh","-c","exec java $JAVA_OPTS org.springframework.boot.loader.launch.JarLauncher"]

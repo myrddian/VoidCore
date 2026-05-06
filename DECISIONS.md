@@ -1,5 +1,11 @@
 # DECISIONS.md
 
+> **Audience:** core contributors, architects, and long-term
+> maintainers. ADRs are dense by design. If you are landing on the
+> repo for the first time, start with [README.md](README.md) and
+> [SPEC.md](SPEC.md); come here when you want to understand *why*
+> a particular choice was made.
+
 Architectural Decision Records for VOIDcore. The *why* behind every
 non-obvious choice in this repo. Read this when you're tempted to second-
 guess something — and update it when you change your mind.
@@ -611,7 +617,7 @@ widgets). Each application defines its own screen layouts and content;
 the client interprets layout descriptions as data rather than knowing
 them as code.
 
-This is a categorically different product — not "ÆYER's BBS plus
+This is a categorically different product — not "the BBS plus
 features" but "a runtime, with the BBS as flagship app." It's
 explicitly not in v1 scope. But the v1 protocol must not foreclose it.
 
@@ -674,12 +680,12 @@ than silently changing the v1 protocol.
 
 **Context:** v1 ships with TLS at the DMZ Caddy plus Argon2id-hashed
 passwords plus opaque session tokens. This is appropriate for v1's
-threat model (small private board, sysop-trusted DMZ Caddy, no PII).
+threat model (small self-hosted board, sysop-trusted DMZ Caddy, no PII).
 
 For v2's "external product" framing, the threat model expands:
 
-- The system might be deployed by people other than the sysop on
-  infrastructure Enzo doesn't control.
+- The system might be deployed by people other than the original sysop
+  on infrastructure the maintainer doesn't control.
 - A compromised session token (logged accidentally, exfiltrated via
   XSS, captured from a stolen browser profile) currently grants full
   account access until expiry.
@@ -1078,10 +1084,10 @@ Architectural shape:
   both are sysop-level. File mode 0600 is the same posture as
   for `.env`.
 - The CLI runs anywhere the public BBS URL is reachable
-  (Cloudflare → Caddy → app), so a sysop can do ops from a
+  (CDN → reverse proxy → app), so a sysop can do ops from a
   laptop on cellular without VPN. Optional `--endpoint` flag
   for direct LAN access (e.g.
-  `ws://192.168.10.6:8080/ws`) when on-prem.
+  `ws://198.51.100.6:8080/ws`) when on-prem.
 - New module to build, version, and deploy. Real work — not
   blocking anything else, queued post-doors.
 
@@ -1120,8 +1126,8 @@ features around them. Files were the *substance*; chat and message
 bases were the connective tissue. VOIDcore inherits the social
 machinery (chat, mentions, NetMail, threads, profiles) but **does
 not host files**. The current "file area" (`#27`, extended in `#81`)
-is really a curated catalog of ÆYER releases pointing at external
-hosts — useful in the fan-club context but not a "files" substrate
+is really a curated catalog of releases pointing at external
+hosts — useful in a community-catalog context but not a "files" substrate
 in the BBS sense.
 
 This leaves the question: if not files, then what is the substance
@@ -1312,7 +1318,7 @@ index, claim-bearing summarisation, multi-agent prompting,
 streaming output, and you need to keep all of it consistent with
 the canonical document store.
 
-A separate project — **Anchor** (`/Users/enzoreyes/proj/anchor`,
+A separate project — **Anchor** (the Anchor companion repo,
 v0 spec dated 2026-04-26, by the same author) — is being designed
 to do exactly this work. Anchor's contribution is not "RAG with
 vectors": it is *opinionated retrieval that is opinionated about
@@ -1489,13 +1495,13 @@ Concretely:
   `@bbs_sysop:bbs.example.com`. Matrix federation distributes to
   every joined homeserver.
 - Matrix user posts → bridge injects into BBS chat broadcast as
-  `<matrix:enzo@example.org> ...` so terminal clients can visually
+  `<matrix:alice@example.org> ...` so terminal clients can visually
   distinguish federated participants without the BBS UI needing to
   know about Matrix.
-- Mentions (#35) cross the bridge: `@SYSOP` typed in Matrix pings
-  the BBS user; `@matrix:enzo` typed in BBS pings the Matrix user.
+- Mentions cross the bridge: `@SYSOP` typed in Matrix pings
+  the BBS user; `@matrix:alice` typed in BBS pings the Matrix user.
   Identity table maps stable user_id ↔ MXID.
-- Netmail (#34) maps cleanly to Matrix DMs. A BBS user sending
+- Netmail maps cleanly to Matrix DMs. A BBS user sending
   netmail to a federated handle creates / reuses a 1:1 Matrix room.
 
 **v1 protocol shape preserved for v2 viability** (these decisions
@@ -1527,7 +1533,7 @@ already align — recording them so they don't drift):
   existing third-party homeserver they already use.
 - **Identity sprawl.** Every BBS user effectively gets a Matrix MXID.
   Moderation now has a Matrix dimension — banned BBS user is also
-  banned from the Matrix room. Sysop tools (#40) extend with
+  banned from the Matrix room. Sysop tools extend with
   cross-protocol semantics; ADR for that lands when v2 work begins.
 - **E2EE friction.** Cross-protocol bridges and Matrix end-to-end
   encryption play poorly together. Standard practice (mautrix,
@@ -1541,8 +1547,8 @@ already align — recording them so they don't drift):
   implementer who knows the Matrix surface — not a weekend project.
   References: matrix.org's `appservice-irc`, the `mautrix-*` family.
   Our half is small because chat is already typed events.
-- **Federation gain.** ÆYER fans on Matrix can talk to people on
-  the BBS terminal client without either side installing the other's
+- **Federation gain.** Community members on Matrix can talk to people
+  on the BBS terminal client without either side installing the other's
   software. That is the actual product win, not the technical
   novelty.
 
