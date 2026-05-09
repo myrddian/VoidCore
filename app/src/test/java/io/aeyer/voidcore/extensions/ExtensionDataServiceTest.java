@@ -47,4 +47,16 @@ class ExtensionDataServiceTest {
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining("key");
     }
+
+    @Test
+    void disabledServiceBecomesSafeNoOp() {
+        ExtensionDataService service = ExtensionDataService.disabled();
+        ObjectNode payload = new ObjectMapper().createObjectNode().put("theme", "ws360");
+
+        assertThat(service.getGlobal("aeyer", "theme")).isEmpty();
+        assertThat(service.userKeys("aeyer", 7L, "", 10)).isEmpty();
+
+        service.putGlobal("aeyer", "theme", payload);
+        service.deleteForUser("aeyer", 7L, "theme");
+    }
 }
