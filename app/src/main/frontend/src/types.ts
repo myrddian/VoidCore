@@ -53,6 +53,7 @@ export interface RegionUpdatePayload {
   // NEW — tree-mode fields. Mutually exclusive with content/cursor/mode.
   tree?: Element;
   focus?: string | null;
+  bannerPolicy?: "always_full" | "auto_compact" | "always_compact" | null;
 }
 
 export interface RegionAppendPayload {

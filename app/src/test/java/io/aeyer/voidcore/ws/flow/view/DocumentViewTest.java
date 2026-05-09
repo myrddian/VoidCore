@@ -343,7 +343,7 @@ class DocumentViewTest {
         when(users.findById(200L)).thenReturn(Optional.of(new UserRepository.UserRow(200L, "VOID", "x", false, false)));
 
         assertThat(view.countByFilter(DocumentFilter.empty(), session)).isEqualTo(2);
-        assertThat(view.kindFacetCounts(DocumentFilter.empty(), session)).containsEntry(DocumentKind.ARTICLE, 1L);
+        assertThat(view.kindFacetCounts(DocumentFilter.empty(), session)).containsEntry("article", 1L);
         List<FacetCount.Author> authors = view.authorFacetCounts(DocumentFilter.empty(), session, 10);
         assertThat(authors).extracting(FacetCount.Author::handle).contains("VOID");
     }

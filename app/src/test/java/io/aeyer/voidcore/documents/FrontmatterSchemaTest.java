@@ -11,11 +11,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 class FrontmatterSchemaTest {
 
     @Test
-    void releaseHasSpecdFields() {
+    void releaseNoLongerUsesBuiltinFallbackFields() {
         List<FrontmatterField> f = FrontmatterSchema.fieldsFor(DocumentKind.RELEASE);
-        assertThat(f).extracting(FrontmatterField::key)
-                .containsExactly("artist", "year", "label",
-                        "catalog_number", "genre", "external_url");
+        assertThat(f).isEmpty();
     }
 
     @Test
@@ -87,15 +85,11 @@ class FrontmatterSchemaTest {
     @Test
     void byLetterAndByKeyLookups() {
         assertThat(FrontmatterSchema.byLetter(DocumentKind.RELEASE, 'A'))
-                .isPresent()
-                .get().extracting(FrontmatterField::key)
-                .isEqualTo("artist");
+                .isEmpty();
         assertThat(FrontmatterSchema.byLetter(DocumentKind.RELEASE, 'Z'))
                 .isEmpty();
 
         assertThat(FrontmatterSchema.byKey(DocumentKind.RELEASE, "year"))
-                .isPresent()
-                .get().extracting(FrontmatterField::type)
-                .isEqualTo(FrontmatterField.Type.INTEGER);
+                .isEmpty();
     }
 }

@@ -9,7 +9,7 @@ package io.aeyer.voidcore.auth;
  * @param newArticles    pinned + unpinned articles since cutoff
  *                       (these are the v1.5 substrate equivalent
  *                       of "bulletins")
- * @param newReleases    new {@code documents.kind=release} since cutoff
+ * @param newReleases    new {@code documents.type_slug='release'} since cutoff
  * @param newThreads     forum threads created since cutoff
  * @param newOneliners   oneliners posted since cutoff
  * @param unreadNetmail  unread netmail addressed to this user

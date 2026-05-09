@@ -16,11 +16,13 @@ import io.aeyer.voidcore.ws.flow.bus.MessageBus;
 import io.aeyer.voidcore.ws.session.SessionProxy;
 import io.aeyer.voidcore.ws.flow.screen.BbsContext;
 import io.aeyer.voidcore.ws.flow.screen.BbsServices;
+import io.aeyer.voidcore.ws.flow.screen.CustomScreenRegistry;
 import io.aeyer.voidcore.ws.flow.screen.Frame;
 import io.aeyer.voidcore.ws.flow.screen.NavigationState;
 import io.aeyer.voidcore.ws.flow.screen.Phase;
 import io.aeyer.voidcore.ws.flow.screen.Screen;
 import io.aeyer.voidcore.ws.flow.screen.ScreenApp;
+import io.aeyer.voidcore.ws.flow.screen.ScreenRoute;
 import io.aeyer.voidcore.ws.flow.screen.Transition;
 import io.aeyer.voidcore.ws.flow.ui.AppEvent;
 import io.aeyer.voidcore.ws.protocol.ClientMessage;
@@ -74,6 +76,7 @@ public class ScreenRouter
     private final BbsServices bbsServices;
     private final MessageBus bus;
     private final NavigationState navState;
+    private final CustomScreenRegistry customScreens;
 
     /**
      * Phase → screen-bean ObjectProvider registry, populated at
@@ -105,6 +108,24 @@ public class ScreenRouter
                         NavigationState navState,
                         ApplicationContext appCtx,
                         List<Screen> screenSentinels) {
+        this(auth, sessions, users, netmail, messageBases, threads, presence, json,
+                wsSessions, bbsServices, bus, navState, appCtx, screenSentinels,
+                CustomScreenRegistry.empty());
+    }
+
+    public ScreenRouter(AuthService auth, SessionService sessions,
+                        UserRepository users,
+                        NetmailRepository netmail,
+                        MessageBaseRepository messageBases,
+                        ThreadRepository threads,
+                        PresenceService presence,
+                        ObjectMapper json, SessionRegistry wsSessions,
+                        BbsServices bbsServices,
+                        MessageBus bus,
+                        NavigationState navState,
+                        ApplicationContext appCtx,
+                        List<Screen> screenSentinels,
+                        CustomScreenRegistry customScreens) {
         this.auth = auth;
         this.sessions = sessions;
         this.users = users;
@@ -117,6 +138,7 @@ public class ScreenRouter
         this.bbsServices = bbsServices;
         this.bus = bus;
         this.navState = navState;
+        this.customScreens = customScreens;
         Map<Phase, ObjectProvider<? extends Screen>> providers = new EnumMap<>(Phase.class);
         Map<Phase, String> names = new EnumMap<>(Phase.class);
         for (Screen sentinel : screenSentinels) {
@@ -143,8 +165,8 @@ public class ScreenRouter
         // WS close, so detach-then-reconnect-within-TTL preserves
         // nav state / bus subs / presence in place.
         wsSessions.addTerminationListener(this::onSessionTerminated);
-        log.info("ScreenRouter initialised with {} extracted screens (of {} total phases); rest fall back to legacy dispatch",
-                providers.size(), Phase.values().length);
+        log.info("ScreenRouter initialised with {} extracted screens (of {} total phases) and {} custom screen registrations; rest fall back to legacy dispatch",
+                providers.size(), Phase.values().length, customScreens.names().size());
     }
 
     /**
@@ -156,9 +178,25 @@ public class ScreenRouter
      * provider yet (legacy phases), matching the old map-lookup contract.
      */
     private Frame mintFrame(Phase phase) {
-        ObjectProvider<? extends Screen> provider = screenProviders.get(phase);
-        Screen screen = provider == null ? null : provider.getObject();
-        return new Frame(phase, screen);
+        return mintFrame(ScreenRoute.core(phase));
+    }
+
+    private Frame mintFrame(String screenName) {
+        return mintFrame(ScreenRoute.custom(screenName));
+    }
+
+    private Frame mintFrame(ScreenRoute route) {
+        if (route instanceof ScreenRoute.Core core) {
+            Phase phase = core.phase();
+            ObjectProvider<? extends Screen> provider = screenProviders.get(phase);
+            Screen screen = provider == null ? null : provider.getObject();
+            return new Frame(route, screen);
+        }
+        if (route instanceof ScreenRoute.Custom custom) {
+            Screen screen = customScreens.create(custom.screenName()).orElse(null);
+            return new Frame(route, screen);
+        }
+        throw new IllegalStateException("Unhandled route type " + route.getClass().getName());
     }
 
     /** Top-of-stack screen for {@code session}, or {@code null}. */
@@ -199,7 +237,9 @@ public class ScreenRouter
         UserRow user = session.userId() == null
                 ? null
                 : users.findById(session.userId()).orElse(null);
-        return new BbsContext(session, user, this, bbsServices, this);
+        Frame frame = navState.peekFrame(session);
+        String screenName = frame == null || frame.screen() == null ? null : frame.screen().name();
+        return new BbsContext(session, user, this, bbsServices, this, screenName);
     }
 
     // ===================================================================
@@ -208,34 +248,47 @@ public class ScreenRouter
 
     @Override
     public void push(VoidCoreSession session, Phase phase) {
+        pushRoute(session, ScreenRoute.core(phase));
+    }
+
+    @Override
+    public void push(VoidCoreSession session, String screenName) {
+        pushRoute(session, ScreenRoute.custom(screenName));
+    }
+
+    private boolean pushRoute(VoidCoreSession session, ScreenRoute route) {
         log.debug("[ws-trace] phase-push id={} from={} to={}",
-                session.id(), navState.currentPhase(session), phase);
-        Frame frame = mintFrame(phase);
+                session.id(), currentRouteKey(session), route.key());
+        Frame frame = mintFrame(route);
+        if (frame.screen() == null) {
+            log.warn("ignoring push to unregistered screen route '{}' for session={}",
+                    route.key(), session.id());
+            return false;
+        }
         navState.pushFrame(session, frame);
         Screen screen = frame.screen();
-        if (screen != null) {
-            // CRITICAL: clear bus subscriptions BEFORE calling onEnter.
-            // The previous screen's listeners would otherwise still be
-            // attached to this session id. If the new screen's onEnter
-            // calls ctx.publish, the old listener fires synchronously
-            // and dispatches via the active screen — which is already
-            // the new top, so it routes back into the same screen's
-            // onEvent → onEnter → recursive loop. Concrete repro from
-            // [ws-trace]:
-            //   restoreFromCurrentScreen("thread") cascades:
-            //     push BASES_LIST   (no topics, no leftovers)
-            //     push THREADS_LIST (subscribes "base:N")
-            //     push THREAD_VIEW  → onEnter publishes "base:N" → loop
-            // Fix: subscribeBefore-onEnter ordering. Defensive
-            // unsubscribeAll inside applyScreenSubscriptions stays as
-            // a belt for the new top's resubscribe.
-            bus.unsubscribeAll(session.id());
-            log.debug("[ws-trace] phase-onEnter id={} screen={} phase={}",
-                    session.id(), screen.name(), phase);
-            BbsContext ctx = makeContext(session);
-            screen.onEnter(ctx);
-            applyScreenSubscriptions(session, screen, ctx);
-        }
+        // CRITICAL: clear bus subscriptions BEFORE calling onEnter.
+        // The previous screen's listeners would otherwise still be
+        // attached to this session id. If the new screen's onEnter
+        // calls ctx.publish, the old listener fires synchronously
+        // and dispatches via the active screen — which is already
+        // the new top, so it routes back into the same screen's
+        // onEvent → onEnter → recursive loop. Concrete repro from
+        // [ws-trace]:
+        //   restoreFromCurrentScreen("thread") cascades:
+        //     push BASES_LIST   (no topics, no leftovers)
+        //     push THREADS_LIST (subscribes "base:N")
+        //     push THREAD_VIEW  → onEnter publishes "base:N" → loop
+        // Fix: subscribeBefore-onEnter ordering. Defensive
+        // unsubscribeAll inside applyScreenSubscriptions stays as
+        // a belt for the new top's resubscribe.
+        bus.unsubscribeAll(session.id());
+        log.debug("[ws-trace] phase-onEnter id={} screen={} phase={}",
+                session.id(), screen.name(), route.key());
+        BbsContext ctx = makeContext(session);
+        screen.onEnter(ctx);
+        applyScreenSubscriptions(session, screen, ctx);
+        return true;
     }
 
     @Override
@@ -247,14 +300,14 @@ public class ScreenRouter
         }
         if (navState.isEmpty(session)) {
             log.debug("[ws-trace] phase-pop-root id={} leaving={} → logout",
-                    session.id(), leaving.phase());
+                    session.id(), leaving.route().key());
             onAuthLogout(session);
             return;
         }
         Frame top = navState.peekFrame(session);
         Screen screen = top == null ? null : top.screen();
         log.debug("[ws-trace] phase-pop id={} from={} to={}",
-                session.id(), leaving.phase(), top == null ? null : top.phase());
+                session.id(), leaving.route().key(), top == null ? null : top.route().key());
         if (screen != null) {
             // Same ordering rule as push() — clear leaving screen's
             // subscriptions before the popped-to screen's onEnter runs,
@@ -262,7 +315,7 @@ public class ScreenRouter
             // listener.
             bus.unsubscribeAll(session.id());
             log.debug("[ws-trace] phase-onEnter id={} screen={} phase={} (re-entry from pop)",
-                    session.id(), screen.name(), top.phase());
+                    session.id(), screen.name(), top.route().key());
             BbsContext ctx = makeContext(session);
             screen.onEnter(ctx);
             applyScreenSubscriptions(session, screen, ctx);
@@ -274,7 +327,7 @@ public class ScreenRouter
     @Override
     public void replaceTop(VoidCoreSession session, Phase phase) {
         log.debug("[ws-trace] phase-replaceTop id={} from={} to={} (no-onEnter)",
-                session.id(), navState.currentPhase(session), phase);
+                session.id(), currentRouteKey(session), phase.name());
         navState.replaceTopFrame(session, mintFrame(phase));
         bus.unsubscribeAll(session.id());
     }
@@ -282,7 +335,7 @@ public class ScreenRouter
     @Override
     public void replaceTopAndEnter(VoidCoreSession session, Phase phase) {
         log.debug("[ws-trace] phase-replaceTopAndEnter id={} from={} to={}",
-                session.id(), navState.currentPhase(session), phase);
+                session.id(), currentRouteKey(session), phase.name());
         replaceTop(session, phase);
         Frame top = navState.peekFrame(session);
         Screen screen = top == null ? null : top.screen();
@@ -291,7 +344,7 @@ public class ScreenRouter
             // pre-onEnter clean is already done. No additional clear
             // needed before screen.onEnter.
             log.debug("[ws-trace] phase-onEnter id={} screen={} phase={} (replaceTopAndEnter)",
-                    session.id(), screen.name(), phase);
+                    session.id(), screen.name(), phase.name());
             BbsContext ctx = makeContext(session);
             screen.onEnter(ctx);
             applyScreenSubscriptions(session, screen, ctx);
@@ -357,6 +410,16 @@ public class ScreenRouter
     @Override
     public Phase currentPhase(VoidCoreSession session) {
         return navState.currentPhase(session);
+    }
+
+    @Override
+    public ScreenRoute currentRoute(VoidCoreSession session) {
+        return navState.currentRoute(session);
+    }
+
+    private String currentRouteKey(VoidCoreSession session) {
+        ScreenRoute route = navState.currentRoute(session);
+        return route == null ? null : route.key();
     }
 
     /**
@@ -571,9 +634,10 @@ public class ScreenRouter
     public void onLineSubmit(VoidCoreSession session, ClientMessage.LineSubmit req) {
         Frame top = navState.peekFrame(session);
         Phase ph = top == null ? null : top.phase();
-        log.debug("[ws-trace] router-onLineSubmit id={} phase={} text-len={}",
-                session.id(), ph, req.text() == null ? 0 : req.text().length());
-        if (ph == null) {
+        log.debug("[ws-trace] router-onLineSubmit id={} route={} text-len={}",
+                session.id(), top == null ? null : top.route().key(),
+                req.text() == null ? 0 : req.text().length());
+        if (top == null) {
             log.debug("[ws-trace] router-onLineSubmit-ignored id={} (no phase)", session.id());
             return;
         }
@@ -622,8 +686,9 @@ public class ScreenRouter
     public void onLineCancel(VoidCoreSession session) {
         Frame top = navState.peekFrame(session);
         Phase ph = top == null ? null : top.phase();
-        log.debug("[ws-trace] router-onLineCancel id={} phase={}", session.id(), ph);
-        if (ph != null) {
+        log.debug("[ws-trace] router-onLineCancel id={} route={}",
+                session.id(), top == null ? null : top.route().key());
+        if (top != null) {
             Screen screen = top.screen();
             if (screen != null) {
                 log.debug("[ws-trace] router-onLineCancel-→screen id={} screen={}",
@@ -662,9 +727,9 @@ public class ScreenRouter
         Frame top = navState.peekFrame(session);
         Phase ph = top == null ? null : top.phase();
         String k = req.key() == null ? "" : req.key().toUpperCase();
-        log.debug("[ws-trace] router-onKeystroke id={} phase={} key={}",
-                session.id(), ph, k);
-        if (ph == null) {
+        log.debug("[ws-trace] router-onKeystroke id={} route={} key={}",
+                session.id(), top == null ? null : top.route().key(), k);
+        if (top == null) {
             log.debug("[ws-trace] router-onKeystroke-ignored id={} (no phase)", session.id());
             return;
         }
@@ -709,9 +774,9 @@ public class ScreenRouter
     public void onAppEvent(VoidCoreSession session, AppEvent ev) {
         Frame top = navState.peekFrame(session);
         Phase ph = top == null ? null : top.phase();
-        log.debug("[ws-trace] router-onAppEvent id={} phase={} event={}",
-                session.id(), ph, ev.getClass().getSimpleName());
-        if (ph == null) {
+        log.debug("[ws-trace] router-onAppEvent id={} route={} event={}",
+                session.id(), top == null ? null : top.route().key(), ev.getClass().getSimpleName());
+        if (top == null) {
             log.debug("[ws-trace] router-onAppEvent-ignored id={} (no phase)", session.id());
             return;
         }
@@ -1091,6 +1156,12 @@ public class ScreenRouter
                 session.setCurrentNetmailId(id);
                 push(session, Phase.NETMAIL_READ);
                 return true;
+            }
+            case "custom_screen" -> {
+                String screenName = cs.path("screen").asText(null);
+                if (screenName == null || screenName.isBlank()) return false;
+                resetStack(session, Phase.MENU);
+                return pushRoute(session, ScreenRoute.custom(screenName));
             }
             // "menu" or anything else: caller falls through to showMainMenu
             default -> { return false; }

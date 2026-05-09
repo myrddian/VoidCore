@@ -11,7 +11,6 @@ import org.jooq.Record3;
 import org.jooq.impl.DSL;
 
 import java.time.OffsetDateTime;
-import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -181,9 +180,13 @@ public class DocumentRepository {
      * releases are the v1.5 "files".
      */
     public long countByKindSince(DocumentKind kind, OffsetDateTime since) {
+        return countByTypeSlugSince(kind.wireValue(), since);
+    }
+
+    public long countByTypeSlugSince(String typeSlug, OffsetDateTime since) {
         var step = dsl.selectCount()
                 .from(DOCUMENTS)
-                .where(DOCUMENTS.TYPE_SLUG.eq(kind.wireValue()))
+                .where(DOCUMENTS.TYPE_SLUG.eq(typeSlug))
                 .and(DOCUMENTS.DELETED_AT.isNull());
         if (since == null) return step.fetchOne(0, Long.class);
         return step.and(DOCUMENTS.CREATED_AT.gt(since))
@@ -192,8 +195,12 @@ public class DocumentRepository {
 
     /** Narrow by kind, ordered by updated_at DESC. */
     public List<DocumentRow> listByKind(DocumentKind kind) {
+        return listByTypeSlug(kind.wireValue());
+    }
+
+    public List<DocumentRow> listByTypeSlug(String typeSlug) {
         return dsl.selectFrom(DOCUMENTS)
-                .where(DOCUMENTS.TYPE_SLUG.eq(kind.wireValue()))
+                .where(DOCUMENTS.TYPE_SLUG.eq(typeSlug))
                 .and(DOCUMENTS.DELETED_AT.isNull())
                 .orderBy(DOCUMENTS.UPDATED_AT.desc())
                 .fetch(this::toRow);
@@ -268,7 +275,7 @@ public class DocumentRepository {
                                    Visibility visibility,
                                    Status status) {
         try {
-            Schema schema = schemaRepo.findActive(typeSlug)
+            Schema schema = schemaRepo.findWritable(typeSlug)
                     .orElseThrow(() -> new UnknownTypeException(typeSlug));
             JsonNode effectiveFrontmatter = frontmatter == null
                     ? json.createObjectNode()
@@ -706,7 +713,7 @@ public class DocumentRepository {
     private static Condition filterConditions(DocumentFilter filter) {
         Condition c = DSL.noCondition();
         if (filter.kind().isPresent()) {
-            c = c.and(DOCUMENTS.TYPE_SLUG.eq(filter.kind().get().wireValue()));
+            c = c.and(DOCUMENTS.TYPE_SLUG.eq(filter.kind().get()));
         }
         if (!filter.tagsList().isEmpty()) {
             // Postgres array containment: tags @> ARRAY['a','b']
@@ -837,27 +844,23 @@ public class DocumentRepository {
     }
 
     /**
-     * Per-kind counts within the current filter. Returns kinds in the
-     * enum's natural order (RELEASE, ARTICLE, etc.); zero-count kinds
-     * are omitted. Used by the kind picker screen.
+     * Per-type counts within the current filter. Returns raw
+     * {@code type_slug} keys so overlay-defined types can flow through
+     * generic document surfaces without a built-in enum entry.
      */
-    public Map<DocumentKind, Long> kindFacetCounts(DocumentFilter filter,
-                                                   long sessionUserId,
-                                                   boolean isSysop) {
+    public Map<String, Long> kindFacetCounts(DocumentFilter filter,
+                                             long sessionUserId,
+                                             boolean isSysop) {
         var rows = dsl.select(DOCUMENTS.TYPE_SLUG, DSL.count())
                 .from(DOCUMENTS)
                 .where(visibilityPredicate(sessionUserId, isSysop))
                 .and(filterConditions(filter))
                 .groupBy(DOCUMENTS.TYPE_SLUG)
+                .orderBy(DOCUMENTS.TYPE_SLUG.asc())
                 .fetch();
-        Map<DocumentKind, Long> out = new EnumMap<>(DocumentKind.class);
+        Map<String, Long> out = new java.util.LinkedHashMap<>();
         for (var r : rows) {
-            try {
-                out.put(DocumentKind.parse(r.value1()), r.value2().longValue());
-            } catch (IllegalArgumentException e) {
-                // Ignore unknown kinds in the DB (defensive); shouldn't happen
-                // since the column is constrained.
-            }
+            out.put(r.value1(), r.value2().longValue());
         }
         return out;
     }

@@ -4,6 +4,7 @@ import io.aeyer.voidcore.auth.UserRepository;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.function.Consumer;
 
@@ -84,12 +85,12 @@ public final class FilterExpressionParser {
                                       Consumer<String> notifier) {
         return switch (key) {
             case "kind" -> {
-                try {
-                    yield cur.withKind(DocumentKind.parse(value));
-                } catch (IllegalArgumentException e) {
+                String normalized = value.trim().toLowerCase(Locale.ROOT);
+                if (normalized.isEmpty()) {
                     warn(notifier, "unknown kind: " + value);
                     yield cur;
                 }
+                yield cur.withTypeSlug(normalized);
             }
             case "tag" -> cur.withTag(value);
             case "-tag" -> cur.withExcludedTag(value);

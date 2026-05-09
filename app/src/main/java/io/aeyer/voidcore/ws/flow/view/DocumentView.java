@@ -4,7 +4,6 @@ import io.aeyer.voidcore.acl.AclPermission;
 import io.aeyer.voidcore.acl.AclResourceType;
 import io.aeyer.voidcore.acl.AclService;
 import io.aeyer.voidcore.documents.DocumentFilter;
-import io.aeyer.voidcore.documents.DocumentKind;
 import io.aeyer.voidcore.documents.DocumentRepository;
 import io.aeyer.voidcore.documents.DocumentRow;
 import io.aeyer.voidcore.documents.DocumentSort;
@@ -22,7 +21,6 @@ import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
 import java.time.OffsetDateTime;
 import java.util.Comparator;
-import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -268,17 +266,13 @@ public class DocumentView {
         return visibleFiltered(filter, session).count();
     }
 
-    public Map<DocumentKind, Long> kindFacetCounts(DocumentFilter filter,
-                                                   VoidCoreSession session) {
-        Map<DocumentKind, Long> out = new EnumMap<>(DocumentKind.class);
-        visibleFiltered(filter, session).forEach(doc -> {
-            try {
-                out.merge(doc.kind(), 1L, Long::sum);
-            } catch (IllegalArgumentException ignored) {
-                // defensive against schema/binary drift
-            }
-        });
-        return out;
+    public Map<String, Long> kindFacetCounts(DocumentFilter filter,
+                                             VoidCoreSession session) {
+        return visibleFiltered(filter, session)
+                .collect(Collectors.groupingBy(
+                        DocumentRow::typeSlug,
+                        java.util.LinkedHashMap::new,
+                        Collectors.counting()));
     }
 
     public List<FacetCount.Tag> tagFacetCounts(DocumentFilter filter,
@@ -342,7 +336,7 @@ public class DocumentView {
     }
 
     private boolean matchesFilter(DocumentFilter filter, DocumentRow doc) {
-        if (filter.kind().isPresent() && !filter.kind().get().wireValue().equals(doc.typeSlug())) return false;
+        if (filter.kind().isPresent() && !filter.kind().get().equals(doc.typeSlug())) return false;
         if (!doc.tags().containsAll(filter.tagsList())) return false;
         if (!filter.excludedTagsList().isEmpty()
                 && doc.tags().stream().anyMatch(filter.excludedTagsList()::contains)) return false;

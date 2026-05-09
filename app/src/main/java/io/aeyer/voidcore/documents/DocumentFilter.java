@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.TreeSet;
 
@@ -39,7 +40,7 @@ import java.util.TreeSet;
  * year is always present when month is.
  */
 public record DocumentFilter(
-        Optional<DocumentKind> kind,
+        Optional<String> kind,
         List<String> tags,
         List<String> excludedTags,
         Optional<Long> authorId,
@@ -75,13 +76,39 @@ public record DocumentFilter(
     // ─── with* / drop* mutators ──────────────────────────────────────────
 
     public DocumentFilter withKind(DocumentKind k) {
-        return new DocumentFilter(Optional.of(k), tags, excludedTags,
+        if (k == null) return dropKind();
+        return withTypeSlug(k.wireValue());
+    }
+
+    public DocumentFilter withTypeSlug(String typeSlug) {
+        String normalized = normalizeTypeSlug(typeSlug);
+        if (normalized == null) return dropKind();
+        return new DocumentFilter(Optional.of(normalized), tags, excludedTags,
                 authorId, year, month, search);
     }
 
     public DocumentFilter dropKind() {
         return new DocumentFilter(Optional.empty(), tags, excludedTags,
                 authorId, year, month, search);
+    }
+
+    private static String normalizeTypeSlug(String typeSlug) {
+        if (typeSlug == null) return null;
+        String normalized = typeSlug.trim().toLowerCase(Locale.ROOT);
+        return normalized.isEmpty() ? null : normalized;
+    }
+
+    /**
+     * @deprecated Transitional helper for older built-in-kind callers.
+     */
+    @Deprecated
+    public Optional<DocumentKind> builtinKind() {
+        if (kind.isEmpty()) return Optional.empty();
+        try {
+            return Optional.of(DocumentKind.parse(kind.get()));
+        } catch (IllegalArgumentException ignored) {
+            return Optional.empty();
+        }
     }
 
     /**
@@ -214,7 +241,7 @@ public record DocumentFilter(
         }
         if (kind.isPresent()) {
             if (!first) sb.append('&');
-            sb.append("kind=").append(kind.get().wireValue());
+            sb.append("kind=").append(kind.get());
             first = false;
         }
         if (search.isPresent()) {
@@ -318,7 +345,7 @@ public record DocumentFilter(
             String key = trimmed.substring(0, eq);
             String val = trimmed.substring(eq + 1);
             switch (key) {
-                case "kind" -> out = out.withKind(DocumentKind.parse(val));
+                case "kind" -> out = out.withTypeSlug(val);
                 case "tag" -> out = out.withTag(val);
                 case "-tag" -> out = out.withExcludedTag(val);
                 case "by" -> {

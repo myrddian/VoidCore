@@ -33,6 +33,29 @@ against operator-definable schemas, with first-class conversation primitives
 - **Terminal-native UI in the browser** — no separate client to install,
   no Electron, no mobile app
 
+## Extensibility today
+
+The current extension contract is intentionally small:
+
+- branding and instance-shaping via env vars and built-in feature toggles
+- overlay-owned SQL migrations mounted into Flyway
+- startup-loaded overlay themes under `/instance/themes`
+- startup-loaded ANSI skins under `/instance/skins`
+- sidecar applications via the door protocol
+- an internal named custom-screen routing seam that future in-process
+  extensions can build on
+
+For local development, the repo ships a worked example instance root at
+[`app/dev-instance`](/Users/enzoreyes/proj/VoidCore/app/dev-instance). That
+includes a `WS/360` theme, a manifest-backed `ws360/demo` custom screen, and
+sample ANSI skins. Production deployments should still point
+`VOIDCORE_INSTANCE_ROOT` at their own external overlay path.
+
+The repo does **not yet** promise a finished operator-facing in-process plugin
+boundary for private `Screen` classes, manifests, or scripts. See
+[docs/extending-voidcore.md](docs/extending-voidcore.md) for the current
+supported contract and its limits.
+
 ## Quick start
 
 ```sh
@@ -86,7 +109,7 @@ own deployment overlay.
 - [SPEC-screen-navigation.md](docs/SPEC-screen-navigation.md) — navigation model
 - [SPEC-doors.md](docs/SPEC-doors.md) — door protocol
 - [SPEC-layout.md](docs/SPEC-layout.md) — layout primitives
-- [docs/extending-voidcore.md](docs/extending-voidcore.md) — extension hooks
+- [docs/extending-voidcore.md](docs/extending-voidcore.md) — current overlay contract and extension hooks
 - [DECISIONS.md](docs/DECISIONS.md) — architectural rationale (ADRs)
 - [ROADMAP.md](docs/ROADMAP.md) — direction
 

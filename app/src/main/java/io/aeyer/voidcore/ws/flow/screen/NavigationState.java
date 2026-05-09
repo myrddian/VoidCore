@@ -15,13 +15,12 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * Per-session navigation stack storage. Pure data; zero behaviour.
  *
- * <p>Internally each layer is a {@link Frame} = ({@link Phase}, live
- * {@link Screen} instance). The router pushes a fresh instance on every
- * push (minted via Spring's {@code ObjectProvider} so prototype-scoped
- * beans get a new instance each call); that instance lives on the stack
- * for the duration of the layer and is GC'd when the layer pops. This
- * is the fix for the multi-session state-leak bug — see
- * {@link ScreenAppComponent}.
+ * <p>Internally each layer is a {@link Frame} = ({@link ScreenRoute}, live
+ * {@link Screen} instance). The router pushes a fresh instance on every push
+ * (minted via Spring's {@code ObjectProvider} so prototype-scoped beans get a
+ * new instance each call); that instance lives on the stack for the duration
+ * of the layer and is GC'd when the layer pops. This is the fix for the
+ * multi-session state-leak bug — see {@link ScreenAppComponent}.
  *
  * <p>The legacy read-only API ({@link #currentPhase}, {@link #peek},
  * {@link #isEmpty}, {@link #clear}) is preserved as thin shims so leaf
@@ -110,10 +109,16 @@ public class NavigationState {
 
     // ─── Phase-only read API (thin shims; stable for external callers) ──
 
+    /** Top route of the stack, or {@code null} if empty / no stack yet. */
+    public ScreenRoute currentRoute(VoidCoreSession session) {
+        Frame f = peekFrame(session);
+        return f == null ? null : f.route();
+    }
+
     /** Top of the stack, or {@code null} if empty / no stack yet. */
     public Phase currentPhase(VoidCoreSession session) {
-        Frame f = peekFrame(session);
-        return f == null ? null : f.phase();
+        ScreenRoute route = currentRoute(session);
+        return route == null ? null : route.corePhaseOrNull();
     }
 
     /** Peek the top phase without removing it. Same as {@link #currentPhase}. */

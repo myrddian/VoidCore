@@ -1,0 +1,21 @@
+{
+  "slug": "ws360",
+  "label": "WS/360 Demo",
+  "version": "0.1.0",
+  "screens": [
+    {
+      "screenName": "ws360/demo",
+      "label": "WS/360 Demo",
+      "entrypoint": "demo.js",
+      "capabilities": [
+        "documents.read",
+        "extensions_data.user",
+        "effects.theme"
+      ],
+      "documentTypes": [
+        "note",
+        "article"
+      ]
+    }
+  ]
+}

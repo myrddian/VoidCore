@@ -85,6 +85,22 @@ class FlywayMigrationIntegrationTest {
     }
 
     @Test
+    void releaseSchemaIsCompatibilityOnlyByDefault() throws SQLException {
+        try (Connection c = connect();
+             Statement s = c.createStatement();
+             ResultSet rs = s.executeQuery(
+                     "SELECT status, label, presentation->>'overlay_owned', " +
+                     "       presentation->>'core_compatibility_only' " +
+                     "FROM schemas WHERE slug = 'release' AND version = 1")) {
+            assertThat(rs.next()).isTrue();
+            assertThat(rs.getString("status")).isEqualTo("deprecated");
+            assertThat(rs.getString("label")).isEqualTo("Release (compatibility)");
+            assertThat(rs.getString("overlay_owned")).isEqualTo("true");
+            assertThat(rs.getString("core_compatibility_only")).isEqualTo("true");
+        }
+    }
+
+    @Test
     void articleDocsAreNotSeededByDefault() throws SQLException {
         try (Connection c = connect();
              Statement s = c.createStatement();

@@ -164,7 +164,7 @@ class DocsBacklinksScreenTest {
         screen.onKey(ctx, "5");
 
         verify(session, never()).setCurrentDocumentId(anyLong());
-        verify(navigator, never()).push(any(), any());
+        verify(navigator, never()).push(any(), any(Phase.class));
     }
 
     @Test

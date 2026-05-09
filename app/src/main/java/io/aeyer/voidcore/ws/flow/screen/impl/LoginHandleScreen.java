@@ -40,7 +40,8 @@ public class LoginHandleScreen implements Screen {
     private final BrandingProperties branding;
     private final PresenceService presence;
 
-    public LoginHandleScreen(BrandingProperties branding, PresenceService presence) {
+    public LoginHandleScreen(BrandingProperties branding,
+                             PresenceService presence) {
         this.branding = branding;
         this.presence = presence;
     }

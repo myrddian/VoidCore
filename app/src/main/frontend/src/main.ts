@@ -3,7 +3,7 @@
  * routes inbound messages to the right module. No application logic — that
  * lives entirely on the server (smart-terminal architecture, SPEC §6).
  */
-import { effects } from "./effects.js";
+import { configureThemes, effects } from "./effects.js";
 import { envelope } from "./envelope.js";
 import { getRegions } from "./layout.js";
 import { InputController } from "./input.js";
@@ -42,7 +42,40 @@ function findEditorId(el: Element, id: string): boolean {
   return false;
 }
 
-function main(): void {
+interface ThemeBootstrapPayload {
+  knownThemes?: string[];
+  labels?: Record<string, string>;
+  overlayCss?: string;
+}
+
+async function loadThemes(): Promise<void> {
+  try {
+    const response = await fetch("/api/instance/themes", {
+      headers: { Accept: "application/json" },
+    });
+    if (!response.ok) return;
+    const payload = (await response.json()) as ThemeBootstrapPayload;
+    configureThemes(payload.knownThemes ?? []);
+    injectOverlayThemeCss(payload.overlayCss ?? "");
+  } catch (_) {
+    // Startup should remain resilient when the theme manifest endpoint
+    // isn't reachable yet or an older server build doesn't provide it.
+  }
+}
+
+function injectOverlayThemeCss(css: string): void {
+  const id = "voidcore-overlay-themes";
+  let style = document.getElementById(id) as HTMLStyleElement | null;
+  if (style === null) {
+    style = document.createElement("style");
+    style.id = id;
+    document.head.appendChild(style);
+  }
+  style.textContent = css;
+}
+
+async function main(): Promise<void> {
+  await loadThemes();
   const regions = getRegions();
   const renderer = new RegionRenderer(regions);
 
@@ -102,6 +135,7 @@ function main(): void {
             target.replaceChildren(
               renderTree(payload.tree, payload.focus ?? null, deps),
             );
+            renderer.refreshResponsiveLayout();
           }
         } else {
           // rows-mode: tear down any active editor when main region goes back to rows
@@ -199,4 +233,4 @@ function wsUrlFor(loc: Location): string {
   return `${proto}://${loc.host}/ws`;
 }
 
-main();
+void main();

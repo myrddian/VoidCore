@@ -32,6 +32,27 @@ public class SchemaRepository {
                 .fetchOptional(this::toRow);
     }
 
+    /**
+     * Preferred write target for a type slug. Active schemas win; if a slug is
+     * currently compatibility-only, the newest deprecated version is used as a
+     * fallback so transitional screens can keep functioning without advertising
+     * that type as active engine surface.
+     */
+    public Optional<Schema> findWritable(String slug) {
+        if (slug == null || slug.isBlank()) return Optional.empty();
+        return dsl.selectFrom(SCHEMAS)
+                .where(SCHEMAS.SLUG.eq(slug))
+                .and(SCHEMAS.STATUS.in(
+                        SchemaStatus.ACTIVE.wireValue(),
+                        SchemaStatus.DEPRECATED.wireValue()))
+                .orderBy(
+                        DSL.when(SCHEMAS.STATUS.eq(SchemaStatus.ACTIVE.wireValue()), 0)
+                                .otherwise(1),
+                        SCHEMAS.VERSION.desc())
+                .limit(1)
+                .fetchOptional(this::toRow);
+    }
+
     public Optional<Schema> find(String slug, int version) {
         if (slug == null || slug.isBlank() || version < 1) return Optional.empty();
         return dsl.selectFrom(SCHEMAS)

@@ -24,11 +24,13 @@ public final class FocusPath {
         return switch (root) {
             case Element.TextField tf -> Optional.of(tf.id());
             case Element.Editor    ed -> Optional.of(ed.id());
+            case Element.Shell     s  -> firstFocusable(s.body());
             case Element.Form      f  -> {
                 if (f.focusedChildId() != null) yield Optional.of(f.focusedChildId());
                 yield walkChildren(f.children());
             }
             case Element.VStack    v  -> walkChildren(v.children());
+            case Element.AnsiBlock a  -> Optional.empty();
             case Element.Padded    p  -> firstFocusable(p.child());
             case Element.Styled    s  -> firstFocusable(s.child());
             default -> Optional.empty();

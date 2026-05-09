@@ -4,7 +4,6 @@ import io.aeyer.voidcore.acl.AclPermission;
 import io.aeyer.voidcore.acl.AclResourceType;
 import io.aeyer.voidcore.acl.AclService;
 import io.aeyer.voidcore.chat.ChatRepository;
-import io.aeyer.voidcore.documents.DocumentKind;
 import io.aeyer.voidcore.ws.flow.Frames;
 import io.aeyer.voidcore.ws.flow.screen.BbsContext;
 import io.aeyer.voidcore.ws.flow.screen.Phase;
@@ -18,6 +17,9 @@ import java.util.List;
 /** Sysop tools menu — gateway to user / announcement / file / chat / broadcast tools. */
 @ScreenComponent
 public class SysopMenuScreen implements Screen {
+
+    private static final String TYPE_ARTICLE = "article";
+    private static final String TYPE_RELEASE = "release";
 
     private final AclService acl;
     private final ChatRepository chat;
@@ -92,13 +94,13 @@ public class SysopMenuScreen implements Screen {
 
     private boolean canManageAnnouncements(BbsContext ctx) {
         return ctx.isSysop() || ctx.services().documents().list().stream()
-                .filter(doc -> DocumentKind.ARTICLE.wireValue().equals(doc.typeSlug()))
+                .filter(doc -> TYPE_ARTICLE.equals(doc.typeSlug()))
                 .anyMatch(doc -> acl.can(ctx.session(), AclResourceType.DOCUMENT, doc.id(), AclPermission.MANAGE));
     }
 
     private boolean canManageReleases(BbsContext ctx) {
         return ctx.isSysop() || ctx.services().documents().list().stream()
-                .filter(doc -> DocumentKind.RELEASE.wireValue().equals(doc.typeSlug()))
+                .filter(doc -> TYPE_RELEASE.equals(doc.typeSlug()))
                 .anyMatch(doc -> acl.can(ctx.session(), AclResourceType.DOCUMENT, doc.id(), AclPermission.MANAGE));
     }
 

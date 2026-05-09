@@ -1,0 +1,16 @@
+{
+  "screenName": "ws360/demo",
+  "bannerPolicy": "always_compact",
+  "tree": {
+    "variant": "console",
+    "headerTitle": "WS/360 PRESENTATION SHELL",
+    "headerRightAnnotation": "TREE MODE",
+    "paddingLeft": 1,
+    "topAssets": ["top.ans", "top-accent.ans"],
+    "leftAssets": ["left.ans", "left-lower.ans"],
+    "rightAssets": ["right.ans", "right-lower.ans"],
+    "bottomAssets": ["bottom.ans", "bottom-note.ans"],
+    "footerText": "WS/360 shell chrome wraps the tree while the browser still owns layout and raster.",
+    "footerStyle": "bright_cyan"
+  }
+}

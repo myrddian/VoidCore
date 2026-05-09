@@ -13,7 +13,10 @@ Current guides:
 - [SPEC-layout.md](SPEC-layout.md) — layout primitives
 - [DECISIONS.md](DECISIONS.md) — architectural rationale (ADRs)
 - [ROADMAP.md](ROADMAP.md) — product direction
-- [extending-voidcore.md](extending-voidcore.md) — generic overlay / extension hook guidance
+- [extending-voidcore.md](extending-voidcore.md) — current overlay contract, extension hooks, and limits
+- [instance-customization-guide.md](instance-customization-guide.md) — practical guide to themes, skins, and custom screens
+- [tree-screen-skinning-note.md](tree-screen-skinning-note.md) — design note for shell-first skinning on tree-mode screens
+- [session-actor-platform-thread-migration-note.md](session-actor-platform-thread-migration-note.md) — pre-change note on moving session actors off Loom
 - [../CONTRIBUTING.md](../CONTRIBUTING.md) — contributor workflow
 - [../CODE_OF_CONDUCT.md](../CODE_OF_CONDUCT.md) — community expectations
 - [../SECURITY.md](../SECURITY.md) — security reporting guidance
@@ -23,4 +26,4 @@ Planned additions:
 
 - `user-guide.md`
 - `sysop-guide.md`
-- deeper plugin / extension guidance once the Java-side overlay boundary exists
+- deeper JVM-side extension guidance once the Java overlay boundary exists

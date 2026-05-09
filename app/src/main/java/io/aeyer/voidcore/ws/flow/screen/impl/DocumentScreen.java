@@ -79,7 +79,7 @@ public class DocumentScreen extends ScreenApp {
                         : d.title();
                 return "DOCUMENT · " + title
                         + "  [#" + d.id() + "]"
-                        + "  (" + d.kind().wireValue() + ")";
+                        + "  (" + d.typeSlug() + ")";
             })
             .orElse("DOCUMENT");
     }
@@ -196,7 +196,7 @@ public class DocumentScreen extends ScreenApp {
                 new Element.TextField("title", "title:", doc.title(), 200,
                     !canEdit || uiState != UiState.EDITING_TITLE),
                 new Element.TextField("kind",  "kind: ",
-                    doc.kind() == null ? "" : doc.kind().wireValue(),
+                    doc.typeSlug() == null ? "" : doc.typeSlug(),
                     null, true),                      // always readOnly
                 new Element.TextField("tags",  "tags: ",
                     String.join(", ", doc.tags() == null ? java.util.List.of() : doc.tags()),

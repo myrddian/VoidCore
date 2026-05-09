@@ -1,0 +1,19 @@
+{
+  "screenName": "main-menu",
+  "bannerPolicy": "always_compact",
+  "banner": {
+    "asset": "banner.ans"
+  },
+  "main": {
+    "asset": "main.ans",
+    "slots": [
+      {
+        "name": "body",
+        "row": 5,
+        "col": 4,
+        "width": 72,
+        "height": 18
+      }
+    ]
+  }
+}

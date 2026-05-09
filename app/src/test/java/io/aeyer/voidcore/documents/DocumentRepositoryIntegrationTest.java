@@ -629,13 +629,13 @@ class DocumentRepositoryIntegrationTest {
 
     @Test
     void kindFacetCountsReturnsPerKindCount() {
-        Map<DocumentKind, Long> counts = repo.kindFacetCounts(
+        Map<String, Long> counts = repo.kindFacetCounts(
                 DocumentFilter.empty(), sysopId, true);
-        assertThat(counts.get(DocumentKind.RELEASE)).isEqualTo(1);
-        assertThat(counts.get(DocumentKind.ARTICLE)).isEqualTo(2);
-        assertThat(counts.get(DocumentKind.NOTE)).isEqualTo(1);
+        assertThat(counts.get("release")).isEqualTo(1);
+        assertThat(counts.get("article")).isEqualTo(2);
+        assertThat(counts.get("note")).isEqualTo(1);
         // Non-existent kinds are absent (not zero).
-        assertThat(counts).doesNotContainKey(DocumentKind.HOWTO);
+        assertThat(counts).doesNotContainKey("howto");
     }
 
     @Test

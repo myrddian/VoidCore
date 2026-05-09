@@ -26,9 +26,11 @@ import java.util.List;
  */
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "kind")
 @JsonSubTypes({
+    @JsonSubTypes.Type(value = Element.Shell.class,      name = "shell"),
     @JsonSubTypes.Type(value = Element.VStack.class,     name = "vstack"),
     @JsonSubTypes.Type(value = Element.Text.class,       name = "text"),
     @JsonSubTypes.Type(value = Element.Para.class,       name = "para"),
+    @JsonSubTypes.Type(value = Element.AnsiBlock.class,  name = "ansiBlock"),
     @JsonSubTypes.Type(value = Element.Rule.class,       name = "rule"),
     @JsonSubTypes.Type(value = Element.Spacer.class,     name = "spacer"),
     @JsonSubTypes.Type(value = Element.Padded.class,     name = "padded"),
@@ -41,6 +43,18 @@ import java.util.List;
     @JsonSubTypes.Type(value = Element.Form.class,       name = "form"),
 })
 public sealed interface Element {
+
+    /**
+     * Shell wrapper for tree-mode presentation chrome. Gives the browser
+     * named regions around the live body tree without flattening it back
+     * into rows.
+     */
+    record Shell(String variant,
+                 Element top,
+                 Element left,
+                 Element body,
+                 Element right,
+                 Element bottom) implements Element {}
 
     /**
      * Vertical container. Children render top-to-bottom in
@@ -90,6 +104,16 @@ public sealed interface Element {
         /** Default-styled. */
         public Para(String content) { this(content, "default"); }
     }
+
+    /**
+     * Pre-rasterised ANSI/text block for tree-mode shells and other safe
+     * decorative regions. Unlike row-mode updates this lives inside the tree.
+     */
+    record AnsiBlock(List<AnsiLine> rows) implements Element {}
+
+    record AnsiLine(List<AnsiSpan> spans) {}
+
+    record AnsiSpan(String text, String fg, String bg, Boolean bold) {}
 
     /**
      * Horizontal divider. Renders as {@code -}×canvasCols by default;

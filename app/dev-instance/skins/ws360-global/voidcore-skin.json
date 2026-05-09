@@ -1,0 +1,31 @@
+{
+  "includeScreens": ["*"],
+  "bannerPolicy": "always_compact",
+  "banner": {
+    "asset": "banner.ans"
+  },
+  "main": {
+    "asset": "main.ans",
+    "slots": [
+      {
+        "name": "body",
+        "row": 5,
+        "col": 4,
+        "width": 72,
+        "height": 18
+      }
+    ]
+  },
+  "tree": {
+    "variant": "console",
+    "headerTitle": "WS/360 INTERACTIVE OPERATIONS",
+    "headerRightAnnotation": "TREE MODE",
+    "paddingLeft": 1,
+    "topAssets": ["top.ans", "top-accent.ans"],
+    "leftAssets": ["left.ans", "left-lower.ans"],
+    "rightAssets": ["right.ans", "right-lower.ans"],
+    "bottomAssets": ["bottom.ans", "bottom-note.ans"],
+    "footerText": "WS/360 shell chrome is active for every tree screen. Exact screen skins still override this profile.",
+    "footerStyle": "bright_cyan"
+  }
+}
