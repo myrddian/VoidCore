@@ -4,7 +4,6 @@ import io.aeyer.voidcore.acl.AclPermission;
 import io.aeyer.voidcore.acl.AclResourceType;
 import io.aeyer.voidcore.acl.AclService;
 import io.aeyer.voidcore.documents.DocumentFilter;
-import io.aeyer.voidcore.documents.DocumentKind;
 import io.aeyer.voidcore.documents.DocumentRow;
 import io.aeyer.voidcore.documents.ReleaseFrontmatter;
 import io.aeyer.voidcore.ws.VoidCoreSession;
@@ -31,6 +30,8 @@ import java.util.List;
  */
 @ScreenComponent
 public class SysopReleasesScreen implements Screen {
+
+    private static final String TYPE_RELEASE = "release";
 
     private final AclService acl;
 
@@ -108,7 +109,7 @@ public class SysopReleasesScreen implements Screen {
 
     private List<DocumentRow> manageableReleases(BbsContext ctx) {
         return ctx.services().documents().findByFilter(
-                DocumentFilter.empty().withKind(DocumentKind.RELEASE),
+                DocumentFilter.empty().withTypeSlug(TYPE_RELEASE),
                 ctx.session(),
                 0,
                 9).stream()

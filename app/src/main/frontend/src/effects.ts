@@ -10,7 +10,19 @@ import {
   type EffectSetTitlePayload,
 } from "./types.js";
 
-const KNOWN_THEMES = new Set(["phosphor", "amber", "cga", "modern"]);
+const BUILT_IN_THEMES = ["phosphor", "amber", "cga", "modern"];
+const knownThemes = new Set(BUILT_IN_THEMES);
+
+export function configureThemes(themeNames: string[] | null | undefined): void {
+  knownThemes.clear();
+  for (const name of themeNames ?? BUILT_IN_THEMES) {
+    const normalized = name.trim().toLowerCase();
+    if (normalized) knownThemes.add(normalized);
+  }
+  if (knownThemes.size === 0) {
+    for (const name of BUILT_IN_THEMES) knownThemes.add(name);
+  }
+}
 
 export const effects = {
   openUrl(p: EffectOpenUrlPayload): void {
@@ -39,7 +51,7 @@ export const effects = {
 
   setTheme(p: EffectSetThemePayload): void {
     const name = (p.name ?? "phosphor").toLowerCase();
-    const theme = KNOWN_THEMES.has(name) ? name : "phosphor";
+    const theme = knownThemes.has(name) ? name : "phosphor";
     document.body.setAttribute("data-theme", theme);
   },
 };

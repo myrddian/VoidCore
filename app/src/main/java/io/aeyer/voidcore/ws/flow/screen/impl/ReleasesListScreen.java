@@ -1,7 +1,6 @@
 package io.aeyer.voidcore.ws.flow.screen.impl;
 
 import io.aeyer.voidcore.documents.DocumentFilter;
-import io.aeyer.voidcore.documents.DocumentKind;
 import io.aeyer.voidcore.documents.DocumentRow;
 import io.aeyer.voidcore.documents.ReleaseFrontmatter;
 import io.aeyer.voidcore.instance.InstanceFeature;
@@ -38,6 +37,8 @@ import java.util.List;
  */
 @ScreenComponent
 public class ReleasesListScreen implements Screen {
+
+    private static final String TYPE_RELEASE = "release";
 
     @Override public Phase phase() { return Phase.RELEASES_LIST; }
     @Override public String name() { return "releases-list"; }
@@ -122,7 +123,7 @@ public class ReleasesListScreen implements Screen {
 
     private static List<DocumentRow> releases(BbsContext ctx) {
         return ctx.services().documents().findByFilter(
-                DocumentFilter.empty().withKind(DocumentKind.RELEASE),
+                DocumentFilter.empty().withTypeSlug(TYPE_RELEASE),
                 ctx.session(),
                 0,
                 9);

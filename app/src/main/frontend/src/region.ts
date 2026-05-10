@@ -26,13 +26,18 @@ interface RegionState {
   dom: RegionDom;
   buffer: Row[];
   version: number;
+  bannerPolicy?: BannerPolicy;
   notifyTimer?: number;
   deferred?: boolean;
+  compacted?: boolean;
 }
+
+type BannerPolicy = "always_full" | "auto_compact" | "always_compact";
 
 export class RegionRenderer {
 
   private readonly states: Record<string, RegionState> = {};
+  private layoutPassScheduled = false;
   /** Set true between pointerdown and pointerup so repaints don't blow away
    * a drag-select in progress (a drag's selection is collapsed for most of
    * its lifetime, so a non-collapsed-selection check alone isn't enough). */
@@ -62,6 +67,7 @@ export class RegionRenderer {
     document.addEventListener("mousedown",   onDown);
     document.addEventListener("pointerup",   onUp);
     document.addEventListener("mouseup",     onUp);
+    window.addEventListener("resize", () => this.scheduleResponsiveLayout());
   }
 
   /** Per-region versions, used by ws.ts to send region_versions on resume. */
@@ -75,6 +81,9 @@ export class RegionRenderer {
     const s = this.require(p.region);
     s.buffer = p.content.slice().sort((a, b) => a.row - b.row);
     s.version = p.version;
+    if (p.region === "banner" && p.bannerPolicy) {
+      s.bannerPolicy = p.bannerPolicy;
+    }
     s.dom.el.classList.remove("level-info", "level-warn", "level-alert");
     this.repaint(s);
   }
@@ -95,7 +104,10 @@ export class RegionRenderer {
   clear(p: RegionClearPayload): void {
     const s = this.require(p.region);
     s.buffer = [];
+    s.compacted = false;
     s.dom.el.replaceChildren();
+    s.dom.el.classList.remove("region-banner-compact");
+    this.scheduleResponsiveLayout();
   }
 
   notify(p: RegionNotifyPayload): void {
@@ -110,6 +122,11 @@ export class RegionRenderer {
         s.dom.el.classList.remove("level-info", "level-warn", "level-alert");
       }, p.duration_ms);
     }
+    this.scheduleResponsiveLayout();
+  }
+
+  refreshResponsiveLayout(): void {
+    this.applyResponsiveBanner();
   }
 
   private repaint(s: RegionState): void {
@@ -138,6 +155,48 @@ export class RegionRenderer {
       // the v0 artifact's append-and-scroll behaviour.
       s.dom.el.scrollTop = s.dom.el.scrollHeight;
     }
+    this.scheduleResponsiveLayout();
+  }
+
+  private scheduleResponsiveLayout(): void {
+    if (this.layoutPassScheduled) return;
+    this.layoutPassScheduled = true;
+    requestAnimationFrame(() => {
+      this.layoutPassScheduled = false;
+      this.applyResponsiveBanner();
+    });
+  }
+
+  private applyResponsiveBanner(): void {
+    const banner = this.states.banner;
+    const main = this.states.main;
+    if (!banner || !main || banner.buffer.length === 0) return;
+    const policy = banner.bannerPolicy ?? "auto_compact";
+    const canCompact = banner.buffer.length > 1;
+    let policyWantsCompact = false;
+    switch (policy) {
+      case "always_compact":
+        policyWantsCompact = true;
+        break;
+      case "auto_compact":
+        policyWantsCompact = main.dom.el.scrollHeight > main.dom.el.clientHeight + 1;
+        break;
+      case "always_full":
+      default:
+        policyWantsCompact = false;
+        break;
+    }
+    const shouldCompact = canCompact && policyWantsCompact;
+    if (shouldCompact === Boolean(banner.compacted)) return;
+    if (shouldCompact) {
+      banner.dom.el.replaceChildren(...rowsToNodes(compactBannerRows(banner.buffer)));
+      banner.dom.el.classList.add("region-banner-compact");
+      banner.compacted = true;
+      return;
+    }
+    banner.dom.el.replaceChildren(...rowsToNodes(banner.buffer));
+    banner.dom.el.classList.remove("region-banner-compact");
+    banner.compacted = false;
   }
 
   private selectionInside(el: HTMLElement): boolean {
@@ -163,6 +222,72 @@ function rowsToNodes(rows: Row[]): Node[] {
   // shape and the result is identical in the DOM.
   const sorted = rows.slice().sort((a, b) => a.row - b.row);
   return sorted.map(rowToNode);
+}
+
+export function compactBannerRows(rows: Row[]): Row[] {
+  const best = pickCompactBannerRow(rows);
+  if (!best) return rows.slice(0, 1);
+  return [{ ...trimBannerRow(best), row: 0 }];
+}
+
+function pickCompactBannerRow(rows: Row[]): Row | null {
+  const candidates = rows
+    .map((row, index) => ({ row, index, text: rowText(row).trim() }))
+    .filter((entry) => entry.text.length > 0);
+  if (candidates.length === 0) return rows[0] ?? null;
+  const scored = candidates
+    .map((entry) => ({ ...entry, score: compactBannerScore(entry.text) }))
+    .filter((entry) => entry.score > 0);
+  if (scored.length === 0) return candidates[candidates.length - 1]?.row ?? rows[0] ?? null;
+  scored.sort((a, b) => {
+    if (b.score !== a.score) return b.score - a.score;
+    return b.index - a.index;
+  });
+  return scored[0]?.row ?? null;
+}
+
+function compactBannerScore(text: string): number {
+  const alphaNum = (text.match(/[A-Za-z0-9]/g) ?? []).length;
+  const separators = (text.match(/[ /._-]/g) ?? []).length;
+  const boxGlyphs = (text.match(/[|+\\]/g) ?? []).length;
+  if (alphaNum < 3) return 0;
+  return alphaNum * 3 + separators - boxGlyphs * 2;
+}
+
+function trimBannerRow(row: Row): Row {
+  const full = rowText(row);
+  const start = firstVisibleIndex(full);
+  const end = lastVisibleIndex(full);
+  if (start < 0 || end < start) return row;
+  let offset = 0;
+  const spans: Span[] = [];
+  for (const span of row.spans) {
+    const spanStart = offset;
+    const spanEnd = offset + span.text.length;
+    offset = spanEnd;
+    if (spanEnd <= start || spanStart > end) continue;
+    const sliceStart = Math.max(0, start - spanStart);
+    const sliceEnd = Math.min(span.text.length, end + 1 - spanStart);
+    const text = span.text.slice(sliceStart, sliceEnd);
+    if (!text) continue;
+    spans.push({ ...span, text });
+  }
+  return spans.length > 0 ? { ...row, spans } : row;
+}
+
+function rowText(row: Row): string {
+  return row.spans.map((span) => span.text).join("");
+}
+
+function firstVisibleIndex(text: string): number {
+  return text.search(/\S/);
+}
+
+function lastVisibleIndex(text: string): number {
+  for (let i = text.length - 1; i >= 0; i--) {
+    if (!/\s/.test(text[i] ?? "")) return i;
+  }
+  return -1;
 }
 
 function rowToNode(row: Row): HTMLDivElement {

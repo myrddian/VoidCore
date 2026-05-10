@@ -1,7 +1,6 @@
 package io.aeyer.voidcore.ws.flow.screen.impl;
 
 import io.aeyer.voidcore.documents.DocumentFilter;
-import io.aeyer.voidcore.documents.DocumentKind;
 import io.aeyer.voidcore.ws.flow.screen.BbsContext;
 import io.aeyer.voidcore.ws.flow.screen.Phase;
 import io.aeyer.voidcore.ws.flow.screen.Screen;
@@ -10,6 +9,8 @@ import io.aeyer.voidcore.ws.flow.screen.Transition;
 
 @ScreenComponent
 public class SysopRoleReleasesScreen implements Screen {
+
+    private static final String TYPE_RELEASE = "release";
 
     @Override public Phase phase() { return Phase.SYSOP_ROLE_RELEASES; }
     @Override public String name() { return "sysop-role-releases"; }
@@ -25,7 +26,7 @@ public class SysopRoleReleasesScreen implements Screen {
         if (ctx.session().selectedSysopId() == null) { ctx.pop(); return Transition.None.INSTANCE; }
         ctx.session().setSelectedSysopResourceId(null);
         var list = ctx.services().documents().findByFilter(
-                DocumentFilter.empty().withKind(DocumentKind.RELEASE),
+                DocumentFilter.empty().withTypeSlug(TYPE_RELEASE),
                 ctx.session(), 0, 9);
         return SysopRoleDocumentsScreen.render(ctx, list, "ROLE · FILES", "role file:");
     }
@@ -34,7 +35,7 @@ public class SysopRoleReleasesScreen implements Screen {
     public Transition onKey(BbsContext ctx, String key) {
         return SysopRoleDocumentsScreen.pickDocument(ctx, key,
                 ctx.services().documents().findByFilter(
-                        DocumentFilter.empty().withKind(DocumentKind.RELEASE),
+                        DocumentFilter.empty().withTypeSlug(TYPE_RELEASE),
                         ctx.session(), 0, 9));
     }
 }

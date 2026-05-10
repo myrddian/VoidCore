@@ -75,12 +75,14 @@ public final class LayoutRenderer {
                             String leftPad,
                             String styleOverride) {
         return switch (element) {
+            case Element.Shell(String variant, Element top, Element left, Element body, Element right, Element bottom) -> 0;
             case Element.VStack(List<Element> children, int gap) ->
                     emitVStack(children, gap, cols, out, rowOffset, leftPad, styleOverride);
             case Element.Text(String content, String style) ->
                     emitText(content, resolveStyle(style, styleOverride), cols, out, rowOffset, leftPad);
             case Element.Para(String content, String style) ->
                     emitPara(content, resolveStyle(style, styleOverride), cols, out, rowOffset, leftPad);
+            case Element.AnsiBlock(List<Element.AnsiLine> rows) -> 0;
             case Element.Rule r ->
                     emitRule(cols, out, rowOffset, leftPad, styleOverride);
             case Element.Spacer(int rows) ->

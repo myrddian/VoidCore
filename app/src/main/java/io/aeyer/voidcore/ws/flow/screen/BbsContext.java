@@ -37,17 +37,28 @@ public final class BbsContext {
     private final Navigator navigator;
     private final BbsServices services;
     private final Object legacyRouter;
+    private final String screenName;
 
     public BbsContext(VoidCoreSession session,
                       UserRow user,
                       Navigator navigator,
                       BbsServices services,
                       Object legacyRouter) {
+        this(session, user, navigator, services, legacyRouter, null);
+    }
+
+    public BbsContext(VoidCoreSession session,
+                      UserRow user,
+                      Navigator navigator,
+                      BbsServices services,
+                      Object legacyRouter,
+                      String screenName) {
         this.session = session;
         this.user = user;
         this.navigator = navigator;
         this.services = services;
         this.legacyRouter = legacyRouter;
+        this.screenName = screenName == null || screenName.isBlank() ? null : screenName;
     }
 
     public VoidCoreSession session()  { return session; }
@@ -78,10 +89,56 @@ public final class BbsContext {
      */
     public void send(ServerMessage m) {
         try {
-            session.send(m);
+            session.send(applySkinIfNeeded(m));
         } catch (IOException e) {
             log.debug("send failed for session={}: {}", session.id(), e.toString());
         }
+    }
+
+    private ServerMessage applySkinIfNeeded(ServerMessage message) {
+        if (!(message instanceof ServerMessage.RegionUpdate update)) return message;
+        if (screenName == null) return message;
+
+        var skins = services.skins();
+        if (skins == null) return message;
+
+        if ("main".equals(update.region()) && update.tree() != null) {
+            return new ServerMessage.RegionUpdate(
+                    update.region(),
+                    update.version(),
+                    update.content(),
+                    update.cursor(),
+                    update.mode(),
+                    skins.renderTreeOrDefault(screenName, update.tree()),
+                    update.focus(),
+                    update.bannerPolicy());
+        }
+
+        if ("banner".equals(update.region())) {
+            if (update.content() == null) return message;
+            return new ServerMessage.RegionUpdate(
+                    update.region(),
+                    update.version(),
+                    skins.renderBannerOrDefault(screenName, update.content()),
+                    update.cursor(),
+                    update.mode(),
+                    update.tree(),
+                    update.focus(),
+                    skins.bannerPolicyFor(screenName).wireValue());
+        }
+        if ("main".equals(update.region())) {
+            if (update.content() == null) return message;
+            return new ServerMessage.RegionUpdate(
+                    update.region(),
+                    update.version(),
+                    skins.renderMainOrDefault(screenName, update.content(), java.util.Map.of("body", update.content())),
+                    update.cursor(),
+                    update.mode(),
+                    update.tree(),
+                    update.focus(),
+                    update.bannerPolicy());
+        }
+        return message;
     }
 
     // ===================================================================
@@ -91,6 +148,11 @@ public final class BbsContext {
     /** Push a phase onto the navigation stack and dispatch its {@code onEnter}. */
     public void push(Phase phase) {
         navigator.push(session, phase);
+    }
+
+    /** Push a named custom screen onto the navigation stack. */
+    public void push(String screenName) {
+        navigator.push(session, screenName);
     }
 
     /**
@@ -120,6 +182,11 @@ public final class BbsContext {
         navigator.replaceTopAndEnter(session, phase);
     }
 
+    /** The current top route, or {@code null} if the stack is empty. */
+    public ScreenRoute currentRoute() {
+        return navigator.currentRoute(session);
+    }
+
     // ===================================================================
     // Cross-cutting service helpers (delegated to BbsServices)
     // ===================================================================
@@ -130,6 +197,12 @@ public final class BbsContext {
      */
     public void persistCurrentScreen(String screenJson) {
         services.persistCurrentScreen(session, screenJson);
+    }
+
+    /** Persist a custom screen as the reconnect / restart restore target. */
+    public void persistCustomScreen(String screenName) {
+        String normalized = ScreenRoute.custom(screenName).key();
+        persistCurrentScreen("{\"kind\":\"custom_screen\",\"screen\":\"" + normalized + "\"}");
     }
 
     /** Read the active user's saved theme name; default {@code phosphor}. */

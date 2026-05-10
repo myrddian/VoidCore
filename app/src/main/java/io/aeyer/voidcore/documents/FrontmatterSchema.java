@@ -10,7 +10,7 @@ import java.util.Optional;
  * SPEC-documents §3, scoped to v1 PR-4c.
  *
  * <p>Deprecated in favour of schema-driven metadata from the
- * {@code schemas} table. This remains as a fallback for the six
+ * {@code schemas} table. This remains as a fallback for the core
  * built-ins while the screen layer migrates.
  */
 @Deprecated
@@ -22,20 +22,6 @@ public final class FrontmatterSchema {
             new EnumMap<>(BuiltinType.class);
 
     static {
-        BY_KIND.put(BuiltinType.RELEASE, List.of(
-                new FrontmatterField('A', "artist",         "artist       ",
-                        FrontmatterField.Type.STRING),
-                new FrontmatterField('Y', "year",           "year         ",
-                        FrontmatterField.Type.INTEGER),
-                new FrontmatterField('L', "label",          "label        ",
-                        FrontmatterField.Type.STRING),
-                new FrontmatterField('C', "catalog_number", "catalog #    ",
-                        FrontmatterField.Type.STRING),
-                new FrontmatterField('G', "genre",          "genre        ",
-                        FrontmatterField.Type.STRING),
-                new FrontmatterField('U', "external_url",   "external url ",
-                        FrontmatterField.Type.URL)
-        ));
         BY_KIND.put(BuiltinType.LINK, List.of(
                 new FrontmatterField('U', "url",         "url          ",
                         FrontmatterField.Type.URL),
@@ -86,16 +72,20 @@ public final class FrontmatterSchema {
 
     @Deprecated
     public static List<FrontmatterField> fieldsFor(DocumentKind kind) {
-        return fieldsFor(BuiltinType.valueOf(kind.name()));
+        return BuiltinType.bySlug(kind.wireValue())
+                .map(FrontmatterSchema::fieldsFor)
+                .orElse(List.of());
     }
 
     @Deprecated
     public static Optional<FrontmatterField> byLetter(DocumentKind kind, char letter) {
-        return byLetter(BuiltinType.valueOf(kind.name()), letter);
+        return BuiltinType.bySlug(kind.wireValue())
+                .flatMap(type -> byLetter(type, letter));
     }
 
     @Deprecated
     public static Optional<FrontmatterField> byKey(DocumentKind kind, String key) {
-        return byKey(BuiltinType.valueOf(kind.name()), key);
+        return BuiltinType.bySlug(kind.wireValue())
+                .flatMap(type -> byKey(type, key));
     }
 }

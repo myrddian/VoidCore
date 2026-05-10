@@ -8,13 +8,11 @@ import java.util.Optional;
  * types use raw slugs from {@link DocumentRow#typeSlug()} instead.
  */
 public enum BuiltinType {
-    NOTE("note"),
     ARTICLE("article"),
     HOWTO("howto"),
     LINK("link"),
     GLOSSARY("glossary"),
-    RELEASE("release");
-
+    NOTE("note");
     private final String slug;
 
     BuiltinType(String slug) {

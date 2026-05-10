@@ -1,6 +1,8 @@
 package io.aeyer.voidcore.ws.flow.screen.impl;
 
 import io.aeyer.voidcore.branding.BrandingProperties;
+import io.aeyer.voidcore.instance.InstanceFeatureProperties;
+import io.aeyer.voidcore.instance.ScreenSkinRegistry;
 import io.aeyer.voidcore.presence.PresenceService;
 import io.aeyer.voidcore.ws.VoidCoreSession;
 import io.aeyer.voidcore.ws.flow.Banner;
@@ -8,10 +10,13 @@ import io.aeyer.voidcore.ws.flow.screen.BbsContext;
 import io.aeyer.voidcore.ws.flow.screen.BbsServices;
 import io.aeyer.voidcore.ws.flow.screen.Navigator;
 import io.aeyer.voidcore.ws.protocol.ServerMessage;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,6 +27,9 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 class LoginHandleScreenTest {
+
+    @TempDir
+    Path tempDir;
 
     @AfterEach
     void tearDown() {
@@ -39,7 +47,11 @@ class LoginHandleScreenTest {
         VoidCoreSession session = mock(VoidCoreSession.class);
         Navigator navigator = mock(Navigator.class);
         BbsServices services = mock(BbsServices.class);
-        BbsContext ctx = new BbsContext(session, null, navigator, services, null);
+        ScreenSkinRegistry skins = new ScreenSkinRegistry(
+                new ObjectMapper(),
+                new InstanceFeatureProperties(List.of(), tempDir.toString()));
+        when(services.skins()).thenReturn(skins);
+        BbsContext ctx = new BbsContext(session, null, navigator, services, null, "login-handle");
         List<ServerMessage> sent = new ArrayList<>();
         doAnswer(inv -> {
             sent.add(inv.getArgument(0));

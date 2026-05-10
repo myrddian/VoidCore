@@ -56,7 +56,7 @@ class FilterExpressionParserTest {
     void kindFacetApplied() {
         DocumentFilter out = parser.parse("kind:howto",
                 DocumentFilter.empty(), notify);
-        assertThat(out.kind()).contains(DocumentKind.HOWTO);
+        assertThat(out.kind()).contains("howto");
     }
 
     @Test
@@ -143,7 +143,7 @@ class FilterExpressionParserTest {
                 "kind:howto tag:samples by:SYSOP -tag:beta kick drum",
                 DocumentFilter.empty(), notify);
 
-        assertThat(out.kind()).contains(DocumentKind.HOWTO);
+        assertThat(out.kind()).contains("howto");
         assertThat(out.tagsList()).containsExactly("samples");
         assertThat(out.excludedTagsList()).containsExactly("beta");
         assertThat(out.authorId()).contains(7L);

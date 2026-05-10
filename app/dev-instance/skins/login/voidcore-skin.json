@@ -1,0 +1,19 @@
+{
+  "screenName": "login-handle",
+  "bannerPolicy": "always_compact",
+  "banner": {
+    "asset": "banner.ans"
+  },
+  "main": {
+    "asset": "main.ans",
+    "slots": [
+      {
+        "name": "body",
+        "row": 5,
+        "col": 5,
+        "width": 68,
+        "height": 8
+      }
+    ]
+  }
+}

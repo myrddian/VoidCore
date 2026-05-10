@@ -3,7 +3,7 @@ spring:
     name: voidcore
   threads:
     virtual:
-      enabled: true
+      enabled: false
   datasource:
     url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/voidcore}
     username: ${SPRING_DATASOURCE_USERNAME:voidcore_app}
@@ -54,6 +54,7 @@ voidcore:
     dial-number: ${BBS_DIAL_NUMBER:0398675309}
     connect-rate: ${BBS_CONNECT_RATE:14400/ARQ/V42BIS}
   instance:
+    root: ${VOIDCORE_INSTANCE_ROOT:./dev-instance}
     disabled-screens: ${BBS_DISABLED_SCREENS:}
   ws:
     # Heartbeat tolerance is generous (5 misses × 30s = 150s) because in

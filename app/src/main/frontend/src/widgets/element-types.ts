@@ -4,12 +4,24 @@
  */
 
 export type Element =
-  | VStack | TextEl | Para | Rule | Spacer | Padded | Styled
+  | Shell | VStack | TextEl | Para | AnsiBlock | Rule | Spacer | Padded | Styled
   | Header | StatusLine | KeyMenu | TextField | Editor | Form;
 
+export interface Shell     {
+  kind: "shell";
+  variant: string;
+  top: Element | null;
+  left: Element | null;
+  body: Element;
+  right: Element | null;
+  bottom: Element | null;
+}
 export interface VStack    { kind: "vstack"; children: Element[]; gap: number; }
 export interface TextEl    { kind: "text"; content: string; style: string; }
 export interface Para      { kind: "para"; content: string; style: string; }
+export interface AnsiBlock { kind: "ansiBlock"; rows: AnsiLine[]; }
+export interface AnsiLine  { spans: AnsiSpan[]; }
+export interface AnsiSpan  { text: string; fg?: string; bg?: string; bold?: boolean; }
 export interface Rule      { kind: "rule"; }
 export interface Spacer    { kind: "spacer"; rows: number; }
 export interface Padded    { kind: "padded"; child: Element; leftCols: number; }

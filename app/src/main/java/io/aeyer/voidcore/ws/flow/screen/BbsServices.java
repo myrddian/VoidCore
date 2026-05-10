@@ -3,6 +3,8 @@ package io.aeyer.voidcore.ws.flow.screen;
 import io.aeyer.voidcore.auth.SessionService;
 import io.aeyer.voidcore.auth.UserRepository;
 import io.aeyer.voidcore.instance.InstanceFeatureService;
+import io.aeyer.voidcore.instance.ScreenSkinRegistry;
+import io.aeyer.voidcore.instance.ThemeRegistry;
 import io.aeyer.voidcore.sysop.SysopActionRepository;
 import io.aeyer.voidcore.ws.VoidCoreSession;
 import io.aeyer.voidcore.ws.flow.bus.MessageBus;
@@ -37,11 +39,11 @@ import org.springframework.stereotype.Component;
 public class BbsServices {
 
     private static final Logger log = LoggerFactory.getLogger(BbsServices.class);
-    private static final String[] THEME_CYCLE = {"phosphor", "amber", "cga", "modern"};
-
     private final SessionService sessions;
     private final ObjectMapper json;
     private final UserRepository users;
+    private final ThemeRegistry themes;
+    private final ScreenSkinRegistry skins;
     private final SysopActionRepository sysopActions;
     private final MessageBus bus;
     private final MentionService mentions;
@@ -55,6 +57,8 @@ public class BbsServices {
     public BbsServices(SessionService sessions,
                        ObjectMapper json,
                        UserRepository users,
+                       ThemeRegistry themes,
+                       ScreenSkinRegistry skins,
                        SysopActionRepository sysopActions,
                        MessageBus bus,
                        MentionService mentions,
@@ -67,6 +71,8 @@ public class BbsServices {
         this.sessions = sessions;
         this.json = json;
         this.users = users;
+        this.themes = themes;
+        this.skins = skins;
         this.sysopActions = sysopActions;
         this.bus = bus;
         this.mentions = mentions;
@@ -101,9 +107,7 @@ public class BbsServices {
     public String currentTheme(long userId) {
         try {
             JsonNode node = json.readTree(users.preferences(userId));
-            String t = node.path("theme").asText("phosphor");
-            for (String known : THEME_CYCLE) if (known.equals(t)) return t;
-            return "phosphor";
+            return themes.normalizeOrDefault(node.path("theme").asText("phosphor"));
         } catch (Exception e) {
             return "phosphor";
         }
@@ -123,6 +127,11 @@ public class BbsServices {
     /** Access to the JSON mapper for screens that need to build JSONB payloads. */
     public ObjectMapper json() {
         return json;
+    }
+
+    /** Startup-loaded ANSI skin registry for selective per-screen overrides. */
+    public ScreenSkinRegistry skins() {
+        return skins;
     }
 
     /**

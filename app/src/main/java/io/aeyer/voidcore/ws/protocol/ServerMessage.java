@@ -72,25 +72,31 @@ public sealed interface ServerMessage {
             Cursor cursor,
             String mode,    // "fixed" (default; null treated as "fixed") | "flow" — per ADR-031 / SPEC-layout.md §4
             Element tree,
-            String focus
+            String focus,
+            String bannerPolicy
     ) implements ServerMessage {
 
         /** rows path (existing 4-arg). mode/tree/focus default to null. */
         public RegionUpdate(String region, int version, List<Row> content, Cursor cursor) {
-            this(region, version, content, cursor, null, null, null);
+            this(region, version, content, cursor, null, null, null, null);
         }
 
         /** rows path with explicit mode (existing 5-arg). tree/focus default to null. */
         public RegionUpdate(String region, int version, List<Row> content,
                             Cursor cursor, String mode) {
-            this(region, version, content, cursor, mode, null, null);
+            this(region, version, content, cursor, mode, null, null, null);
+        }
+
+        public RegionUpdate(String region, int version, List<Row> content,
+                            Cursor cursor, String mode, Element tree, String focus) {
+            this(region, version, content, cursor, mode, tree, focus, null);
         }
 
         /** tree path. content/cursor/mode are null. */
         public static RegionUpdate ofTree(String region, int version,
                                           Element tree,
                                           String focus) {
-            return new RegionUpdate(region, version, null, null, null, tree, focus);
+            return new RegionUpdate(region, version, null, null, null, tree, focus, null);
         }
     }
 

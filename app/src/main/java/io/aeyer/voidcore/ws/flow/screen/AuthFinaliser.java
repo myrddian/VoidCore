@@ -8,6 +8,7 @@ import io.aeyer.voidcore.auth.Session;
 import io.aeyer.voidcore.auth.SessionService;
 import io.aeyer.voidcore.auth.UserRepository;
 import io.aeyer.voidcore.auth.UserRepository.UserRow;
+import io.aeyer.voidcore.instance.ThemeRegistry;
 import io.aeyer.voidcore.presence.PresenceEntry;
 import io.aeyer.voidcore.presence.PresenceService;
 import io.aeyer.voidcore.ws.VoidCoreSession;
@@ -65,10 +66,9 @@ import java.util.List;
 public class AuthFinaliser {
 
     private static final Logger log = LoggerFactory.getLogger(AuthFinaliser.class);
-    private static final String[] THEME_CYCLE = {"phosphor", "amber", "cga", "modern"};
-
     private final AuthService auth;
     private final UserRepository users;
+    private final ThemeRegistry themes;
     private final PresenceService presence;
     private final SessionRegistry wsSessions;
     private final ObjectMapper json;
@@ -80,6 +80,7 @@ public class AuthFinaliser {
 
     public AuthFinaliser(AuthService auth,
                          UserRepository users,
+                         ThemeRegistry themes,
                          PresenceService presence,
                          SessionRegistry wsSessions,
                          ObjectMapper json,
@@ -90,6 +91,7 @@ public class AuthFinaliser {
                          org.springframework.beans.factory.ObjectProvider<io.aeyer.voidcore.social.SocialEventService> socialEvents) {
         this.auth = auth;
         this.users = users;
+        this.themes = themes;
         this.presence = presence;
         this.wsSessions = wsSessions;
         this.json = json;
@@ -343,9 +345,7 @@ public class AuthFinaliser {
     private String currentTheme(long userId) {
         try {
             var node = json.readTree(users.preferences(userId));
-            String t = node.path("theme").asText("phosphor");
-            for (String known : THEME_CYCLE) if (known.equals(t)) return t;
-            return "phosphor";
+            return themes.normalizeOrDefault(node.path("theme").asText("phosphor"));
         } catch (Exception e) {
             return "phosphor";
         }

@@ -37,6 +37,12 @@ public interface Navigator {
     void push(VoidCoreSession session, Phase phase);
 
     /**
+     * Push a custom screen by name. Intended as the ergonomic surface for
+     * extension-defined navigation trees.
+     */
+    void push(VoidCoreSession session, String screenName);
+
+    /**
      * Pop the top of the stack. If something remains underneath, that
      * screen's {@code onEnter} re-fires so it can re-paint. If the
      * stack would become empty, the root-guard for the popping screen
@@ -63,6 +69,16 @@ public interface Navigator {
      * point of {@code replaceTop} over {@code push}.
      */
     void replaceTopAndEnter(VoidCoreSession session, Phase phase);
+
+    /**
+     * The current top route, or {@code null} if the session has no stack yet.
+     * Default implementation preserves the old core-only behaviour for mocks
+     * and transitional callers.
+     */
+    default ScreenRoute currentRoute(VoidCoreSession session) {
+        Phase phase = currentPhase(session);
+        return phase == null ? null : ScreenRoute.core(phase);
+    }
 
     /**
      * The current top of the stack, or {@code null} if the session

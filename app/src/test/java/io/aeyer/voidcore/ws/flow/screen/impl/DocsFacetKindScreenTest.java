@@ -1,6 +1,5 @@
 package io.aeyer.voidcore.ws.flow.screen.impl;
 
-import io.aeyer.voidcore.documents.DocumentKind;
 import io.aeyer.voidcore.instance.InstanceFeature;
 import io.aeyer.voidcore.instance.InstanceFeatureService;
 import io.aeyer.voidcore.ws.VoidCoreSession;
@@ -15,7 +14,6 @@ import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 
@@ -73,10 +71,10 @@ class DocsFacetKindScreenTest {
 
     @Test
     void onEnterRendersAllVisibleKinds() {
-        Map<DocumentKind, Long> counts = new EnumMap<>(DocumentKind.class);
-        counts.put(DocumentKind.RELEASE, 47L);
-        counts.put(DocumentKind.ARTICLE, 12L);
-        counts.put(DocumentKind.NOTE, 166L);
+        Map<String, Long> counts = new java.util.LinkedHashMap<>();
+        counts.put("release", 47L);
+        counts.put("article", 12L);
+        counts.put("note", 166L);
         when(documents.kindFacetCounts(any(), any())).thenReturn(counts);
 
         screen.onEnter(ctx);
@@ -108,14 +106,12 @@ class DocsFacetKindScreenTest {
 
     @Test
     void onKeyNumberPicksKindAndReplaceTopAndEntersResults() {
-        Map<DocumentKind, Long> counts = new EnumMap<>(DocumentKind.class);
-        counts.put(DocumentKind.RELEASE, 1L);
-        counts.put(DocumentKind.ARTICLE, 2L);
+        Map<String, Long> counts = new java.util.LinkedHashMap<>();
+        counts.put("release", 1L);
+        counts.put("article", 2L);
         when(documents.kindFacetCounts(any(), any())).thenReturn(counts);
 
-        // [1] is RELEASE (first in DocumentKind enum order amongst the two).
-        // DocumentKind enum order: ARTICLE, HOWTO, GLOSSARY, NOTE, LINK, RELEASE.
-        // Of the two visible, ARTICLE comes before RELEASE.
+        // Built-in order renders article before overlay/compatibility kinds.
         screen.onKey(ctx, "1");
 
         verify(session).setDocsFilter(eq("kind=article"));
@@ -125,8 +121,7 @@ class DocsFacetKindScreenTest {
 
     @Test
     void onKeyOutOfRangeNumberIgnored() {
-        Map<DocumentKind, Long> counts = new EnumMap<>(DocumentKind.class);
-        counts.put(DocumentKind.NOTE, 1L);
+        Map<String, Long> counts = Map.of("note", 1L);
         when(documents.kindFacetCounts(any(), any())).thenReturn(counts);
 
         screen.onKey(ctx, "5"); // only 1 visible

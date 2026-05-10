@@ -8,7 +8,9 @@ import java.util.Locale;
  * <p>The canonical type identity now lives in
  * {@code documents.type_slug + type_version}; this enum remains as a
  * convenience for the built-in handlers and older call sites while the
- * screen layer migrates.
+ * screen layer migrates. {@code RELEASE} remains here as a transitional
+ * compatibility kind even though release is no longer part of the core
+ * built-in fallback/schema set.
  *
  * <p>An unknown wire value indicates migration drift (the schema is
  * ahead of the deployed binary, or vice versa). {@link #parse} throws

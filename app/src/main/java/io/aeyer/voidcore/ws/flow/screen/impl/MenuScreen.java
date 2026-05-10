@@ -7,10 +7,12 @@ import io.aeyer.voidcore.auth.UserRepository;
 import io.aeyer.voidcore.auth.UserRepository.UserRow;
 import io.aeyer.voidcore.instance.InstanceFeature;
 import io.aeyer.voidcore.instance.InstanceFeatureService;
+import io.aeyer.voidcore.instance.ThemeRegistry;
 import io.aeyer.voidcore.ws.flow.Banner;
 import io.aeyer.voidcore.ws.flow.Frames;
 import io.aeyer.voidcore.ws.flow.ScreenRouter;
 import io.aeyer.voidcore.ws.flow.screen.BbsContext;
+import io.aeyer.voidcore.ws.flow.screen.CustomScreenRegistry;
 import io.aeyer.voidcore.ws.flow.screen.Phase;
 import io.aeyer.voidcore.ws.flow.screen.Screen;
 import io.aeyer.voidcore.ws.flow.screen.Transition;
@@ -57,21 +59,25 @@ import java.util.List;
 public class MenuScreen implements Screen {
 
     private static final Logger log = LoggerFactory.getLogger(MenuScreen.class);
-    private static final String[] THEME_CYCLE = {"phosphor", "amber", "cga", "modern"};
-
     private final UserRepository users;
     private final ObjectMapper json;
     private final io.aeyer.voidcore.chat.ChatRepository chat;
     private final AclService acl;
+    private final ThemeRegistry themes;
+    private final CustomScreenRegistry customScreens;
 
     public MenuScreen(UserRepository users,
                       ObjectMapper json,
                       org.springframework.beans.factory.ObjectProvider<io.aeyer.voidcore.chat.ChatRepository> chat,
-                      AclService acl) {
+                      AclService acl,
+                      ThemeRegistry themes,
+                      CustomScreenRegistry customScreens) {
         this.users = users;
         this.json = json;
         this.chat = chat.getIfAvailable();
         this.acl = acl;
+        this.themes = themes;
+        this.customScreens = customScreens;
     }
 
     @Override public Phase phase() { return Phase.MENU; }
@@ -98,6 +104,7 @@ public class MenuScreen implements Screen {
         boolean voidmail = ScreenFeatureGate.enabled(ctx, InstanceFeature.VOIDMAIL);
         boolean polls = ScreenFeatureGate.enabled(ctx, InstanceFeature.POLLS);
         boolean doors = ScreenFeatureGate.enabled(ctx, InstanceFeature.DOORS);
+        boolean ws360Demo = customScreens.contains("ws360/demo");
 
         java.util.ArrayList<String> lines = new java.util.ArrayList<>(java.util.List.of(
                 "",
@@ -121,6 +128,7 @@ public class MenuScreen implements Screen {
         lines.add("  [H] Achievements           " + (polls ? "[P] Polls" : ""));
         if (doors) lines.add("  [D] Doors");
         lines.add("  [T] Theme  (current: " + theme + ")");
+        if (ws360Demo) lines.add("  [X] WS/360 demo");
         if (user.isSysop() || acl.hasAnyManageAccess(ctx.session())) lines.add("  [S] Operator tools");
         lines.add("");
         lines.add("  [G] Goodbye");
@@ -164,6 +172,7 @@ public class MenuScreen implements Screen {
         if (voidmail) valid.append('N');
         if (polls) valid.append('P');
         if (doors) valid.append('D');
+        if (ws360Demo) valid.append('X');
         if (user.isSysop() || acl.hasAnyManageAccess(ctx.session())) valid.append('S');
         ctx.send(new InputPrompt("keystroke", "command:", null,
                 valid.toString(), null));
@@ -209,6 +218,9 @@ public class MenuScreen implements Screen {
                 if (!ScreenFeatureGate.enabled(ctx, InstanceFeature.DOORS)) return Transition.None.INSTANCE;
                 ctx.push(Phase.DOORS_MENU);
             }
+            case "X" -> {
+                if (customScreens.contains("ws360/demo")) ctx.push("ws360/demo");
+            }
             default -> { /* ignored */ }
         }
         return Transition.None.INSTANCE;
@@ -233,9 +245,7 @@ public class MenuScreen implements Screen {
         if (user == null) return;
         long uid = user.id();
         String cur = ctx.currentTheme();
-        int idx = 0;
-        for (int i = 0; i < THEME_CYCLE.length; i++) if (THEME_CYCLE[i].equals(cur)) { idx = i; break; }
-        String next = THEME_CYCLE[(idx + 1) % THEME_CYCLE.length];
+        String next = themes.nextTheme(cur);
         try {
             com.fasterxml.jackson.databind.node.ObjectNode prefs =
                     (com.fasterxml.jackson.databind.node.ObjectNode) json.readTree(users.preferences(uid));

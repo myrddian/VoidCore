@@ -66,6 +66,7 @@ services:
     environment:
       JAVA_OPTS: >-
         -XX:+UseZGC
+        -XX:+EnableJVMCI
         -XX:MaxRAMPercentage=60
         -Djava.net.preferIPv4Stack=true
       SPRING_PROFILES_ACTIVE: prod

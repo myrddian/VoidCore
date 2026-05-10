@@ -217,6 +217,18 @@ public class AuthConfig {
     }
 
     @Bean
+    public io.aeyer.voidcore.extensions.ExtensionDataRepository extensionDataRepository(
+            DSLContext dsl, ObjectMapper json) {
+        return new io.aeyer.voidcore.extensions.ExtensionDataRepository(dsl, json);
+    }
+
+    @Bean
+    public io.aeyer.voidcore.extensions.ExtensionDataService extensionDataService(
+            io.aeyer.voidcore.extensions.ExtensionDataRepository repo) {
+        return new io.aeyer.voidcore.extensions.ExtensionDataService(repo);
+    }
+
+    @Bean
     public io.aeyer.voidcore.ws.flow.ui.AppStateRepository appStateRepository(
             DSLContext dsl, ObjectMapper json) {
         return new io.aeyer.voidcore.ws.flow.ui.AppStateRepository(dsl, json);
@@ -249,7 +261,8 @@ public class AuthConfig {
                                      io.aeyer.voidcore.ws.flow.bus.MessageBus bus,
                                      io.aeyer.voidcore.ws.flow.screen.NavigationState navState,
                                      org.springframework.context.ApplicationContext appCtx,
-                                     java.util.List<io.aeyer.voidcore.ws.flow.screen.Screen> screens) {
+                                     java.util.List<io.aeyer.voidcore.ws.flow.screen.Screen> screens,
+                                     io.aeyer.voidcore.ws.flow.screen.CustomScreenRegistry customScreens) {
         // ApplicationContext is needed so the router can resolve a
         // per-Phase ObjectProvider that respects each screen's Spring
         // scope — singletons keep returning the same instance, while
@@ -258,6 +271,6 @@ public class AuthConfig {
         // session state-leak bug).
         return new ScreenRouter(auth, sessions, users,
                 netmail, messageBases, threads, presence, json, wsSessions,
-                bbsServices, bus, navState, appCtx, screens);
+                bbsServices, bus, navState, appCtx, screens, customScreens);
     }
 }

@@ -30,6 +30,8 @@ import java.time.OffsetDateTime;
 @ConditionalOnBean(DocumentRepository.class)
 public class LoginSummaryService {
 
+    private static final String TYPE_RELEASE = "release";
+
     private final DocumentRepository documents;
     private final ThreadRepository threads;
     private final OnelinerRepository oneliners;
@@ -53,7 +55,7 @@ public class LoginSummaryService {
     public LoginSummary compute(long userId, OffsetDateTime since) {
         if (since == null) return LoginSummary.empty();
         long newArticles = documents.countByKindSince(DocumentKind.ARTICLE, since);
-        long newReleases = documents.countByKindSince(DocumentKind.RELEASE, since);
+        long newReleases = documents.countByTypeSlugSince(TYPE_RELEASE, since);
         long newThreads = threads.countSince(since);
         long newOneliners = oneliners.countSince(since);
         // Unread netmail isn't time-bounded — the user's inbox carries

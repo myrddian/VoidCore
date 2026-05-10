@@ -11,7 +11,6 @@ version = "0.0.1"
 java {
     toolchain {
         languageVersion.set(JavaLanguageVersion.of(21))
-        vendor.set(JvmVendorSpec.ADOPTIUM)
     }
 }
 
@@ -51,6 +50,10 @@ dependencies {
 
     // Typed document substrate validation (A3/A4)
     implementation("com.networknt:json-schema-validator:1.5.6")
+
+    // In-process extension runtime
+    implementation("org.graalvm.polyglot:polyglot:25.0.2")
+    implementation("org.graalvm.polyglot:js:25.0.2")
 
     // jOOQ code generator (used by the generateJooq task — see ADR-005a)
     jooqGenerator("org.postgresql:postgresql:42.7.4")

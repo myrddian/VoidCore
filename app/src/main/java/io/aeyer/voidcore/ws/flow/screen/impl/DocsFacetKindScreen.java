@@ -1,7 +1,6 @@
 package io.aeyer.voidcore.ws.flow.screen.impl;
 
 import io.aeyer.voidcore.documents.DocumentFilter;
-import io.aeyer.voidcore.documents.DocumentKind;
 import io.aeyer.voidcore.instance.InstanceFeature;
 import io.aeyer.voidcore.ws.flow.Frames;
 import io.aeyer.voidcore.ws.flow.screen.BbsContext;
@@ -14,6 +13,7 @@ import io.aeyer.voidcore.ws.protocol.ServerMessage.InputPrompt;
 import io.aeyer.voidcore.ws.protocol.ServerMessage.Row;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
@@ -28,6 +28,9 @@ import java.util.Map;
  */
 @ScreenComponent
 public class DocsFacetKindScreen implements Screen {
+
+    private static final List<String> BUILTIN_ORDER = List.of(
+            "article", "glossary", "howto", "link", "note");
 
     @Override public Phase phase() { return Phase.DOCS_FACET_KIND; }
     @Override public String name() { return "docs-facet-kind"; }
@@ -44,7 +47,7 @@ public class DocsFacetKindScreen implements Screen {
         }
         DocumentView docs = ctx.services().documents();
         DocumentFilter cur = DocsCommon.currentFilter(ctx.session());
-        Map<DocumentKind, Long> counts = docs.kindFacetCounts(cur, ctx.session());
+        Map<String, Long> counts = docs.kindFacetCounts(cur, ctx.session());
         if (counts.isEmpty()) {
             ctx.send(Frames.notify("notifications",
                     "no documents in scope", "warn", 2000));
@@ -57,16 +60,11 @@ public class DocsFacetKindScreen implements Screen {
                 "bright_yellow"));
         rows.add(DocsCommon.blank(1));
 
-        // Render in DocumentKind enum order; assign sequential numbers
-        // so the user sees [1]..[N] regardless of which kinds exist.
-        ArrayList<DocumentKind> visible = new ArrayList<>();
-        for (DocumentKind k : DocumentKind.values()) {
-            if (counts.containsKey(k)) visible.add(k);
-        }
+        ArrayList<String> visible = visibleKinds(counts);
         int rowN = 2;
         int n = 1;
-        for (DocumentKind k : visible) {
-            rows.add(facetRow(rowN++, n++, k.wireValue() + "/", counts.get(k)));
+        for (String typeSlug : visible) {
+            rows.add(facetRow(rowN++, n++, typeSlug + "/", counts.get(typeSlug)));
         }
         rows.add(DocsCommon.blank(rowN++));
         rows.add(Frames.row(rowN++,
@@ -118,19 +116,28 @@ public class DocsFacetKindScreen implements Screen {
         }
         int n = k.charAt(0) - '0';
         DocumentFilter cur = DocsCommon.currentFilter(ctx.session());
-        Map<DocumentKind, Long> counts = ctx.services().documents()
+        Map<String, Long> counts = ctx.services().documents()
                 .kindFacetCounts(cur, ctx.session());
-        ArrayList<DocumentKind> visible = new ArrayList<>();
-        for (DocumentKind dk : DocumentKind.values()) {
-            if (counts.containsKey(dk)) visible.add(dk);
-        }
+        ArrayList<String> visible = visibleKinds(counts);
         if (n < 1 || n > visible.size()) return Transition.None.INSTANCE;
 
-        DocumentKind picked = visible.get(n - 1);
-        DocumentFilter next = cur.withKind(picked);
+        String picked = visible.get(n - 1);
+        DocumentFilter next = cur.withTypeSlug(picked);
         DocsCommon.writeFilter(ctx.session(), next);
         ctx.session().setDocsResultsPage(0);
         ctx.replaceTopAndEnter(Phase.DOCS_RESULTS);
         return Transition.None.INSTANCE;
+    }
+
+    private static ArrayList<String> visibleKinds(Map<String, Long> counts) {
+        ArrayList<String> visible = new ArrayList<>();
+        for (String typeSlug : BUILTIN_ORDER) {
+            if (counts.containsKey(typeSlug)) visible.add(typeSlug);
+        }
+        counts.keySet().stream()
+                .filter(typeSlug -> !BUILTIN_ORDER.contains(typeSlug))
+                .sorted(Comparator.naturalOrder())
+                .forEach(visible::add);
+        return visible;
     }
 }

@@ -25,7 +25,7 @@ class DocumentFilterTest {
         DocumentFilter f = DocumentFilter.empty()
                 .withKind(DocumentKind.HOWTO)
                 .withKind(DocumentKind.NOTE);
-        assertThat(f.kind()).contains(DocumentKind.NOTE);
+        assertThat(f.kind()).contains("note");
     }
 
     @Test
@@ -155,7 +155,7 @@ class DocumentFilterTest {
                 .withYearMonth(2024, 11);
         DocumentFilter round = DocumentFilter.parse(f.serialise());
         assertThat(round.serialise()).isEqualTo(f.serialise());
-        assertThat(round.kind()).contains(DocumentKind.RELEASE);
+        assertThat(round.kind()).contains("release");
         assertThat(round.authorId()).contains(100L);
         assertThat(round.tagsList()).containsExactlyInAnyOrder("industrial", "eurorack");
         assertThat(round.year()).contains(2024);
@@ -252,7 +252,7 @@ class DocumentFilterTest {
         assertThat(round.search()).contains("kick drum");
         assertThat(round.excludedTagsList()).containsExactly("beta");
         assertThat(round.tagsList()).containsExactly("samples");
-        assertThat(round.kind()).contains(DocumentKind.HOWTO);
+        assertThat(round.kind()).contains("howto");
         assertThat(round.authorId()).contains(42L);
     }
 
