@@ -606,6 +606,25 @@ body {
 /* ============================================================================
  * Widget theming for editor, tokens, status modes, text fields, headers, menus
  * ============================================================================ */
+/*
+ * The editor's key source (ADR-036). Taken out of the visual flow but kept
+ * focusable — same constraint as .status-input.hidden: display:none would
+ * make .focus() a no-op and lock mobile users out of the on-screen keyboard
+ * (#42), and IME composition needs a real focused element to attach to.
+ * The visible editor is painted separately into .widget-editor-paint.
+ */
+.widget-editor-key-input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  border: none;
+  opacity: 0;
+  resize: none;
+  overflow: hidden;
+  pointer-events: none;
+}
+
 .widget-editor { color: var(--widget-editor-fg); }
 .widget-editor-line-num { color: var(--widget-editor-line-num-fg); }
 .widget-editor-cursor { background: var(--widget-editor-cursor-bg); color: var(--widget-editor-cursor-fg); }

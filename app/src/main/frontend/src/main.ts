@@ -30,7 +30,7 @@ import {
 } from "./types.js";
 import { WsClient, sendRaw, registerInstance } from "./ws.js";
 import { renderTree, type RenderDeps } from "./widgets/tree.js";
-import { stopActiveEditor, getActiveEditorId } from "./widgets/editor/editor.js";
+import { stopActiveEditor, getActiveEditorId, focusActiveEditor } from "./widgets/editor/editor.js";
 import type { Element } from "./widgets/element-types.js";
 
 function findEditorId(el: Element, id: string): boolean {
@@ -135,6 +135,9 @@ async function main(): Promise<void> {
             target.replaceChildren(
               renderTree(payload.tree, payload.focus ?? null, deps),
             );
+            // renderEditor runs while the subtree is still detached, so its
+            // .focus() is a no-op until now (ADR-036).
+            focusActiveEditor();
             renderer.refreshResponsiveLayout();
           }
         } else {
