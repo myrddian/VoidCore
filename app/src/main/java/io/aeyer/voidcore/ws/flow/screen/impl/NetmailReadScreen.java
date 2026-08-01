@@ -120,7 +120,7 @@ public class NetmailReadScreen implements Screen {
         String body = m.body() == null ? "" : m.body();
         Layout bodyLayout = new Layout.Flow(
                 new Element.Padded(new Element.Para(body, "default"), BODY_INDENT),
-                BODY_CANVAS + BODY_INDENT);
+                ctx.bodyCanvasCols());
         rows.addAll(LayoutRenderer.render(bodyLayout, rowN));
         rowN = rows.size();
 
@@ -143,7 +143,6 @@ public class NetmailReadScreen implements Screen {
     }
 
     /** Body wrap canvas (matches the legacy 2-col indent). */
-    private static final int BODY_CANVAS = 78;
     private static final int BODY_INDENT = 2;
 
     @Override

@@ -115,6 +115,15 @@ export class ViewportReporter {
     this.last = null;
   }
 
+  /**
+   * Last reported size, or null before the first measurement. Read by
+   * client-side widgets that size themselves — the editor's visible line
+   * count — so there is one measurement, not one per widget.
+   */
+  lastSize(): ViewportSize | null {
+    return this.last;
+  }
+
   reportNow(): void {
     const size = this.measure();
     if (!size) return;

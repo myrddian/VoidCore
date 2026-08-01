@@ -100,7 +100,7 @@ public class BulletinViewScreen implements Screen {
 
         ArrayList<Row> rows = new ArrayList<>(LayoutRenderer.render(new Layout.Flow(
                 new Element.VStack(children),
-                BODY_CANVAS + BODY_INDENT * 2)));
+                ctx.bodyCanvasCols())));
         int rowN = rows.size();
         rows.add(Frames.blank(rowN++));
         rows.add(Frames.row(rowN,
@@ -114,7 +114,6 @@ public class BulletinViewScreen implements Screen {
     }
 
     /** Body wrap canvas, mirrors the legacy hand-built indent. */
-    private static final int BODY_CANVAS = 76;
     /** Two-space indent on every wrapped line. */
     private static final int BODY_INDENT = 2;
 
