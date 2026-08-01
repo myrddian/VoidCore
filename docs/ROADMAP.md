@@ -43,11 +43,23 @@ v1 ships when the §13 acceptance criteria pass.
 feature land cleanly.** Captured in **ADR-025** and
 **`SPEC-screens.md`**.
 
-The current `ScreenRouter.java` is a 2700+ line God Object holding
-routing, per-screen state, layout, and theming all in one class.
-v1.4 splits it into a slim dispatcher (~150 LOC) plus one class
-per screen, plus a `LayoutTree` data structure for layout, plus a
-richer theme model for skinning.
+> **Status (2026-08-01): substantially landed.** 76 screen classes
+> extracted (93 files in the `impl` package, the rest shared
+> helpers); `Navigator`, `BbsServices`, `NavigationState`, and the
+> layout types all exist; one file still holds a `legacyRouter()`
+> cast. `ScreenRouter.java` is down to ~830 lines of code (plus ~430
+> lines of tombstone comments recording what was deleted). What
+> remains is two central switch tables — `restoreFromCurrentScreen`
+> and `resolveIntent` — that still know every screen's stack shape.
+> Retiring them means letting a `Screen` declare its own persisted
+> `kind` and deep-link prefix. The ~150-LOC target below is
+> unrealistic post-custom-screen-routes; ~300 is the honest floor.
+
+The `ScreenRouter.java` this milestone started against was a 2700+
+line God Object holding routing, per-screen state, layout, and
+theming all in one class. v1.4 splits it into a slim dispatcher plus
+one class per screen, plus a `LayoutTree` data structure for layout,
+plus a richer theme model for skinning.
 
 ### What changes
 
@@ -179,7 +191,40 @@ is fully functional without it.
 
 ---
 
-## v2 — major uplift to a product
+## v2 — the protocol bump
+
+> **Scope narrowed 2026-08-01 — see ADR-035.** v2 is the
+> `voidcore-node-v1` → `voidcore-node-v2` wire contract, and nothing
+> else. The test: *does it change what goes over the wire between BBS
+> and client?* Yes → v2. Only consumes the existing wire → it's an
+> application, and it ships against v1 whenever it's ready.
+>
+> **v2 is the layout/region vocabulary, and only that:** the `Element`
+> tree as the general region content model (partly shipped already —
+> ADR-031); new element kinds `list` / `progress` / `marquee` / `image`;
+> screen-owned regions (ADR-032); `screen.define` carrying a real layout
+> description.
+>
+> **Reserved-but-inert fields stay inert:** envelope `seq` / `mac` and
+> `screen.define`'s `cacheable` / `ttl_seconds` are already on the wire
+> as placeholders, so lighting any of them up later needs no break and no
+> milestone. Per-message MAC (ADR-018) is parked — a lot of work for
+> little gain over TLS at this scale.
+>
+> **Not in v2, despite living in this document:** the admin CLI and the
+> Matrix bridge (both are WS clients of the *existing* protocol, by their
+> own ADRs), multi-tenancy, Anchor, and the extension runtime. The door
+> protocol `voidcore-door-v1` versions on its own track.
+>
+> **Not gated on v2 at all:** `viewport.resize` (the message already
+> exists in v1; the server just drops it) and the editor's input
+> ownership / non-destructive repaint. Those are v1.x behaviour work, and
+> between them they're most of what makes the UI stop feeling like a
+> fixed grid.
+>
+> The sections below predate this narrowing. They still describe the
+> intended end state — read them as capability notes, not as one
+> milestone.
 
 **A terminal-aesthetic application runtime, with the BBS as flagship
 app.** This is a different category of thing. v2 isn't "v1 plus
@@ -251,6 +296,10 @@ lines. Still small, but a real engine.
 
 ### Cacheable content and pre-fetching
 
+> **Not v2 (ADR-035).** `screen.define` already reserves `cacheable` /
+> `ttl_seconds` with caching-disabled defaults, so this can be switched
+> on whenever it's wanted — no break, no milestone. Unscheduled.
+
 The thing that makes the runtime usable on slow connections.
 
 - Static content (NFOs, announcements, user profiles, the menu structure)
@@ -313,6 +362,16 @@ See ADR-018 for the full design. Short version:
 - First door: guess-the-number — exercises every v1 protocol
   message. Pure Java, in-process, Normal mode.
 
+> **Status (2026-08-01): landed differently.** The guess-the-number
+> Java door was never built. The framework was proved out with
+> sidecar doors instead — `doors/cityline-mud` and
+> `doors/revenge-of-the-dragon`, both Node — plus `doors/sdk-node`
+> and `doors/sdk-python` so a door author never touches the raw
+> protocol. `door_state` (V21) backs the KV store per ADR-020, and
+> doors can reach a language model through the LLM gateway
+> (ADR-034). No in-process Java door exists; if one is ever wanted
+> it would be for latency, not capability.
+
 **v2+ extensions:**
 
 - Deferred mode: full-screen takeover. Suspend/resume on
@@ -327,6 +386,9 @@ beef with rivals. Don't build it until the message board and chat are
 solid in v1.
 
 ### Admin CLI (`voidcore-cli`)
+
+> **Not v2 (ADR-035).** Independent track — it's a client of the
+> existing protocol, as this section itself says. Buildable today.
 
 A Spring Shell client that speaks `voidcore-node-v1` over WebSocket —
 same protocol the browser uses, no new server endpoints, no new
@@ -358,6 +420,9 @@ duplication. See **ADR-021** for the full rationale.
   flag overrides for LAN-direct.
 
 ### Federated chat via Matrix bridge
+
+> **Not v2 (ADR-035).** Independent track — a sidecar speaking the
+> existing protocol, no new server endpoint. Buildable today.
 
 The architectural gap classic-era BBSes never closed: store-and-forward
 got federated (FidoNet); realtime chat never did. Modern open-source
@@ -404,6 +469,9 @@ typed events; the bulk is on the Matrix side.
 
 ### Multi-tenancy (possibly)
 
+> **Not v2 (ADR-035).** Deployment and data-model shape; no wire impact.
+> Default position remains "not in scope."
+
 v2's "external product" framing implies someone other than the original
 maintainer might deploy it. That's not the same as multi-tenancy, but it might evolve
 into it.
@@ -439,6 +507,10 @@ for v2:
 
 1. **Envelope reserves `seq` and `mac` fields.** v1 sends `seq: 0,
    mac: null`. v1 servers accept and ignore. v2 servers enforce.
+   **Delivered as specced** — `Envelope.java` carries both,
+   `envelope.ts` emits them, `BbsWebSocketHandler` stamps them outbound
+   and ignores them inbound. Because the reservation held, *enabling*
+   them needs no envelope break (ADR-035).
 2. **`screen.define` exists in v1.** v1 servers always emit
    `layout: "default"`. v1 clients render the default layout. v2
    adds varied layout descriptions.
@@ -467,10 +539,18 @@ Recording these to prevent silent scope creep:
 - An API for third-party clients. The protocol is private; clients
   are the runtime. If a third-party client appears, it's a fork, not
   a contract.
-- Search. v1 explicitly excludes. v2 might add Postgres FTS but it's
-  not core.
-- Multiple chat rooms. v1 single-room is correct. v2 might add named
-  rooms; not committed.
+- ~~Search. v1 explicitly excludes. v2 might add Postgres FTS but it's
+  not core.~~ **Shipped in v1.5.** ADR-023 folded search into the
+  faceted document surface; Postgres FTS (tsvector, V6/V11) backs it.
+- ~~Multiple chat rooms. v1 single-room is correct. v2 might add named
+  rooms; not committed.~~ **Shipped in v1.** Named rooms (V13) and
+  direct messages (V22), with per-room ACLs.
+
+Both were reversed deliberately, not scope-crept into: the document
+substrate made search a facet rather than a feature, and the ACL work
+made rooms cheap. Recording the reversal so the list stays honest —
+an unmarked "not committing to" entry that shipped anyway teaches
+future-you to distrust the whole list.
 
 ---
 
