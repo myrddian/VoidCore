@@ -106,6 +106,12 @@ async function main(): Promise<void> {
     getStoredToken: () => sessionStore.get(),
     getIntent: () => readIntentFromUrl(),
     onMessage: (env) => dispatch(env),
+    onOpen: () => {
+      // The socket is live now; a report sent before this was dropped.
+      // Covers reconnects too, where the server session may be fresh.
+      viewport.resetBaseline();
+      viewport.reportNow();
+    },
     onServerClose: () => {
       // Goodbye (or any deliberate server close) — drop the persisted
       // token so a refresh starts fresh, and stay on whatever was last
@@ -198,11 +204,6 @@ async function main(): Promise<void> {
         const tokenFromAuth = (env.payload as { token?: string }).token;
         if (tokenFromAuth) sessionStore.set(tokenFromAuth);
         if (p.user) document.title = `VOIDcore — ${p.user.handle}`;
-        // The server session starts at the 80x24 default, and anything we
-        // sent before the socket opened was dropped. Re-report now that
-        // there is definitely a session to receive it.
-        viewport.resetBaseline();
-        viewport.reportNow();
         break;
       }
       case "auth.err": {
@@ -213,10 +214,6 @@ async function main(): Promise<void> {
       case "resume.ok": {
         const p = env.payload as ResumeOkPayload;
         if (!p.sync && p.frames) for (const f of p.frames) dispatch(f);
-        // Same reasoning as auth.ok — and a reconnect may have landed on a
-        // session that never learned this client's size.
-        viewport.resetBaseline();
-        viewport.reportNow();
         break;
       }
       case "resume.err": {
