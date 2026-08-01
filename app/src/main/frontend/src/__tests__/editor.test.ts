@@ -26,13 +26,15 @@ function editorEl(overrides: Partial<Editor> = {}): Editor {
   };
 }
 
-function deps(): RenderDeps & { sent: unknown[] } {
+function deps(): RenderDeps & { sent: unknown[]; status: string[] } {
   const sent: unknown[] = [];
+  const status: string[] = [];
   return {
     sent,
+    status,
     sendMessage: (msg: unknown) => { sent.push(msg); },
     getCurrentTheme: () => "phosphor",
-    setStatusBar: () => { /* no-op */ },
+    setStatusBar: (text: string) => { status.push(text); },
   };
 }
 
@@ -121,5 +123,55 @@ describe("editor input ownership (ADR-036)", () => {
 
     press(input, "q");
     expect(paintedText(node)).not.toContain("q");
+  });
+});
+
+/**
+ * Repaint must not disturb a live edit — ADR-036 follow-up.
+ *
+ * A screen re-sending its tree unchanged (which is what a viewport.resize
+ * repaint is) arrives here as a reuse with an identical Editor element. The
+ * user's mode is client-side state; only a genuine server-side change should
+ * override it.
+ */
+describe("editor repaint (ADR-036 follow-up)", () => {
+  /** Mode as the widget reports it — the `[MODE]` prefix of the info bar. */
+  function modeOf(d: { status: string[] }): string {
+    const last = d.status[d.status.length - 1] ?? "";
+    return last.slice(0, last.indexOf("]") + 1);
+  }
+
+  it("keeps the user's mode when the same element is re-sent", () => {
+    // Screen declares NORMAL; the user enters INSERT client-side.
+    const { node, deps: d } = mount(editorEl({ mode: "NORMAL" }));
+    press(keyInput(node)!, "i");
+    expect(modeOf(d)).toBe("[INSERT]");
+
+    // An unchanged re-render — what a resize repaint is — must not yank
+    // them out of INSERT.
+    renderEditor(editorEl({ mode: "NORMAL" }), null, d);
+
+    expect(modeOf(d)).toBe("[INSERT]");
+  });
+
+  it("keeps the live buffer when the same element is re-sent", () => {
+    const { node, deps: d } = mount(editorEl({ mode: "NORMAL" }));
+    press(keyInput(node)!, "i");
+    press(keyInput(node)!, "x");
+
+    renderEditor(editorEl({ mode: "NORMAL" }), null, d);
+
+    expect(paintedText(node)).toContain("x");
+  });
+
+  it("still hard-resets when the server actually changes the editor", () => {
+    const { node, deps: d } = mount(editorEl({ mode: "NORMAL" }));
+    press(keyInput(node)!, "i");
+    expect(modeOf(d)).toBe("[INSERT]");
+
+    // readOnly flipping is a real server-side state change, not a re-render.
+    renderEditor(editorEl({ mode: "NORMAL", readOnly: true }), null, d);
+
+    expect(modeOf(d)).toBe("[READ-ONLY]");
   });
 });
