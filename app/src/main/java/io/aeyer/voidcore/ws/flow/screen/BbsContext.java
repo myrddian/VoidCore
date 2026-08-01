@@ -63,6 +63,16 @@ public final class BbsContext {
 
     public VoidCoreSession session()  { return session; }
     public UserRow user()          { return user; }
+
+    /**
+     * Client canvas width in character cells, as last reported by
+     * {@code viewport.resize}. 80 until the client says otherwise, which
+     * is also what {@link io.aeyer.voidcore.ws.flow.layout.Layout.Flow}
+     * assumes by default — so a screen that ignores this behaves exactly
+     * as it did before.
+     */
+    public int viewportCols()      { return session.viewportCols(); }
+    public int viewportRows()      { return session.viewportRows(); }
     public BbsServices services()  { return services; }
 
     /** Transitional accessor for the still-private helpers on ScreenRouter. */

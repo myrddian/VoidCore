@@ -84,6 +84,16 @@ public abstract class ScreenApp implements Screen {
      * the wire-level focus field stays at the {@code onEnter} value and
      * downstream renderers see stale focus.
      */
+    /**
+     * Reflow on resize. Recomposes and repaints without re-entering, so
+     * mid-flow state (a wizard's step index, a form's accumulated draft)
+     * survives the user rotating their phone.
+     */
+    @Override
+    public void onViewportResize(BbsContext ctx) {
+        repaintNow(ctx);
+    }
+
     protected final void repaintNow(BbsContext ctx) {
         this.tree = compose(ctx);
         this.focusPath = FocusPath.firstFocusable(tree).orElse(null);

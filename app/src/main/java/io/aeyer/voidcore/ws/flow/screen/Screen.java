@@ -107,4 +107,19 @@ public interface Screen {
     default Transition onEvent(BbsContext ctx, String topic) {
         return onEnter(ctx);
     }
+
+    /**
+     * The client's canvas changed size — browser resize, mobile rotation,
+     * on-screen keyboard opening. The new size is already on the session
+     * ({@link BbsContext#viewportCols()}) before this is called.
+     *
+     * <p>Default is deliberately <strong>no-op</strong>, not
+     * {@code onEnter(ctx)}. Re-entering resets screen-local state — a
+     * wizard would jump back to step 0 — and a resize is not a navigation
+     * event. Screens that reflow override this and repaint; screens whose
+     * layout the client handles need do nothing.
+     */
+    default void onViewportResize(BbsContext ctx) {
+        // no-op
+    }
 }
