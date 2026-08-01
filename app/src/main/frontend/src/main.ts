@@ -140,6 +140,7 @@ async function main(): Promise<void> {
               getCurrentTheme: () =>
                 document.body.getAttribute("data-theme") ?? "phosphor",
               setStatusBar: (text) => input.setStatusText(text),
+              getViewportRows: () => viewport.lastSize()?.rows ?? null,
             };
             target.replaceChildren(
               renderTree(payload.tree, payload.focus ?? null, deps),

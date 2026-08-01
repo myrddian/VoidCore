@@ -8,9 +8,9 @@ import { applyEdit } from "./edits.js";
 import { UndoRing } from "./undo.js";
 import { parseCommand } from "./command-line.js";
 import { paintEditor, type RenderState } from "./render.js";
+import { editorViewportLines } from "./viewport-lines.js";
 
 const SNAPSHOT_INTERVAL_MS = 15_000;
-const VIEWPORT_LINES = 20;
 
 class EditorWidget {
 
@@ -159,7 +159,7 @@ class EditorWidget {
       }
       if (ev.key.startsWith("Arrow") || ev.key === "Home" || ev.key === "End"
           || ev.key === "PageUp" || ev.key === "PageDown") {
-        this.cursor = applyMotion(this.buffer, this.cursor, ev.key);
+        this.cursor = applyMotion(this.buffer, this.cursor, ev.key, this.viewportLines());
         this.adjustScroll();
         this.repaint();
         return;
@@ -225,7 +225,7 @@ class EditorWidget {
       return;
     }
 
-    const moved = applyMotion(this.buffer, this.cursor, key);
+    const moved = applyMotion(this.buffer, this.cursor, key, this.viewportLines());
     if (moved !== this.cursor) {
       this.cursor = moved;
       this.adjustScroll();
@@ -266,10 +266,16 @@ class EditorWidget {
     this.repaint();
   }
 
+  /** Editor height in buffer lines, from the reported client viewport. */
+  private viewportLines(): number {
+    return editorViewportLines(this.deps.getViewportRows?.() ?? null);
+  }
+
   private adjustScroll(): void {
     if (this.cursor.line < this.scrollLine) this.scrollLine = this.cursor.line;
-    if (this.cursor.line >= this.scrollLine + VIEWPORT_LINES) {
-      this.scrollLine = this.cursor.line - VIEWPORT_LINES + 1;
+    const lines = this.viewportLines();
+    if (this.cursor.line >= this.scrollLine + lines) {
+      this.scrollLine = this.cursor.line - lines + 1;
     }
   }
 
@@ -315,6 +321,7 @@ class EditorWidget {
       syntaxMode: this.el.syntaxMode === "markdown" ? "markdown" : "plain",
       commandLine: this.commandLine,
       dirty: this.dirty,
+      viewportLines: this.viewportLines(),
     };
     this.paintNode.replaceChildren(paintEditor(state));
     this.focusKeyInput();

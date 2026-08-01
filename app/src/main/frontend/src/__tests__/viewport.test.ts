@@ -1,6 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { ViewportReporter, viewportFromMetrics, type ViewportSize } from "../viewport.js";
+import { editorViewportLines } from "../widgets/editor/viewport-lines.js";
 
 describe("viewportFromMetrics", () => {
   it("reports whole cells that fit", () => {
@@ -105,5 +106,28 @@ describe("ViewportReporter", () => {
 
     expect(sent).toEqual([{ cols: 80, rows: 24 }]);
     r.stop();
+  });
+});
+
+describe("editorViewportLines", () => {
+  it("falls back to the historical 20 before anything is measured", () => {
+    expect(editorViewportLines(null)).toBe(20);
+  });
+
+  it("gives the editor the reported height minus screen chrome", () => {
+    // 40 rows of canvas, less header/rule/key-menu.
+    expect(editorViewportLines(40)).toBe(36);
+  });
+
+  it("keeps a usable minimum on a short viewport", () => {
+    // Phone with the on-screen keyboard open. Better to scroll a small
+    // editor than to render a negative number of lines.
+    expect(editorViewportLines(6)).toBe(5);
+  });
+
+  it("ignores nonsense", () => {
+    expect(editorViewportLines(0)).toBe(20);
+    expect(editorViewportLines(-5)).toBe(20);
+    expect(editorViewportLines(NaN)).toBe(20);
   });
 });

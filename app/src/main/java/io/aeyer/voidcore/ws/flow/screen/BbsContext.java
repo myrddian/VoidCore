@@ -73,6 +73,33 @@ public final class BbsContext {
      */
     public int viewportCols()      { return session.viewportCols(); }
     public int viewportRows()      { return session.viewportRows(); }
+
+    /** Narrowest body we'll wrap to — below this, prose becomes a column of fragments. */
+    private static final int MIN_BODY_COLS = 40;
+    /**
+     * Widest body we'll wrap to. Not a technical limit: past roughly this
+     * many characters the eye loses the line on the return sweep, so a
+     * 4K-wide window gets margins rather than 300-character lines.
+     */
+    private static final int MAX_BODY_COLS = 120;
+
+    /**
+     * Canvas width for a wrapped prose body, in character cells, honouring
+     * the client's reported viewport and clamped to a readable range.
+     *
+     * <p>The value is the <em>total</em> canvas including any
+     * {@link io.aeyer.voidcore.ws.flow.layout.Element.Padded} indent, which
+     * is what {@link io.aeyer.voidcore.ws.flow.layout.Layout.Flow} expects.
+     *
+     * <p>Falls back to the classic 80 when the client has not reported —
+     * which is also what a mocked session yields in tests, so screens keep
+     * their historical wrapping unless a real viewport says otherwise.
+     */
+    public int bodyCanvasCols() {
+        int reported = viewportCols();
+        int cols = reported > 0 ? reported : io.aeyer.voidcore.ws.flow.layout.Layout.Flow.DEFAULT_COLS;
+        return Math.max(MIN_BODY_COLS, Math.min(cols, MAX_BODY_COLS));
+    }
     public BbsServices services()  { return services; }
 
     /** Transitional accessor for the still-private helpers on ScreenRouter. */

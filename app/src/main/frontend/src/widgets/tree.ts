@@ -15,6 +15,9 @@ export interface RenderDeps {
   sendMessage: (msg: unknown) => void;
   getCurrentTheme: () => string;
   setStatusBar: (text: string) => void;
+  /** Client viewport height in character cells, if measured yet.
+   *  Optional so callers that don't render editors need not supply it. */
+  getViewportRows?: () => number | null;
 }
 
 export function renderTree(el: Element, focus: string | null, deps: RenderDeps): HTMLElement {

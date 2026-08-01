@@ -1,13 +1,16 @@
 import { type Buffer } from "./buffer.js";
 import { clampCursor, type Cursor } from "./cursor.js";
+import { DEFAULT_VIEWPORT_LINES } from "./viewport-lines.js";
 
-const VIEWPORT_LINES = 20;
 
 /**
  * Apply a motion key to a cursor, returning the new cursor. Pure
  * function; doesn't mutate the buffer. Unknown keys return cursor unchanged.
  */
-export function applyMotion(buf: Buffer, c: Cursor, key: string): Cursor {
+export function applyMotion(
+  buf: Buffer, c: Cursor, key: string,
+  viewportLines: number = DEFAULT_VIEWPORT_LINES,
+): Cursor {
   switch (key) {
     case "h": case "ArrowLeft":
       return clampCursor(buf, { line: c.line, col: c.col - 1 });
@@ -35,13 +38,13 @@ export function applyMotion(buf: Buffer, c: Cursor, key: string): Cursor {
     case "b":
       return wordBackward(buf, c);
     case "PageDown":
-      return clampCursor(buf, { line: c.line + VIEWPORT_LINES, col: c.col });
+      return clampCursor(buf, { line: c.line + viewportLines, col: c.col });
     case "PageUp":
-      return clampCursor(buf, { line: c.line - VIEWPORT_LINES, col: c.col });
+      return clampCursor(buf, { line: c.line - viewportLines, col: c.col });
     case "Ctrl-d":
-      return clampCursor(buf, { line: c.line + Math.floor(VIEWPORT_LINES / 2), col: c.col });
+      return clampCursor(buf, { line: c.line + Math.floor(viewportLines / 2), col: c.col });
     case "Ctrl-u":
-      return clampCursor(buf, { line: c.line - Math.floor(VIEWPORT_LINES / 2), col: c.col });
+      return clampCursor(buf, { line: c.line - Math.floor(viewportLines / 2), col: c.col });
     default:
       return c;
   }

@@ -3,7 +3,6 @@ import type { Cursor } from "./cursor.js";
 import type { Mode } from "./modes.js";
 import { tokeniseMarkdown, type Token } from "./markdown.js";
 
-const VIEWPORT_LINES = 20;
 
 export interface RenderState {
   buffer: Buffer;
@@ -13,6 +12,8 @@ export interface RenderState {
   syntaxMode: "markdown" | "plain";
   commandLine: string;
   dirty: boolean;
+  /** Buffer lines the editor can show — derived from the client viewport. */
+  viewportLines: number;
 }
 
 /**
@@ -38,7 +39,7 @@ export function paintEditor(state: RenderState): HTMLElement {
   const body = document.createElement("div");
   body.className = "widget-editor-body";
   const start = Math.max(0, state.scrollLine);
-  const end = Math.min(state.buffer.lineCount(), start + VIEWPORT_LINES);
+  const end = Math.min(state.buffer.lineCount(), start + state.viewportLines);
   let fenceState = false;
   for (let i = 0; i < start; i++) {
     fenceState = tokeniseMarkdown(state.buffer.getLine(i), fenceState).fenceState;

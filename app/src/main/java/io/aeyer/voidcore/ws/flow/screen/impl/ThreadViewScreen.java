@@ -126,7 +126,7 @@ public class ThreadViewScreen implements Screen {
                     new Element.Padded(
                             new Element.Para(bodyText, "default"),
                             POST_INDENT),
-                    POST_CANVAS + POST_INDENT);
+                    ctx.bodyCanvasCols());
             rows.addAll(LayoutRenderer.render(postBody, rowN));
             rowN = rows.size();
             rows.add(Frames.blank(rowN++));
@@ -143,7 +143,6 @@ public class ThreadViewScreen implements Screen {
     }
 
     /** Post body wrap canvas (matches the legacy 4-col indent + 76-col body). */
-    private static final int POST_CANVAS = 76;
     private static final int POST_INDENT = 4;
 
     /** Esc cancels back to the threads list — same shape as {@code [Q]}. */
