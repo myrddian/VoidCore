@@ -138,6 +138,10 @@ public final class SessionProxy implements VoidCoreSession {
 
     @Override public String currentChatRoomSlug() { return actor.submit(VoidCoreSession::currentChatRoomSlug); }
     @Override public void setCurrentChatRoomSlug(String slug) { actor.submit(c -> { c.setCurrentChatRoomSlug(slug); return null; }); }
+    @Override public int viewportCols() { return actor.submit(VoidCoreSession::viewportCols); }
+    @Override public int viewportRows() { return actor.submit(VoidCoreSession::viewportRows); }
+    @Override public void setViewport(int cols, int rows) { actor.submit(c -> { c.setViewport(cols, rows); return null; }); }
+
     @Override public String currentDoorId() { return actor.submit(VoidCoreSession::currentDoorId); }
     @Override public void setCurrentDoorId(String doorId) { actor.submit(c -> { c.setCurrentDoorId(doorId); return null; }); }
     @Override public String selectedAchievementDoorId() { return actor.submit(VoidCoreSession::selectedAchievementDoorId); }

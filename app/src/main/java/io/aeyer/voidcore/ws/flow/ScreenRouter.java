@@ -771,6 +771,21 @@ public class ScreenRouter
      * a plain {@link Screen} (not a ScreenApp), the event is logged and
      * dropped — these messages can only arrive while a ScreenApp is on top.
      */
+    /**
+     * Client canvas resized (SPEC §4.3). Records the new size on the
+     * session, then gives the active screen a chance to reflow.
+     *
+     * <p>Deliberately not a re-enter: {@link Screen#onViewportResize} is a
+     * no-op by default, and screens that reflow override it to repaint. A
+     * resize must not reset mid-flow state.
+     */
+    public void onViewportResize(VoidCoreSession session, ClientMessage.ViewportResize req) {
+        session.setViewport(req.cols(), req.rows());
+        Screen screen = activeScreen(session);
+        if (screen == null) return;
+        screen.onViewportResize(makeContext(session));
+    }
+
     public void onAppEvent(VoidCoreSession session, AppEvent ev) {
         Frame top = navState.peekFrame(session);
         Phase ph = top == null ? null : top.phase();

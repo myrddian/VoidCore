@@ -132,7 +132,7 @@ public class RoutingMessageDispatcher implements MessageDispatcher {
             case ClientMessage.LineSubmit   m -> screen.onLineSubmit(session, m);
             case ClientMessage.LineCancel   m -> screen.onLineCancel(session);
             case ClientMessage.ScrollRequest m -> notImplemented(session, m);
-            case ClientMessage.ViewportResize m -> notImplemented(session, m);
+            case ClientMessage.ViewportResize m -> screen.onViewportResize(session, m);
             case ClientMessage.EditorCommit m -> screen.onAppEvent(session,
                     new AppEvent.EditorCommit(m.widget_id(), m.content(), m.action()));
             case ClientMessage.EditorCancel m -> screen.onAppEvent(session,
@@ -159,7 +159,7 @@ public class RoutingMessageDispatcher implements MessageDispatcher {
             case ClientMessage.LineSubmit x     -> "onLineSubmit(text-len=" + (x.text() == null ? 0 : x.text().length()) + ")";
             case ClientMessage.LineCancel x     -> "onLineCancel";
             case ClientMessage.ScrollRequest x  -> "scrollRequest [not impl]";
-            case ClientMessage.ViewportResize x -> "viewportResize [not impl]";
+            case ClientMessage.ViewportResize x -> "viewportResize";
             case ClientMessage.EditorCommit x   -> "onAppEvent(EditorCommit widget=" + x.widget_id() + ")";
             case ClientMessage.EditorCancel x   -> "onAppEvent(EditorCancel widget=" + x.widget_id() + ")";
             case ClientMessage.EditorSnapshot x -> "onAppEvent(EditorSnapshot widget=" + x.widget_id() + ")";

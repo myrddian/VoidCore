@@ -96,6 +96,9 @@ public final class SessionCore implements VoidCoreSession {
     private volatile String pendingLoginHandle;
     private volatile String infoVariant;
     private volatile String currentChatRoomSlug;
+    /** Client canvas in character cells; 80x24 until the client reports. */
+    private volatile int viewportCols = 80;
+    private volatile int viewportRows = 24;
     private volatile String currentDoorId;
     private volatile String selectedAchievementDoorId;
     private volatile Long selectedSysopId;
@@ -210,6 +213,13 @@ public final class SessionCore implements VoidCoreSession {
 
     @Override public String currentChatRoomSlug() { return currentChatRoomSlug; }
     @Override public void setCurrentChatRoomSlug(String slug) { this.currentChatRoomSlug = slug; }
+    @Override public int viewportCols() { return viewportCols; }
+    @Override public int viewportRows() { return viewportRows; }
+    @Override public void setViewport(int cols, int rows) {
+        this.viewportCols = cols;
+        this.viewportRows = rows;
+    }
+
     @Override public String currentDoorId() { return currentDoorId; }
     @Override public void setCurrentDoorId(String doorId) { this.currentDoorId = doorId; }
     @Override public String selectedAchievementDoorId() { return selectedAchievementDoorId; }

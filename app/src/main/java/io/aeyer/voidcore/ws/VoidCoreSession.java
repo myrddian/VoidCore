@@ -112,6 +112,16 @@ public interface VoidCoreSession {
     String currentChatRoomSlug();
     void setCurrentChatRoomSlug(String slug);
 
+    /**
+     * Client canvas size in character cells, as last reported by
+     * {@code viewport.resize} (SPEC §4.3 / §6.7). Defaults to the classic
+     * 80x24 until the client reports otherwise, so a client that never
+     * sends one behaves exactly as before.
+     */
+    int viewportCols();
+    int viewportRows();
+    void setViewport(int cols, int rows);
+
     String currentDoorId();
     void setCurrentDoorId(String doorId);
 

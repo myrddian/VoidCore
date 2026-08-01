@@ -6,6 +6,7 @@
 import { configureThemes, effects } from "./effects.js";
 import { envelope } from "./envelope.js";
 import { getRegions } from "./layout.js";
+import { ViewportReporter, measureViewport } from "./viewport.js";
 import { InputController } from "./input.js";
 import { readIntentFromUrl } from "./intent.js";
 import { RegionRenderer } from "./region.js";
@@ -78,6 +79,14 @@ async function main(): Promise<void> {
   await loadThemes();
   const regions = getRegions();
   const renderer = new RegionRenderer(regions);
+
+  // Report the canvas size in character cells so the server can render for
+  // the actual viewport instead of assuming 80x24 (SPEC §6.7). Measured on
+  // the main region — that's the content area screens size against.
+  const viewport = new ViewportReporter(
+    () => measureViewport(regions.main.el),
+    (size) => sendRaw({ type: "viewport.resize", ...size }),
+  );
 
   const statusInput = document.getElementById("status-input") as HTMLInputElement;
   const statusText = document.getElementById("status-text") as HTMLElement;
@@ -188,6 +197,11 @@ async function main(): Promise<void> {
         const tokenFromAuth = (env.payload as { token?: string }).token;
         if (tokenFromAuth) sessionStore.set(tokenFromAuth);
         if (p.user) document.title = `VOIDcore — ${p.user.handle}`;
+        // The server session starts at the 80x24 default, and anything we
+        // sent before the socket opened was dropped. Re-report now that
+        // there is definitely a session to receive it.
+        viewport.resetBaseline();
+        viewport.reportNow();
         break;
       }
       case "auth.err": {
@@ -198,6 +212,10 @@ async function main(): Promise<void> {
       case "resume.ok": {
         const p = env.payload as ResumeOkPayload;
         if (!p.sync && p.frames) for (const f of p.frames) dispatch(f);
+        // Same reasoning as auth.ok — and a reconnect may have landed on a
+        // session that never learned this client's size.
+        viewport.resetBaseline();
+        viewport.reportNow();
         break;
       }
       case "resume.err": {
@@ -228,6 +246,7 @@ async function main(): Promise<void> {
   }
 
   registerInstance(ws);
+  viewport.start();
   ws.start();
 }
 
