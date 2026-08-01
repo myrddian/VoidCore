@@ -28,6 +28,15 @@ const PROBE_CHARS = 50;
 
 const DEFAULT_DEBOUNCE_MS = 150;
 
+/**
+ * The first measurement often lands before the region has been laid out —
+ * an element with no layout measures zero, which we (correctly) refuse to
+ * report. Retry a few times before giving up, otherwise the server sits on
+ * its 80x24 default until the user happens to resize.
+ */
+const INITIAL_RETRY_MS = 50;
+const INITIAL_ATTEMPTS = 10;
+
 function clamp(n: number, lo: number, hi: number): number {
   return Math.min(hi, Math.max(lo, n));
 }
@@ -87,18 +96,33 @@ export function measureViewport(el: HTMLElement): ViewportSize | null {
 export class ViewportReporter {
   private last: ViewportSize | null = null;
   private timer: number | null = null;
+  private initialTimer: number | null = null;
+  private attemptsLeft = INITIAL_ATTEMPTS;
 
   constructor(
     private readonly measure: () => ViewportSize | null,
-    private readonly send: (size: ViewportSize) => void,
+    private readonly send: (size: ViewportSize) => boolean,
     private readonly debounceMs: number = DEFAULT_DEBOUNCE_MS,
   ) {}
 
   start(): void {
     window.addEventListener("resize", this.onResize);
     // Report once up front so the server isn't stuck on the 80x24 default
-    // for a client that never resizes.
+    // for a client that never resizes — retrying while the page settles.
+    this.attemptsLeft = INITIAL_ATTEMPTS;
+    this.reportInitial();
+  }
+
+  /** First report, retried until the region has a measurable layout. */
+  private reportInitial(): void {
+    const before = this.last;
     this.reportNow();
+    if (this.last !== before) return;
+    if (--this.attemptsLeft <= 0) return;
+    this.initialTimer = window.setTimeout(() => {
+      this.initialTimer = null;
+      this.reportInitial();
+    }, INITIAL_RETRY_MS);
   }
 
   stop(): void {
@@ -106,6 +130,10 @@ export class ViewportReporter {
     if (this.timer != null) {
       clearTimeout(this.timer);
       this.timer = null;
+    }
+    if (this.initialTimer != null) {
+      clearTimeout(this.initialTimer);
+      this.initialTimer = null;
     }
   }
 
@@ -128,8 +156,10 @@ export class ViewportReporter {
     const size = this.measure();
     if (!size) return;
     if (this.last && this.last.cols === size.cols && this.last.rows === size.rows) return;
-    this.last = size;
-    this.send(size);
+    // Only remember what actually left the socket. Recording a size that
+    // was dropped (socket not open yet) would suppress every later report
+    // of the same size — which is exactly what happened at page load.
+    if (this.send(size)) this.last = size;
   }
 
   private onResize = (): void => {

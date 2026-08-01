@@ -32,11 +32,14 @@ describe("viewportFromMetrics", () => {
 describe("ViewportReporter", () => {
   let sent: ViewportSize[];
   let size: ViewportSize | null;
+  /** Whether the socket accepts the frame — false models "not open yet". */
+  let delivers: boolean;
 
   beforeEach(() => {
     vi.useFakeTimers();
     sent = [];
     size = { cols: 80, rows: 24 };
+    delivers = true;
   });
 
   afterEach(() => {
@@ -44,7 +47,11 @@ describe("ViewportReporter", () => {
   });
 
   function reporter(debounceMs = 150): ViewportReporter {
-    return new ViewportReporter(() => size, (s) => { sent.push(s); }, debounceMs);
+    return new ViewportReporter(
+      () => size,
+      (s) => { if (delivers) sent.push(s); return delivers; },
+      debounceMs,
+    );
   }
 
   it("reports once on start so the server is not stuck on the default", () => {
@@ -92,6 +99,53 @@ describe("ViewportReporter", () => {
     vi.advanceTimersByTime(200);
 
     expect(sent).toEqual([]);
+  });
+
+  it("retries the first report until the region has been laid out", () => {
+    // Found in a real browser: at start() the main region has no layout, so
+    // the measurement is (correctly) refused — and nothing ever retried, so
+    // the server sat on 80x24 until the user resized.
+    size = null;
+    const r = reporter();
+    r.start();
+    expect(sent).toEqual([]);
+
+    size = { cols: 105, rows: 24 };
+    vi.advanceTimersByTime(60);
+
+    expect(sent).toEqual([{ cols: 105, rows: 24 }]);
+    r.stop();
+  });
+
+  it("gives up retrying rather than spinning forever", () => {
+    size = null;
+    const r = reporter();
+    r.start();
+
+    vi.advanceTimersByTime(10_000);
+    size = { cols: 80, rows: 24 };
+    vi.advanceTimersByTime(10_000);
+
+    // A viewport that never measures (hidden tab, detached region) must not
+    // leave a timer running for the life of the page.
+    expect(sent).toEqual([]);
+    r.stop();
+  });
+
+  it("does not treat a dropped send as reported", () => {
+    // Found in a real browser: the first report went out before the socket
+    // was open, was dropped, and the reporter recorded it anyway — so the
+    // same size was never sent again and the server stayed at 80x24.
+    delivers = false;
+    const r = reporter();
+    r.start();
+    expect(sent).toEqual([]);
+
+    delivers = true;
+    r.reportNow();
+
+    expect(sent).toEqual([{ cols: 80, rows: 24 }]);
+    r.stop();
   });
 
   it("re-reports an unchanged size after the baseline is reset", () => {
