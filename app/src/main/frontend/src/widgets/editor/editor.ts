@@ -43,6 +43,15 @@ class EditorWidget {
    */
   private readonly paintNode: HTMLElement;
 
+  /**
+   * The server's last *declaration* for this widget. Compared on reuse to
+   * tell a genuine server-side change from a bare re-render — see
+   * {@link updateFromServer}.
+   */
+  private lastServerMode: string;
+  private lastServerReadOnly: boolean;
+  private lastServerContent: string;
+
   constructor(
     private readonly el: Editor,
     private readonly deps: RenderDeps,
@@ -51,6 +60,9 @@ class EditorWidget {
     this.buffer = Buffer.fromString(el.content);
     this.mode = el.readOnly ? "READ_ONLY" : (el.mode as Mode);
     this.initialContent = el.content;
+    this.lastServerMode = el.mode;
+    this.lastServerReadOnly = el.readOnly;
+    this.lastServerContent = el.content;
 
     this.keyInput = document.createElement("textarea");
     this.keyInput.className = "widget-editor-key-input";
@@ -265,16 +277,32 @@ class EditorWidget {
    * Sync the widget's authoritative state from a freshly-arrived
    * Editor element. Called when renderEditor() reuses an existing
    * widget instance — preserves the live buffer / cursor / scroll
-   * (those are client-side truth) but accepts the server's mode and
-   * readOnly fields (those are server-side state-machine truth).
+   * (those are client-side truth).
    *
-   * If we're already in INSERT or COMMAND mode (client-side only),
-   * we drop back to whatever the server says — INSERT/COMMAND are
-   * transient sub-states of NORMAL and the server transitioning the
-   * editor out from under them is a hard reset.
+   * Mode is only taken from the server when the server's *declaration*
+   * actually changed. A screen re-sending its tree unchanged — which is
+   * what a `viewport.resize` repaint is — must not disturb a live edit;
+   * previously any repaint dropped the user out of INSERT or COMMAND,
+   * so on mobile the on-screen keyboard opening would eject them.
+   *
+   * When the declaration does change (readOnly flips, or the screen
+   * moves the editor to a different mode) that remains a hard reset:
+   * INSERT and COMMAND are transient sub-states of NORMAL, and the
+   * server transitioning the editor out from under them wins.
    */
   updateFromServer(el: Editor): void {
-    this.mode = el.readOnly ? "READ_ONLY" : (el.mode as Mode);
+    const declarationChanged =
+         el.mode !== this.lastServerMode
+      || el.readOnly !== this.lastServerReadOnly
+      || el.content !== this.lastServerContent;
+
+    this.lastServerMode = el.mode;
+    this.lastServerReadOnly = el.readOnly;
+    this.lastServerContent = el.content;
+
+    if (declarationChanged) {
+      this.mode = el.readOnly ? "READ_ONLY" : (el.mode as Mode);
+    }
     this.repaint();
   }
 
