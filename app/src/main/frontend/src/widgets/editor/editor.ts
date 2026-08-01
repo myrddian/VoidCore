@@ -24,6 +24,25 @@ class EditorWidget {
   private readonly undo = new UndoRing();
   private snapshotTimer: number | null = null;
 
+  /**
+   * The editor's key source (ADR-036). A hidden-but-focusable element that
+   * holds focus while the editor is active; keys are read from it rather
+   * than from `document`. `input.ts` also listens on `document` and nothing
+   * coordinates the two — focus is what keeps them apart.
+   *
+   * A textarea rather than an input: it is the conventional host for IME
+   * composition and multi-line paste. Its own value is never used — every
+   * handled path calls preventDefault, so it stays empty.
+   */
+  private readonly keyInput: HTMLTextAreaElement;
+
+  /**
+   * The painted buffer. Repaints replace *this* node's children, never
+   * mountNode's — re-creating the key input on every keystroke would drop
+   * focus and make IME composition impossible.
+   */
+  private readonly paintNode: HTMLElement;
+
   constructor(
     private readonly el: Editor,
     private readonly deps: RenderDeps,
@@ -32,10 +51,25 @@ class EditorWidget {
     this.buffer = Buffer.fromString(el.content);
     this.mode = el.readOnly ? "READ_ONLY" : (el.mode as Mode);
     this.initialContent = el.content;
+
+    this.keyInput = document.createElement("textarea");
+    this.keyInput.className = "widget-editor-key-input";
+    this.keyInput.rows = 1;
+    this.keyInput.spellcheck = false;
+    this.keyInput.autocapitalize = "off";
+    this.keyInput.autocomplete = "off";
+    this.keyInput.setAttribute("autocorrect", "off");
+    this.keyInput.setAttribute("aria-label", "editor input");
+
+    this.paintNode = document.createElement("div");
+    this.paintNode.className = "widget-editor-paint";
+
+    this.mountNode.append(this.keyInput, this.paintNode);
   }
 
   start(): void {
-    document.addEventListener("keydown", this.onKey);
+    this.keyInput.addEventListener("keydown", this.onKey);
+    this.focusKeyInput();
     this.snapshotTimer = window.setInterval(
       () => {
         if (!this.dirty) return;          // skip clean buffers
@@ -51,9 +85,24 @@ class EditorWidget {
   }
 
   stop(): void {
-    document.removeEventListener("keydown", this.onKey);
+    this.keyInput.removeEventListener("keydown", this.onKey);
+    if (document.activeElement === this.keyInput) this.keyInput.blur();
     if (this.snapshotTimer != null) clearInterval(this.snapshotTimer);
     this.deps.setStatusBar("");
+  }
+
+  /**
+   * Take focus, but never steal it. If the user is in another field —
+   * a TextField on the same screen — leave them alone. Called on start,
+   * after each repaint, and once the subtree is attached to the document
+   * (see {@link focusActiveEditor}): `.focus()` on a detached node is a
+   * no-op, and re-parenting a focused node blurs it in some browsers.
+   */
+  focusKeyInput(): void {
+    const active = document.activeElement;
+    if (active === this.keyInput) return;
+    if (active && active !== document.body && active.tagName !== "HTML") return;
+    this.keyInput.focus();
   }
 
   private onKey = (ev: KeyboardEvent): void => {
@@ -239,7 +288,8 @@ class EditorWidget {
       commandLine: this.commandLine,
       dirty: this.dirty,
     };
-    this.mountNode.replaceChildren(paintEditor(state));
+    this.paintNode.replaceChildren(paintEditor(state));
+    this.focusKeyInput();
     // Push mode + position into the global info: bar.
     let bar: string;
     if (this.mode === "COMMAND") {
@@ -266,6 +316,19 @@ export function stopActiveEditor(): void {
 
 export function getActiveEditorId(): string | null {
   return activeEditor ? activeEditor.id : null;
+}
+
+/**
+ * Give the live editor its focus back once the rendered tree is attached to
+ * the document. `renderEditor` runs while the subtree is still detached —
+ * the caller attaches it afterwards — and `.focus()` on a detached element
+ * does nothing. Call this after the attaching `replaceChildren`.
+ *
+ * No-op when there is no active editor, and it will not steal focus from
+ * another field.
+ */
+export function focusActiveEditor(): void {
+  activeEditor?.widget.focusKeyInput();
 }
 
 export function renderEditor(el: Editor, _focus: string | null, deps: RenderDeps): HTMLElement {
