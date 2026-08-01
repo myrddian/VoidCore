@@ -42,8 +42,9 @@ The current extension contract is intentionally small:
 - startup-loaded overlay themes under `/instance/themes`
 - startup-loaded ANSI skins under `/instance/skins`
 - sidecar applications via the door protocol
-- an internal named custom-screen routing seam that future in-process
-  extensions can build on
+- a named custom-screen routing seam, plus manifest-backed **JavaScript
+  screens** loaded at startup from `/instance/extensions` and run on a
+  GraalJS host against a curated API
 
 For local development, the repo ships a worked example instance root at
 [`app/dev-instance`](/Users/enzoreyes/proj/VoidCore/app/dev-instance). That
@@ -52,7 +53,9 @@ sample ANSI skins. Production deployments should still point
 `VOIDCORE_INSTANCE_ROOT` at their own external overlay path.
 
 The repo does **not yet** promise a finished operator-facing in-process plugin
-boundary for private `Screen` classes, manifests, or scripts. See
+boundary: manifest `capabilities` are declarative and unenforced, there is no
+hot-reload, and instance-supplied Java `Screen` classes are still unsupported.
+Scripted screens are for code you already trust to run in the JVM. See
 [docs/extending-voidcore.md](docs/extending-voidcore.md) for the current
 supported contract and its limits.
 

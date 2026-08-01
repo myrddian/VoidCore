@@ -32,26 +32,37 @@ Supported extension points today:
   VOIDcore now scans `/instance/extensions/*/voidcore-extension.json` for
   named custom-screen registrations
 - **Engine-neutral script host seam** for manifest-backed screens:
-  discovered screens now resolve through a curated host API rather than
+  discovered screens resolve through a curated host API rather than
   registry-local placeholder logic
+- **JavaScript screen scripting** via the bundled GraalJS host. A screen
+  whose manifest names a `.js` entrypoint is loaded as a real scripted
+  screen; one with no entrypoint still falls back to the placeholder
+  render. The guest gets no direct access to Java internals — only a
+  proxied API object (`ui`, `navigation`, `session`, `documents`, `data`,
+  `effects`) plus a proxied per-callback host context
 - **Extension-owned JSON state storage contract** via `extensions_data`,
-  reserved for future in-process extensions rather than ad hoc reuse of
-  unrelated core/session scratchpads
+  reachable from scripted screens through the `data` API rather than ad
+  hoc reuse of unrelated core/session scratchpads
 
 Not supported yet:
 
-- a supported scripting runtime that turns manifest-backed screens into
-  real scripted/application screens
-- hot-reload, scripting runtimes, or a dynamic plugin marketplace
+- **enforced capability grants.** A manifest's `capabilities` array is
+  parsed and carried on the registration, but nothing checks it — a
+  screen that declares nothing still reaches the whole host API. Treat
+  it as documentation of intent, not a sandbox boundary, and only mount
+  extension code you trust
+- hot-reload — scripts are loaded at startup; adding or editing one
+  means a restart
+- non-JS guest languages, and a dynamic plugin marketplace
+- instance-supplied **Java** `Screen` classes
 
 This means the current contract is strong enough for:
 
 - scene-specific schemas and seed data
 - deployment-specific branding and configuration
 - sidecar applications that speak the door protocol
-
-It is **not yet** the final operator-facing answer for instance-supplied
-Java or scripted screens.
+- scripted in-process screens written in JavaScript, from operators whose
+  code you would already trust to run in the JVM
 
 For the practical setup walkthrough covering themes, skins, and custom
 screens, start with
@@ -245,7 +256,9 @@ In practical terms:
 - branding/config overlays: supported
 - door sidecars: supported
 - named custom-screen routing inside the engine: present
-- private/operator-supplied in-process screen plugins: not yet supported
+- operator-supplied in-process screens: supported for **JavaScript** via
+  the GraalJS host; Java `Screen` classes remain unsupported, and
+  manifest `capabilities` are not enforced
 
 ## Custom screen seam
 

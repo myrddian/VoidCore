@@ -16,10 +16,12 @@ the rule here wins.
 
 ## Migration discipline
 
-The v1.4 refactor is splitting `ScreenRouter` (a 3000-line god object)
-into Screens, Navigator, and BbsServices. The migration is incremental
-— some code still goes through legacy paths. There is exactly one rule
-that keeps the migration honest:
+The v1.4 refactor is splitting `ScreenRouter` (originally a 3000-line
+god object) into Screens, Navigator, and BbsServices. It is nearly
+done — ScreenRouter is down to ~830 lines of code, and exactly one
+file still casts through `ctx.legacyRouter()`. That makes the rule
+below *more* binding, not less: the debt is almost cleared, and one
+new bridge would be a visible regression rather than noise.
 
 > **STOP before adding any new `legacyX` method on ScreenRouter, any
 > new cast through `ctx.legacyRouter()`, or any new `(ScreenRouter)

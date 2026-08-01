@@ -676,7 +676,15 @@ than silently changing the v1 protocol.
 ## ADR-018 — v2 session security: mutual key exchange + per-message MAC (forward-looking)
 
 **Date:** 2026-04-28
-**Status:** Accepted (forward-looking; recorded to preserve v1 protocol headroom)
+**Status:** Accepted (forward-looking) — **parked 2026-08-01, see ADR-035.**
+Its purpose was to preserve v1 protocol headroom, and it succeeded: the
+`seq` / `mac` envelope fields exist and are reserved, so this design can
+be implemented at any time without a protocol break. It is not scheduled
+against any milestone. The cost (canonical serialisation, a key
+lifecycle that must survive ADR-033's detached sessions and token-based
+reconnect, plus the dev/prod operational surface described below) is not
+currently justified by the gain over TLS for a small self-hosted board.
+Revisit if the threat model changes.
 
 **Context:** v1 ships with TLS at the DMZ Caddy plus Argon2id-hashed
 passwords plus opaque session tokens. This is appropriate for v1's
@@ -2844,6 +2852,282 @@ The actor was the missing primitive that made phase 1 simple. The
 session-by-token refactor on top of `volatile` fields + `sendLock` would
 have been threadable but ugly; on top of one-queue-one-thread it's just
 "index the actor differently."
+
+---
+
+## ADR-034 — LLM gateway: operator-supplied OpenAI-compatible endpoint, doors-only consumer
+
+**Date:** 2026-08-01
+**Status:** Accepted (documents shipped behaviour — written after the fact)
+
+**Context:** `DoorRuntimeService` needs to call a language model — the
+bundled Cityline MUD uses one for generated prose. The engine had no
+sanctioned way to reach one, and ADR-024 (Anchor) deliberately scoped
+*retrieval* to an optional external addon without saying anything about
+generation. Without a decision recorded, the risk was per-door ad hoc
+HTTP clients with their own timeouts, retries, and key handling.
+
+**Decision:** One core gateway service (`io.aeyer.voidcore.llm`) that
+speaks the **OpenAI-compatible chat-completions shape** — blocking and
+SSE-streaming — against an endpoint the operator supplies. It is:
+
+- **Off by default.** `voidcore.llm.enabled=false`; `isEnabled()`
+  additionally requires a non-blank `base-url` and `chat-model`, so a
+  half-configured instance reports disabled rather than failing at call
+  time.
+- **Provider-agnostic.** `base-url` + `chat-model` + `api-key` is the
+  whole contract. A local Ollama or llama.cpp server, a hosted API, or
+  nothing at all — VOIDcore doesn't care and doesn't bundle a default.
+- **Consumed only by doors today.** `DoorRuntimeService` is the sole
+  caller; core BBS screens do not generate text.
+- **Bounded.** Separate blocking (60s) and streaming (90s) timeouts on
+  separate clients, capped retries with backoff, and a dedicated
+  single-thread worker pool (`voidcore.workers.llm.pool-size`) so a slow
+  provider can't starve session actors.
+
+**Consequences:**
+
+- Deployments that never set `VOIDCORE_LLM_BASE_URL` behave exactly as
+  before; the door falls back on `LlmGatewayException` rather than
+  breaking. "No AI in my BBS" stays a supported, default configuration.
+- The API key lives in operator env, never the database, and never
+  reaches a door — doors ask the gateway, they don't hold credentials.
+- Prompt content leaves the deployment when enabled. That is an operator
+  choice made per-instance; the engine takes no position on which
+  provider deserves it, which is why there is no default endpoint.
+- Any future core consumer (a `[?]ask` on documents, per ADR-024) reuses
+  this gateway rather than adding a second HTTP path.
+
+**Rejected alternatives:**
+
+- *Per-door HTTP clients.* Every door reimplements timeouts, retries,
+  and key handling, and every door needs the API key. Worse security,
+  worse failure behaviour.
+- *Bundling a provider SDK.* Pins the engine to a vendor and adds a
+  dependency that most deployments never use. The OpenAI wire shape is
+  the de-facto interop format; plain HTTP against it costs nothing.
+- *Routing generation through Anchor (ADR-024).* Anchor is a retrieval
+  addon with a different lifecycle and may not be deployed. Wrong
+  coupling, and it would make doors depend on a service that has nothing
+  to do with them.
+- *On by default with a hosted default endpoint.* Silently sends
+  community content off-box. Non-starter for a self-hosted project.
+
+---
+
+## ADR-035 — v2 is a protocol milestone; everything else is an application
+
+**Date:** 2026-08-01
+**Status:** Accepted
+
+**Context:** `ROADMAP.md` files six unrelated things under "v2": the
+dynamic UI runtime, cacheable content, forward-secure sessions, doors as
+first-class apps, the admin CLI, the Matrix bridge, and possible
+multi-tenancy. They share nothing but the label. The practical cost is
+that the dynamic UI work — the only part with momentum, and the part
+that decides whether the product stays bound to a character grid — is
+hostage to a milestone that also contains a Matrix bridge.
+
+The label is also wrong on its own terms. ADR-021 and ADR-022 both say
+plainly that the CLI and the bridge speak `voidcore-node-v1` with **no
+new server endpoints**. They were never protocol work; they are clients.
+
+**Decision:** v2 means the wire contract, and nothing else — the
+`voidcore-node-v1` → `voidcore-node-v2` bump.
+
+The boundary test: **does it change what goes over the wire between BBS
+and client?** Yes → v2. Only consumes the existing wire → not v2; it is
+an application and ships on its own schedule against v1.
+
+v2 is, specifically, **the layout and region vocabulary**. That is the
+whole milestone:
+
+- The `Element` tree as the general region content model. Partly shipped
+  already, additively, as `RegionUpdate.tree` — see ADR-031.
+- New element kinds: `list` (with selection events), `progress`,
+  `marquee`, `image`.
+- Screen-owned regions — `region` becomes a screen-declared string
+  rather than the reserved four names (ADR-032).
+- `screen.define` carrying a real layout description instead of always
+  emitting `layout: "default"`.
+
+*Reserved-but-inert fields stay inert.* Four fields already sit on the
+wire as forward-compatibility placeholders: envelope `seq` and `mac`,
+and `screen.define`'s `cacheable` / `ttl_seconds`. The v1 reservation
+held for all of them — `Envelope` declares `seq`/`mac`, the client emits
+`seq: 0, mac: null`, the server stamps them outbound and ignores them
+inbound, and `ScreenDefine` carries the cache hints with
+caching-disabled defaults.
+
+They stay placeholders. Because the shape is already reserved, enabling
+any of them later is *behaviour inside the existing contract* — no field
+changes, no envelope break, no dependency on the v2 bump. That is what
+the reservation was for, and it means none of this work needs to be
+scheduled against a milestone at all.
+
+On `mac` specifically, the cost/benefit does not justify it. TLS already
+covers transport, so per-message HMAC buys defence against a compromised
+reverse proxy plus forward secrecy for captured traffic — real, but
+modest for a self-hosted board of a few hundred users. Against that:
+canonical-serialisation hazards on both ends, a key lifecycle that must
+now survive ADR-033's detached sessions and token-based reconnect (a
+memory-only key dies on page reload while the session lives, so resume
+would have to re-run the exchange against an existing token — which
+leaves the token as the real credential), and ADR-018's whole
+operational surface: build flavours, loopback override, a verifier tool,
+warning banners. **Parked, not planned.** ADR-018 remains on file as the
+design if the threat model ever changes. `seq` enforcement is far
+cheaper and could ship in v1.x if reconnect debugging ever wants it, but
+is likewise not scheduled.
+
+*Out of scope — applications on the protocol:*
+
+- Admin CLI (ADR-021), Matrix bridge (ADR-022) — WS clients of the
+  existing protocol.
+- Multi-tenancy — deployment and data-model shape, no wire impact.
+- Anchor semantic retrieval (ADR-024) — server-side HTTP integration.
+- The extension/scripting runtime — in-process and server-side.
+
+*Separate track:* `voidcore-door-v1` is its own wire contract. Deferred
+mode and the DOS shim are door-protocol work and version independently
+of the node protocol.
+
+*Explicitly not gated on v2:*
+
+- `viewport.resize`. The message already exists in v1 and is validated;
+  the server simply drops it (`RoutingMessageDispatcher` →
+  `notImplemented`). Honouring it is behaviour, not wire change, and
+  ships in v1.x.
+- Editor input ownership and non-destructive repaint — pure client work,
+  and the prerequisite for resize being safe (a repaint arriving while
+  an editor is live currently resets its mode).
+
+**Consequences:**
+
+- v2 becomes finishable. One concept, one negotiation point, one bump.
+- The dynamic UI stops waiting on unrelated ambition. Most of what makes
+  the UI less terminal-bound — resize, the editor fixes, migrating
+  screens onto the tree path — turns out not to be v2 at all.
+- The protocol version bump happens once and carries only the layout
+  vocabulary. Nothing else has to be ready for it, because everything
+  else the roadmap once bundled here either rides the existing wire or
+  is already reserved on it.
+- The CLI / Matrix / multi-tenancy sections stay in ROADMAP, relabelled
+  as independent tracks rather than v2 content.
+
+**Rejected alternatives:**
+
+- *Keep v2 as "everything ambitious."* Guarantees nothing ships. That is
+  the observed outcome so far.
+- *Bundle `seq`/`mac` into the v2 bump "while the envelope is open,"
+  reasoning that an envelope can only be broken cheaply once.* Tempting,
+  and wrong: the fields are **already on the wire**, reserved and
+  ignored, so enabling them never requires a break. Bundling them would
+  have imported ADR-018's cost — canonicalisation, key lifecycle against
+  detached sessions, the whole dev/prod operational surface — into a
+  milestone that is otherwise a vocabulary extension.
+- *Version each message type independently.* No single negotiation
+  point; the client/server capability matrix becomes combinatorial.
+
+---
+
+## ADR-036 — Editor input ownership: a hidden focusable input, not a global keydown listener
+
+**Date:** 2026-08-01
+**Status:** Accepted
+
+**Context:** SPEC §6.11 states the contract — server decides, client
+renders. The modal editor is the first widget that owns *authoritative
+client-side state*: the buffer only exists in the browser. Everything
+awkward about the editor follows from that, and the input path is where
+it hurts first.
+
+Three different input strategies currently coexist in the client:
+
+| Layer | Strategy |
+|---|---|
+| `input.ts` (status line) | A real `<input>`, kept off-screen but focusable |
+| `text-field.ts` | A focusable `div` (`tabIndex`), `keydown` on the node |
+| `editor.ts` | **No focusable element**; `document.addEventListener("keydown")` |
+
+The editor is the outlier, and the consequences are concrete:
+
+- **Two uncoordinated global `document` keydown listeners** —
+  `input.ts` and `editor.ts`. Nothing connects them. Arbitration is
+  *implicit*: `input.ts` bails when its own mode is `none`, which holds
+  only because editor-bearing screens send
+  `input.prompt {mode: "none"}` (see `WizardFormApp.defaultInputPrompt`).
+  A screen that forgets gets every keystroke handled twice. The
+  diagnostic `console.debug` in `handleKeyDown`, and its comment about
+  telling "the event never arrived" apart from "mode=none", is a fossil
+  of chasing exactly this.
+- **No IME support.** There is no `compositionstart` handling anywhere
+  in the frontend, and a keydown-driven buffer fundamentally cannot do
+  composition.
+- **No paste path** in the editor; `input.ts` has one, for the status
+  line only.
+- **Nothing for assistive technology to focus.**
+- **Mobile.** The on-screen keyboard requires a focused input — which is
+  precisely why `input.ts` uses one (#42).
+
+**Decision:** each editor widget owns a **hidden but focusable input
+element** that holds focus while the editor is active, and reads keys
+from it instead of from a document-level listener. Visible rendering
+stays fully custom (`paintEditor`), so the terminal aesthetic is
+untouched.
+
+This is the Ace / CodeMirror 5 / Monaco split — native input handling,
+custom painting — and it is already the pattern `input.ts` uses in this
+codebase.
+
+**Consequences:**
+
+- **Focus becomes the arbiter.** While the editor's input is focused,
+  keys go to the editor. Correctness no longer depends on the server
+  having sent `mode: "none"`; that becomes an optimisation rather than a
+  requirement.
+- Mobile keyboard, IME composition, paste, and screen-reader focus all
+  become reachable. (Composition still needs explicit handling — the
+  input makes it *possible*, which today it is not.)
+- The modal layer (`modes.ts`, `motions.ts`, `edits.ts`) is unchanged.
+  NORMAL-mode keys are intercepted before reaching the buffer, INSERT
+  lets them through — the same shape as vim keymaps in CodeMirror/Ace.
+- `text-field.ts` should converge on the same pattern. It is already
+  focus-based, so that change is smaller.
+- This does **not** by itself fix repaint destruction. See below.
+
+**Sequenced follow-up (separate change):** `paintEditor` does
+`mountNode.replaceChildren(...)` on every repaint, and `renderTree`
+replaces a whole region's children on every tree update. That teardown
+is what forces the module-global `activeEditor` singleton, the
+`findEditorId` pre-scan in `main.ts`, and the 15-second
+`editor.snapshot` timer. Making the editor's paint **reconcile rather
+than replace** is the second half of this work, and it is what makes
+`viewport.resize` safe by construction instead of by a special-case
+guard. Kept separate so each lands and is verifiable on its own.
+
+**Known latent bug to cover with a test when this lands:** widget ids
+are generic (`"body"` in both `ComposePostScreen` and `DocumentScreen`,
+`"step"` for every step of `WizardFormApp`), and `activeEditor` is keyed
+on id alone. The reuse path preserves the live buffer and *discards* the
+incoming `content`. No reachable path triggers it today — every core
+wizard has exactly one MULTI_LINE step, and intervening screens force a
+teardown — but a wizard with two consecutive long-text steps, or an
+extension emitting an editor via `GraalJsHostBridge`, would.
+
+**Rejected alternatives:**
+
+- *`contenteditable` + a mutation-observing view (CodeMirror 6 /
+  ProseMirror).* Higher ceiling, substantially more machinery, and in a
+  modal editor most native editing behaviour is something you suppress
+  rather than use.
+- *Keep the global listener; add a repaint guard only.* Cheapest path to
+  shipping `viewport.resize`, but leaves mobile, IME, paste and
+  accessibility broken, and keeps correctness dependent on every
+  editor-bearing screen remembering to send `mode: "none"`.
+- *Route all keys through `input.ts` and forward to the editor.* Makes
+  the BBS input layer know about widget internals — the exact inversion
+  the widget model exists to avoid.
 
 ---
 

@@ -231,6 +231,18 @@ app/
 
 PostgreSQL schema. Managed by Flyway from `src/main/resources/db/migration/`.
 
+> **Partly superseded.** This section documents the V1 schema as
+> originally specced. Two tables below no longer exist: `bulletins` and
+> `files` were recast into the typed-document substrate by `V6` /
+> `V11` and dropped outright by `V12__drop_legacy_files_bulletins.sql`,
+> per ADR-023. Bulletins are now documents of `kind=article`; releases
+> are `kind=release`. For the live shape of those two, read
+> [SPEC-documents.md](SPEC-documents.md); the surrounding tables here
+> are still accurate. Subsystems added after this section was written
+> (ACL/roles, chat rooms and DMs, polls, achievements and the social
+> layer, door state, extension data) live in `V8`–`V27` and are not
+> reproduced here.
+
 Conventions:
 - Primary keys are `BIGINT GENERATED ALWAYS AS IDENTITY`.
 - Timestamps are `TIMESTAMPTZ DEFAULT now()`.
