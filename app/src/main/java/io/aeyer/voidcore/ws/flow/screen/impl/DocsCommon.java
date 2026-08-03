@@ -136,9 +136,10 @@ final class DocsCommon {
     }
 
     static String padRight(String s, int width) {
-        if (s == null) s = "";
-        if (s.length() >= width) return s.substring(0, Math.max(0, width - 1)) + "…";
-        return s + " ".repeat(width - s.length());
+        // Was the codebase's only pad-that-actually-truncates. Promoted to
+        // ScreenText.column so every tabular screen can reach it; kept as a
+        // thin alias so the Docs call sites read unchanged.
+        return io.aeyer.voidcore.ws.flow.screen.ScreenText.column(s, width);
     }
 
     /**

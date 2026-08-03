@@ -31,6 +31,13 @@ import java.util.ArrayList;
  */
 @ScreenComponent
 public class InfoViewScreen implements Screen {
+    /**
+     * Width of a handle column. Handles are CHECK-constrained to 3..16
+     * characters (V1__initial_schema.sql), so 17 always leaves a one-space
+     * separator and never truncates a real handle.
+     */
+    private static final int HANDLE_COL = 17;
+
 
     public static final String VARIANT_USERS = "users";
     public static final String VARIANT_LAST_CALLERS = "last_callers";
@@ -91,7 +98,7 @@ public class InfoViewScreen implements Screen {
                     Frames.span("  ", null),
                     Frames.span(u.isSysop() ? "[*] " : "    ",
                             u.isSysop() ? "bright_red" : "grey"),
-                    Frames.span(ScreenText.padRight(u.handle(), 16), "bright"),
+                    Frames.span(ScreenText.column(u.handle(), HANDLE_COL), "bright"),
                     Frames.span(ScreenText.padRight(loc, 18), "grey"),
                     Frames.span(ScreenText.padLeft(String.valueOf(u.callCount()), 6), "default"),
                     Frames.span("  ", null),
@@ -105,9 +112,21 @@ public class InfoViewScreen implements Screen {
         ctx.send(new InputPrompt("keystroke", "key:", null, "Q", null));
     }
 
+    /**
+     * Last-caller rows shown before the client reported a viewport — the
+     * historical fixed value, now a floor rather than a cap.
+     */
+    private static final int LAST_CALLERS_ROWS = 20;
+
+    /** Reflow on resize; onEnter is a pure paint switch, so re-entering is safe. */
+    @Override
+    public void onViewportResize(BbsContext ctx) {
+        onEnter(ctx);
+    }
+
     private void paintLastCallers(BbsContext ctx) {
         ctx.persistCurrentScreen("{\"kind\":\"last_callers\"}");
-        var list = lastCallers.recent(20);
+        var list = lastCallers.recent(ctx.contentRowsAtLeast(LAST_CALLERS_ROWS));
         ArrayList<Row> rows = new ArrayList<>();
         rows.add(Frames.colored(0, "  == LAST CALLERS ==", "bright_yellow"));
         rows.add(Frames.blank(1));
@@ -120,7 +139,7 @@ public class InfoViewScreen implements Screen {
             String when = c.at() == null ? "—" : c.at().toString().substring(0, 16);
             rows.add(Frames.row(rowN++,
                     Frames.span("      ", null),
-                    Frames.span(ScreenText.padRight(c.handle(), 16), "bright"),
+                    Frames.span(ScreenText.column(c.handle(), HANDLE_COL), "bright"),
                     Frames.span(ScreenText.padRight(loc, 18), "grey"),
                     Frames.span(when, "dark_grey")));
         }
@@ -156,7 +175,7 @@ public class InfoViewScreen implements Screen {
                     Frames.span("   ", null),
                     Frames.span(p.isSysop() ? "[*] " : "    ",
                             p.isSysop() ? "bright_red" : "grey"),
-                    Frames.span(ScreenText.padRight(p.handle(), 18), "bright"),
+                    Frames.span(ScreenText.column(p.handle(), HANDLE_COL), "bright"),
                     Frames.span(formatOnlineDuration(p.joinedAt(), now), "grey")));
         }
         rows.add(Frames.blank(rowN++));

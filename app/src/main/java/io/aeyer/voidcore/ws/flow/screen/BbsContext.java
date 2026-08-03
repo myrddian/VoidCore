@@ -95,6 +95,42 @@ public final class BbsContext {
      * which is also what a mocked session yields in tests, so screens keep
      * their historical wrapping unless a real viewport says otherwise.
      */
+    /** Rows a screen spends on chrome: title, spacer, column header, key menu. */
+    private static final int CHROME_ROWS = 6;
+    private static final int MIN_CONTENT_ROWS = 5;
+    private static final int MAX_CONTENT_ROWS = 200;
+
+    /**
+     * Content rows available for a given reported viewport height. Static so
+     * paint paths holding only a {@link VoidCoreSession} can use the same
+     * arithmetic as those holding a context.
+     *
+     * <p>Falls back to the classic 24-row terminal when nothing has been
+     * reported.
+     */
+    public static int contentRowsFor(int viewportRows) {
+        int rows = viewportRows > 0 ? viewportRows : 24;
+        return Math.max(MIN_CONTENT_ROWS, Math.min(rows - CHROME_ROWS, MAX_CONTENT_ROWS));
+    }
+
+    /** Content rows available on this session's viewport. */
+    public int contentRows() {
+        return contentRowsFor(viewportRows());
+    }
+
+    /**
+     * Content rows, but never fewer than {@code minimum}.
+     *
+     * <p>This is the shape list screens want. Trimming a history list to
+     * exactly what fits would *remove* scrollback that used to be there on a
+     * small window — so the reported height is used to grow the list when
+     * there is room, never to shrink it below what the screen showed before.
+     * Pass the screen's previous fixed limit as {@code minimum}.
+     */
+    public int contentRowsAtLeast(int minimum) {
+        return Math.max(minimum, contentRows());
+    }
+
     public int bodyCanvasCols() {
         int reported = viewportCols();
         int cols = reported > 0 ? reported : io.aeyer.voidcore.ws.flow.layout.Layout.Flow.DEFAULT_COLS;
