@@ -206,3 +206,38 @@ val frontendBuild = tasks.register<Exec>("frontendBuild") {
 
 tasks.named("processResources") { dependsOn(frontendBuild) }
 tasks.named("compileTestJava") { mustRunAfter(frontendBuild) }
+
+// The bundler strips types without checking them, so a type error reaches
+// the browser rather than the build. Check them explicitly.
+val frontendTypecheck = tasks.register<Exec>("frontendTypecheck") {
+    group = "verification"
+    description = "Type-check the smart-terminal client (tsc --noEmit)."
+    dependsOn(npmInstall)
+    workingDir = frontendDir.asFile
+    inputs.dir(frontendDir.dir("src"))
+    inputs.file(frontendDir.file("package.json"))
+    inputs.file(frontendDir.file("tsconfig.json"))
+    // No output artefact, so there is nothing to compare — always run.
+    outputs.upToDateWhen { false }
+    commandLine("npm", "run", "typecheck")
+}
+
+val frontendTest = tasks.register<Exec>("frontendTest") {
+    group = "verification"
+    description = "Run the client's vitest suite."
+    dependsOn(npmInstall)
+    workingDir = frontendDir.asFile
+    inputs.dir(frontendDir.dir("src"))
+    inputs.file(frontendDir.file("package.json"))
+    outputs.upToDateWhen { false }
+    commandLine("npm", "run", "test:run")
+}
+
+// Gate the client the same way the Java side is gated. Without this the
+// vitest suite exists but nothing runs it, so CI stays green through a
+// client-side regression — which is how the viewport reporting shipped
+// broken despite a full suite passing.
+tasks.named("check") {
+    dependsOn(frontendTypecheck)
+    dependsOn(frontendTest)
+}
