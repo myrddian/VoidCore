@@ -105,9 +105,21 @@ public class InfoViewScreen implements Screen {
         ctx.send(new InputPrompt("keystroke", "key:", null, "Q", null));
     }
 
+    /**
+     * Last-caller rows shown before the client reported a viewport — the
+     * historical fixed value, now a floor rather than a cap.
+     */
+    private static final int LAST_CALLERS_ROWS = 20;
+
+    /** Reflow on resize; onEnter is a pure paint switch, so re-entering is safe. */
+    @Override
+    public void onViewportResize(BbsContext ctx) {
+        onEnter(ctx);
+    }
+
     private void paintLastCallers(BbsContext ctx) {
         ctx.persistCurrentScreen("{\"kind\":\"last_callers\"}");
-        var list = lastCallers.recent(20);
+        var list = lastCallers.recent(ctx.contentRowsAtLeast(LAST_CALLERS_ROWS));
         ArrayList<Row> rows = new ArrayList<>();
         rows.add(Frames.colored(0, "  == LAST CALLERS ==", "bright_yellow"));
         rows.add(Frames.blank(1));
