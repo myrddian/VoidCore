@@ -26,7 +26,11 @@ jobs:
 
       - name: Run test suite
         working-directory: app
-        run: ./gradlew --no-daemon test
+        # `check`, not `test`: `test` is the Java suite only. `check` also
+        # runs the client's vitest suite and tsc --noEmit, neither of which
+        # anything ran before — the bundler strips types without checking
+        # them, so type errors reached the browser rather than the build.
+        run: ./gradlew --no-daemon check
 
   docker:
     runs-on: ubuntu-latest
