@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "voidcore",
+      "runtimeExecutable": "scripts/dev-run.sh",
+      "runtimeArgs": [],
+      "port": 8090
+    }
+  ]
+}
