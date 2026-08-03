@@ -44,6 +44,13 @@ import java.util.List;
  */
 @ScreenComponent
 public class OnelinersScreen implements Screen {
+    /**
+     * Width of a handle column. Handles are CHECK-constrained to 3..16
+     * characters (V1__initial_schema.sql), so 17 always leaves a one-space
+     * separator and never truncates a real handle.
+     */
+    private static final int HANDLE_COL = 17;
+
 
     private static final Logger log = LoggerFactory.getLogger(OnelinersScreen.class);
     private static final int ONELINER_MAX_LEN = 70;
@@ -167,7 +174,7 @@ public class OnelinersScreen implements Screen {
                     Frames.span(num, "bright_yellow"),
                     Frames.span(when, "dark_grey"),
                     Frames.span("  ", null),
-                    Frames.span(ScreenText.padRight(o.handle(), 12), "bright_cyan"),
+                    Frames.span(ScreenText.column(o.handle(), HANDLE_COL), "bright_cyan"),
                     Frames.span(o.body(), "default"),
                     Frames.span(tally, "grey")));
             n++;

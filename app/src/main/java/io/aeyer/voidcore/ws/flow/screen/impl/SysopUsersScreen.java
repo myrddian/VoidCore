@@ -16,6 +16,13 @@ import java.util.ArrayList;
 /** Sysop · users — list of users; pick one to manage. */
 @ScreenComponent
 public class SysopUsersScreen implements Screen {
+    /**
+     * Width of a handle column. Handles are CHECK-constrained to 3..16
+     * characters (V1__initial_schema.sql), so 17 always leaves a one-space
+     * separator and never truncates a real handle.
+     */
+    private static final int HANDLE_COL = 17;
+
 
     private final UserRepository users;
 
@@ -45,7 +52,7 @@ public class SysopUsersScreen implements Screen {
                     Frames.span("  [", "grey"),
                     Frames.span(String.valueOf(i + 1), "bright_yellow", true),
                     Frames.span("] ", "grey"),
-                    Frames.span(ScreenText.padRight(u.handle(), 16), "bright"),
+                    Frames.span(ScreenText.column(u.handle(), HANDLE_COL), "bright"),
                     Frames.span(ScreenText.padRight(loc, 18), "grey"),
                     Frames.span(ScreenText.padLeft(String.valueOf(u.callCount()), 6), "default"),
                     Frames.span("    ", null),
