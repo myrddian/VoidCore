@@ -26,7 +26,16 @@ public final class ScreenText {
         return sb.toString();
     }
 
-    /** Right-pad with spaces to {@code width}; truncates if longer. */
+    /**
+     * Right-pad with spaces to {@code width}. Values longer than
+     * {@code width} are returned <strong>unchanged</strong> — this does not
+     * truncate, despite what this comment used to claim.
+     *
+     * <p>For a fixed column use {@link #column(String, int)} instead: a
+     * long value here shunts every following span rightwards and eats the
+     * separator, which is how a 15-character handle came to be printed
+     * flush against the one-liner body in a 12-wide column.
+     */
     public static String padRight(String s, int width) {
         if (s == null) s = "";
         if (s.length() >= width) return s;
@@ -44,6 +53,18 @@ public final class ScreenText {
         for (int i = s.length(); i < width; i++) sb.append(' ');
         sb.append(s);
         return sb.toString();
+    }
+
+    /**
+     * Fit {@code s} into exactly {@code width} columns: padded when short,
+     * truncated with a trailing '…' when long. Use for any tabular column,
+     * so neither a long value nor a short one can move the next column.
+     */
+    public static String column(String s, int width) {
+        if (s == null) s = "";
+        if (width <= 0) return "";
+        if (s.length() > width) return s.substring(0, width - 1) + "…";
+        return padRight(s, width);
     }
 
     /** Truncate to {@code max} chars, replacing trailing char with '…'. */

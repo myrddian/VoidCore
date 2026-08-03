@@ -23,6 +23,13 @@ import java.util.List;
 
 @ScreenComponent
 public class SysopChatRoomUsersScreen implements Screen {
+    /**
+     * Width of a handle column. Handles are CHECK-constrained to 3..16
+     * characters (V1__initial_schema.sql), so 17 always leaves a one-space
+     * separator and never truncates a real handle.
+     */
+    private static final int HANDLE_COL = 17;
+
 
     private final ChatRepository chat;
     private final UserRepository users;
@@ -75,7 +82,7 @@ public class SysopChatRoomUsersScreen implements Screen {
                     Frames.span("  [", "grey"),
                     Frames.span(String.valueOf(i + 1), "bright_yellow", true),
                     Frames.span("] ", "grey"),
-                    Frames.span(ScreenText.padRight(user.handle(), 16), "bright_cyan", true),
+                    Frames.span(ScreenText.column(user.handle(), HANDLE_COL), "bright_cyan", true),
                     Frames.span(directView ? "ON   " : "off  ", directView ? "bright_green" : "dark_grey"),
                     Frames.span(directPost ? "ON   " : "off  ", directPost ? "bright_green" : "dark_grey"),
                     Frames.span((effectiveView ? "view" : "-") + "/" + (effectivePost ? "post" : "-"),
