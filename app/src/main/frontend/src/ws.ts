@@ -19,6 +19,8 @@ export interface WsCallbacks {
   onStatus: (text: string) => void;
   /** Fired when the server closes the WS deliberately (code 1000). */
   onServerClose: () => void;
+  /** Fired once the socket is open — including after a reconnect. */
+  onOpen?: () => void;
   getRegionVersions: () => Record<string, number>;
   getStoredToken: () => string | null;
   getIntent: () => string | undefined;
@@ -59,17 +61,19 @@ export class WsClient {
     this.connect();
   }
 
-  send(env: Envelope): void {
+  send(env: Envelope): boolean {
     const state = this.ws?.readyState ?? -1;
     // eslint-disable-next-line no-console
     console.debug("[ws] send", env.type, "readyState=" + readyStateName(state));
     if (this.ws && this.ws.readyState === WebSocket.OPEN) {
       this.ws.send(JSON.stringify(env));
+      return true;
     } else {
       // Drop on the floor with a console warning; in a queued model we'd
       // buffer here, but the BBS's request/response shape means anything
       // missed during a drop should be re-fetched after resume anyway.
       console.warn("ws not open, dropping outbound", env.type, "readyState=", readyStateName(state));
+      return false;
     }
   }
 
@@ -93,6 +97,9 @@ export class WsClient {
       this.lastFrameAt = Date.now();
       this.startWatchdog();
       this.cb.onStatus("");
+      // Anything that must reach a live socket goes here, not at page load:
+      // sends before this point are dropped (see send()).
+      this.cb.onOpen?.();
       // Always send auth.resume on connect — when a token is present this
       // resumes the session, when absent (token=null) it serves only to
       // hand the URL fragment intent to the server so it survives the
@@ -227,16 +234,16 @@ export function registerInstance(client: WsClient): void {
  * this helper adds the envelope fields required by the wire protocol.
  * Used as RenderDeps.sendMessage in main.ts.
  */
-export function sendRaw(msg: unknown): void {
+export function sendRaw(msg: unknown): boolean {
   if (!_instance) {
     console.warn("[ws] sendRaw: no active WsClient instance");
-    return;
+    return false;
   }
   const raw = msg as Record<string, unknown>;
   const type = typeof raw["type"] === "string" ? raw["type"] : "unknown";
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { type: _type, ...payload } = raw;
-  _instance.send(envelope(type, payload));
+  return _instance.send(envelope(type, payload));
 }
 
 export function sendFieldCommit(widgetId: string, value: string): void {
