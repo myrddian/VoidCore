@@ -47,6 +47,23 @@ public class OnelinersScreen implements Screen {
 
     private static final Logger log = LoggerFactory.getLogger(OnelinersScreen.class);
     private static final int ONELINER_MAX_LEN = 70;
+
+    /**
+     * Wall entries shown before the client reported a viewport — the
+     * historical fixed value, now a floor rather than a cap.
+     */
+    private static final int WALL_ROWS = 40;
+
+    /**
+     * How many entries to read: never fewer than {@link #WALL_ROWS}, more
+     * when the viewport has room. Shared by the paint path and the /react
+     * handler so their numbering cannot drift — /react only addresses the
+     * first 9 of a newest-first list, but reading the same window keeps that
+     * guarantee obvious rather than incidental.
+     */
+    private static int wallLimit(VoidCoreSession session) {
+        return Math.max(WALL_ROWS, BbsContext.contentRowsFor(session.viewportRows()));
+    }
     public static final String TOPIC = "oneliners";
     public static final long WALL_ID = 1L;
 
@@ -112,6 +129,17 @@ public class OnelinersScreen implements Screen {
     }
 
     /**
+     * Reflow on resize — a taller window shows more of the wall. Paints
+     * directly rather than via onEnter so a resize cannot re-run the
+     * access gate and pop the screen out from under the user.
+     */
+    @Override
+    public void onViewportResize(BbsContext ctx) {
+        renderFrame(ctx.session());
+        emitPrompt(ctx);
+    }
+
+    /**
      * Paint the wall to the given session. Public so the bus delivery
      * path ({@link #onEvent}) can repaint each subscriber, and so
      * {@link #onEnter} can paint the active user. Doesn't emit an
@@ -119,7 +147,7 @@ public class OnelinersScreen implements Screen {
      * {@link #emitPrompt(BbsContext)}.
      */
     public void renderFrame(VoidCoreSession session) {
-        List<Oneliner> list = oneliners.recent(40);
+        List<Oneliner> list = oneliners.recent(wallLimit(session));
         ArrayList<ServerMessage.Row> rows = new ArrayList<>();
         rows.add(Frames.colored(0, "  == ONE-LINERS ==   " + list.size() + " posted",
                 "bright_yellow"));
@@ -238,7 +266,8 @@ public class OnelinersScreen implements Screen {
                     "warn", 3000));
             return true;
         }
-        java.util.List<io.aeyer.voidcore.oneliners.Oneliner> list = oneliners.recent(40);
+        java.util.List<io.aeyer.voidcore.oneliners.Oneliner> list =
+                oneliners.recent(wallLimit(ctx.session()));
         if (n < 1 || n > Math.min(9, list.size())) {
             ctx.send(Frames.notify("notifications",
                     "no oneliner #" + n, "warn", 2000));
