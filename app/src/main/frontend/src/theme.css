@@ -332,10 +332,21 @@ body {
 }
 
 .crt {
+  /* Fully reactive: the CRT is the browser window, less the body's padding.
+   *
+   * It used to be pinned at 920x700 on every display, which made region-main
+   * a constant ~846x549 (~105x23 cells) however large the window was — and
+   * since the reported viewport is measured from this shell, the cap also
+   * pinned what the server was told. Screens taller than the box scrolled
+   * inside region-main rather than using the space.
+   *
+   * No max-width / max-height on purpose. A bigger window is a bigger
+   * terminal; that is the whole point of reporting the viewport. Line length
+   * is not a concern here because prose is capped server-side at 120 columns
+   * (BbsContext.bodyCanvasCols), so a 4K window yields more rows and wider
+   * tables, not unreadable paragraphs. */
   width: 100%;
-  max-width: 920px;
   height: 100%;
-  max-height: 700px;
   position: relative;
   background: #000;
   border: 2px solid #1a1a1a;
