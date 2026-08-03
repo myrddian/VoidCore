@@ -20,6 +20,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 import javax.sql.DataSource;
 import java.sql.Driver;
 import java.time.Clock;
+import java.time.Duration;
 import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
@@ -80,15 +81,40 @@ class SessionServiceIntegrationTest {
         jdbc.getJdbcTemplate().update("TRUNCATE sessions");
     }
 
-    private SessionService serviceAt(String iso) {
-        Clock pinned = Clock.fixed(Instant.parse(iso), ZoneOffset.UTC);
+    /**
+     * Anchor for every pinned clock in this class, captured once per run.
+     *
+     * <p>These clocks used to be hardcoded absolute instants around
+     * 2026-04-29. That is only safe while real time stays close to them:
+     * {@link SessionRepository} deliberately uses the <em>database's</em>
+     * wall clock for the active-row and prune predicates, and
+     * {@code sessions.created_at} defaults to the DB's {@code now()}. So a
+     * session "created" at a pinned instant expires 30 days later on a
+     * fixed calendar date, and once wall-clock time passed it every
+     * expiry-sensitive assertion inverted. The suite went red on
+     * 2026-05-29 and stayed red — a failure with no commit behind it.
+     *
+     * <p>Anchoring to real now keeps the pinned clock and the database's
+     * clock in the same relationship on every run, forever. Tests express
+     * time as an offset — "a day later", "past the TTL" — which is what
+     * they always meant.
+     */
+    private static final Instant NOW = Instant.now();
+
+    /** Service whose clock reads {@code NOW + offset}. */
+    private SessionService serviceAt(Duration offset) {
+        Clock pinned = Clock.fixed(NOW.plus(offset), ZoneOffset.UTC);
         return new SessionService(repo, new SessionProperties(30), pinned);
+    }
+
+    /** Service whose clock reads real now — the common case. */
+    private SessionService serviceNow() {
+        return serviceAt(Duration.ZERO);
     }
 
     @Test
     void createReturnsHexTokenWithDefaultScreen() {
-        Session s = serviceAt("2026-04-29T00:00:00Z")
-                .create(userId, "127.0.0.1", "test/1.0");
+        Session s = serviceNow().create(userId, "127.0.0.1", "test/1.0");
 
         assertThat(s.token()).hasSize(64).matches("[0-9a-f]{64}");
         assertThat(s.userId()).isEqualTo(userId);
@@ -100,40 +126,40 @@ class SessionServiceIntegrationTest {
 
     @Test
     void resumeSlidesTtlAndUpdatesLastSeen() {
-        SessionService createdAt = serviceAt("2026-04-29T00:00:00Z");
+        SessionService createdAt = serviceNow();
         Session created = createdAt.create(userId, "10.0.0.1", "ua");
 
-        SessionService laterAt = serviceAt("2026-04-30T00:00:00Z");
+        SessionService laterAt = serviceAt(Duration.ofDays(1));
         Optional<Session> resumed = laterAt.resume(created.token());
 
         assertThat(resumed).isPresent();
         // last_seen_at slid to the resume moment
         assertThat(resumed.get().lastSeenAt().toInstant())
-                .isEqualTo(Instant.parse("2026-04-30T00:00:00Z"));
+                .isEqualTo(NOW.plus(Duration.ofDays(1)));
         // expires_at slid to resume moment + 30 days, beyond the original
         assertThat(resumed.get().expiresAt()).isAfter(created.expiresAt());
     }
 
     @Test
     void resumeReturnsEmptyForExpiredToken() {
-        SessionService createdAt = serviceAt("2026-04-01T00:00:00Z");
+        SessionService createdAt = serviceAt(Duration.ofDays(-31));
         Session created = createdAt.create(userId, "127.0.0.1", "ua");
 
         // 31 days later — original 30-day TTL has lapsed, no slide possible
-        SessionService laterAt = serviceAt("2026-05-02T00:00:00Z");
+        SessionService laterAt = serviceNow();
         assertThat(laterAt.resume(created.token())).isEmpty();
     }
 
     @Test
     void resumeReturnsEmptyForUnknownToken() {
-        assertThat(serviceAt("2026-04-29T00:00:00Z").resume("does-not-exist")).isEmpty();
-        assertThat(serviceAt("2026-04-29T00:00:00Z").resume("")).isEmpty();
-        assertThat(serviceAt("2026-04-29T00:00:00Z").resume(null)).isEmpty();
+        assertThat(serviceNow().resume("does-not-exist")).isEmpty();
+        assertThat(serviceNow().resume("")).isEmpty();
+        assertThat(serviceNow().resume(null)).isEmpty();
     }
 
     @Test
     void updateScreenPersistsAndRoundTrips() {
-        SessionService svc = serviceAt("2026-04-29T00:00:00Z");
+        SessionService svc = serviceNow();
         Session s = svc.create(userId, "127.0.0.1", "ua");
 
         ObjectNode threadView = json.createObjectNode().put("kind", "thread").put("id", 42);
@@ -147,14 +173,14 @@ class SessionServiceIntegrationTest {
 
     @Test
     void updateScreenReturnsFalseForUnknownToken() {
-        SessionService svc = serviceAt("2026-04-29T00:00:00Z");
+        SessionService svc = serviceNow();
         ObjectNode dummy = json.createObjectNode().put("kind", "menu");
         assertThat(svc.updateScreen("nope", dummy)).isFalse();
     }
 
     @Test
     void invalidateRemovesTheRow() {
-        SessionService svc = serviceAt("2026-04-29T00:00:00Z");
+        SessionService svc = serviceNow();
         Session s = svc.create(userId, "127.0.0.1", "ua");
 
         svc.invalidate(s.token());
@@ -164,14 +190,15 @@ class SessionServiceIntegrationTest {
 
     @Test
     void pruneExpiredDeletesOnlyExpiredRows() {
-        SessionService earlyClock = serviceAt("2026-04-01T00:00:00Z");
+        SessionService earlyClock = serviceAt(Duration.ofDays(-45));
         Session expired = earlyClock.create(userId, "127.0.0.1", "ua-1");
 
-        SessionService recentClock = serviceAt("2026-04-29T00:00:00Z");
+        SessionService recentClock = serviceNow();
         Session live = recentClock.create(userId, "127.0.0.1", "ua-2");
 
-        // Use an even-later clock so the early session is past its 30-day TTL
-        SessionService pruneClock = serviceAt("2026-05-15T00:00:00Z");
+        // Prune at now: the early session's 30-day TTL lapsed 15 days ago,
+        // the recent one has 30 days left.
+        SessionService pruneClock = serviceNow();
         int removed = pruneClock.pruneExpired();
 
         assertThat(removed).isEqualTo(1);
@@ -187,7 +214,7 @@ class SessionServiceIntegrationTest {
 
     @Test
     void tokensAreUniqueAcrossManyCreates() {
-        SessionService svc = serviceAt("2026-04-29T00:00:00Z");
+        SessionService svc = serviceNow();
         // Cheap sanity check on the SecureRandom path; not a statistical proof.
         java.util.Set<String> tokens = new java.util.HashSet<>();
         for (int i = 0; i < 50; i++) {
