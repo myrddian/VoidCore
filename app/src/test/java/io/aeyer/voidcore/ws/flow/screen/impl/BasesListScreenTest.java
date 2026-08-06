@@ -12,6 +12,8 @@ import io.aeyer.voidcore.ws.VoidCoreSession;
 import io.aeyer.voidcore.ws.flow.screen.BbsContext;
 import io.aeyer.voidcore.ws.flow.screen.BbsServices;
 import io.aeyer.voidcore.ws.flow.screen.Phase;
+import io.aeyer.voidcore.ws.flow.layout.Element;
+import io.aeyer.voidcore.ws.flow.ui.AppEvent;
 import io.aeyer.voidcore.ws.protocol.ServerMessage;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -19,6 +21,7 @@ import org.junit.jupiter.api.Test;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
@@ -62,17 +65,77 @@ class BasesListScreenTest {
         screen = new BasesListScreen(repo, acl);
     }
 
+    /** The list the screen actually composed, or null if it rendered none. */
+    private Element.ListView renderedList() {
+        return sent.stream()
+                .filter(ServerMessage.RegionUpdate.class::isInstance)
+                .map(ServerMessage.RegionUpdate.class::cast)
+                .map(ServerMessage.RegionUpdate::tree)
+                .filter(java.util.Objects::nonNull)
+                .map(BasesListScreenTest::findList)
+                .filter(java.util.Objects::nonNull)
+                .findFirst().orElse(null);
+    }
+
+    private static Element.ListView findList(Element el) {
+        return switch (el) {
+            case Element.ListView lv -> lv;
+            case Element.VStack v -> v.children().stream()
+                    .map(BasesListScreenTest::findList)
+                    .filter(java.util.Objects::nonNull).findFirst().orElse(null);
+            default -> null;
+        };
+    }
+
     @Test
     void onEnterFiltersBasesByViewAcl() {
         screen.onEnter(ctx);
 
         verify(ctx).persistCurrentScreen("{\"kind\":\"bases\"}");
-        verify(ctx).send(any(ServerMessage.RegionUpdate.class));
         verify(ctx).send(any(ServerMessage.InputPrompt.class));
+
+        // Assert on what was composed rather than counting sends: the screen
+        // is a ScreenApp now, so onEnter also minimises the banner.
+        Element.ListView list = renderedList();
+        assertThat(list).isNotNull();
+        assertThat(list.items()).hasSize(1);
+        assertThat(list.items().get(0).id()).isEqualTo("1");
+        assertThat(list.items().get(0).label()).contains("general");
     }
 
     @Test
-    void numericSelectionUsesFilteredOrdering() {
+    void selectingAnItemOpensThatBoard() {
+        screen.onEnter(ctx);
+
+        screen.onAppEvent(ctx, new AppEvent.ListSelected("bases", "1"));
+
+        verify(session).setSelectedBaseId(1L);
+        verify(ctx).push(Phase.THREADS_LIST);
+    }
+
+    @Test
+    void ignoresASelectionTheUserMayNotView() {
+        // The id arrives off the wire; a client naming a filtered-out board
+        // must not get in through the list path.
+        screen.onEnter(ctx);
+
+        screen.onAppEvent(ctx, new AppEvent.ListSelected("bases", "2"));
+
+        verify(session, org.mockito.Mockito.never()).setSelectedBaseId(2L);
+        verify(ctx, org.mockito.Mockito.never()).push(Phase.THREADS_LIST);
+    }
+
+    @Test
+    void ignoresASelectionFromAnotherWidget() {
+        screen.onEnter(ctx);
+
+        screen.onAppEvent(ctx, new AppEvent.ListSelected("something-else", "1"));
+
+        verify(ctx, org.mockito.Mockito.never()).push(Phase.THREADS_LIST);
+    }
+
+    @Test
+    void numericSelectionStillWorksAlongsideTheList() {
         screen.onEnter(ctx);
         screen.onKey(ctx, "1");
 
