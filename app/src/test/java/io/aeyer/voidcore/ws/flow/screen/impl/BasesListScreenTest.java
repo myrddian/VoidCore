@@ -135,6 +135,23 @@ class BasesListScreenTest {
     }
 
     @Test
+    void doesNotRepaintItselfOverTheScreenItOpened() {
+        // ScreenApp.onAppEvent recomposes after the handler runs. Pushing
+        // with a bare ctx.push() therefore paints this list back over the
+        // threads screen — the user gets the new prompt above the old body.
+        // Caught in a browser, not by the earlier tests.
+        screen.onEnter(ctx);
+        int framesAfterEnter = sent.size();
+
+        screen.onAppEvent(ctx, new AppEvent.ListSelected("bases", "1"));
+
+        long repaints = sent.stream().skip(framesAfterEnter)
+                .filter(ServerMessage.RegionUpdate.class::isInstance)
+                .count();
+        assertThat(repaints).isZero();
+    }
+
+    @Test
     void numericSelectionStillWorksAlongsideTheList() {
         screen.onEnter(ctx);
         screen.onKey(ctx, "1");

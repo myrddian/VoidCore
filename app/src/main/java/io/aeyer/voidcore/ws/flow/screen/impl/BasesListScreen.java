@@ -176,7 +176,10 @@ public class BasesListScreen extends ScreenApp {
 
     private void enter(BbsContext ctx, long baseId) {
         ctx.session().setSelectedBaseId(baseId);
-        ctx.push(Phase.THREADS_LIST);
+        // pushAndExit, not ctx.push: the event path repaints after the
+        // handler returns, so a bare push leaves this screen's list painted
+        // over the threads screen it just opened.
+        pushAndExit(ctx, Phase.THREADS_LIST);
     }
 
     /**
