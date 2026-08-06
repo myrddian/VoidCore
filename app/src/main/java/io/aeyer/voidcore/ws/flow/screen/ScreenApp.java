@@ -35,7 +35,8 @@ public abstract class ScreenApp implements Screen {
     private String focusPath;
     private int treeVersion;
     private String currentAppKey;
-    private boolean popped = false;
+    /** Set when the screen navigated away, so the post-event repaint is skipped. */
+    private boolean exited = false;
 
     /** Per-instance scoping key for {@code sessions.app_state} (e.g. {@code "doc:42"}). */
     protected abstract String appKey(BbsContext ctx);
@@ -50,7 +51,23 @@ public abstract class ScreenApp implements Screen {
      */
     protected final void popAndExit(BbsContext ctx) {
         ctx.pop();
-        this.popped = true;
+        this.exited = true;
+    }
+
+    /**
+     * Push another screen and leave. The push equivalent of
+     * {@link #popAndExit}, and needed for the same reason: without
+     * suppressing the post-event repaint, this screen's {@code compose()}
+     * re-emits its own tree <em>over</em> the screen just pushed, so the
+     * user sees the new screen's prompt above the old screen's body.
+     *
+     * <p>Only the event path needs this — a keystroke handler returns
+     * before any recompose — but using it on both paths keeps navigation
+     * uniform.
+     */
+    protected final void pushAndExit(BbsContext ctx, Phase phase) {
+        ctx.push(phase);
+        this.exited = true;
     }
 
     /**
@@ -102,7 +119,7 @@ public abstract class ScreenApp implements Screen {
 
     @Override
     public Transition onEnter(BbsContext ctx) {
-        this.popped = false;
+        this.exited = false;
         this.currentAppKey = appKey(ctx);
         this.tree = compose(ctx);
         this.focusPath = FocusPath.firstFocusable(tree).orElse(null);
@@ -134,8 +151,8 @@ public abstract class ScreenApp implements Screen {
         // recompose avoids tearing down the live editor with the just-saved
         // snapshot contents (which would discard the last 15s of typing).
         if (ev instanceof AppEvent.EditorSnapshot) return;
-        if (popped) {
-            popped = false;
+        if (exited) {
+            exited = false;
             return;
         }
         this.tree = compose(ctx);   // re-compose from updated domain state
