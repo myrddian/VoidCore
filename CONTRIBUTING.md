@@ -41,7 +41,31 @@ Faster than `docker compose up --build`, because Gradle rebuilds in place:
 ```sh
 ./scripts/dev-db.sh    # Postgres on :5432, same sql/init as Compose
 ./scripts/dev-run.sh   # the app on :8090
+./scripts/dev-seed.sh  # boards, ACL grants, one-liners — optional
 ```
+
+The engine ships with **no content on purpose** — `message_bases` starts
+empty and `FlywayMigrationIntegrationTest` asserts it, because reference
+data belongs in an operator's overlay rather than in core. That makes a
+fresh developer instance an empty board, so `dev-seed.sh` fills a local
+database without changing what a clone ships.
+
+Note that a board with no `acl_grants` row is invisible rather than
+broken: the VIEW check filters it out silently. `V16` grants the defaults
+for rows that exist when it runs, so anything inserted later needs the
+same grants — which is what tripped up the first attempt at seeding by
+hand.
+
+To verify a screen behind auth without retyping credentials after every
+restart:
+
+```sh
+./scripts/dev-session.sh test   # prints a token for an existing user
+```
+
+It mints a session row for a user that already exists; it will not create
+accounts, and it refuses to run against anything but the local dev
+container.
 
 Note that Spring serves static assets from `build/resources`, so a
 frontend change needs a server restart — rebuilding the bundle alone
