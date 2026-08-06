@@ -24,6 +24,7 @@ public final class FocusPath {
         return switch (root) {
             case Element.TextField tf -> Optional.of(tf.id());
             case Element.Editor    ed -> Optional.of(ed.id());
+            case Element.ListView  lv -> Optional.of(lv.id());
             case Element.Shell     s  -> firstFocusable(s.body());
             case Element.Form      f  -> {
                 if (f.focusedChildId() != null) yield Optional.of(f.focusedChildId());

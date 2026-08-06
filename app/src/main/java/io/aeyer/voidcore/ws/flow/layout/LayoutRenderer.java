@@ -110,6 +110,7 @@ public final class LayoutRenderer {
             case Element.TextField(String id, String label, String value, Integer maxLength, boolean readOnly) -> 0;
             case Element.Editor(String id, String content, String mode, String syntaxMode, boolean readOnly) -> 0;
             case Element.Form(String id, List<Element> children, String focusedChildId) -> 0;
+            case Element.ListView(String id, List<Element.ListView.Item> items, String selectedId) -> 0;
         };
     }
 

@@ -138,6 +138,7 @@ public abstract class WizardFormApp<S> extends ScreenApp {
             case AppEvent.EditorCancel ec      -> onCancel(ctx);
             case AppEvent.EditorSnapshot es    -> onSnapshot(ctx, state, stepIndex, es.content());
             case AppEvent.FocusMove fm         -> { /* steps own their own focus */ }
+            case AppEvent.ListSelected ls      -> { /* no list widget on this screen */ }
         }
     }
 

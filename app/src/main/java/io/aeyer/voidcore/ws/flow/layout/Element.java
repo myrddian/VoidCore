@@ -41,6 +41,7 @@ import java.util.List;
     @JsonSubTypes.Type(value = Element.TextField.class,  name = "textField"),
     @JsonSubTypes.Type(value = Element.Editor.class,     name = "editor"),
     @JsonSubTypes.Type(value = Element.Form.class,       name = "form"),
+    @JsonSubTypes.Type(value = Element.ListView.class,   name = "list"),
 })
 public sealed interface Element {
 
@@ -167,4 +168,34 @@ public sealed interface Element {
 
     /** Container; owns focus among focusable children. */
     record Form(String id, List<Element> children, String focusedChildId) implements Element {}
+
+    /**
+     * Selectable list. The client owns cursor movement, highlight and
+     * viewport-local scrolling; the server is told only when the user
+     * <em>commits</em> a choice, via {@code list.selected}.
+     *
+     * <p>That split is the point. Moving the highlight is the most common
+     * thing a user does on a list and it costs a round trip in the
+     * keystroke-per-frame model — here it costs nothing, and the server
+     * still learns the outcome.
+     *
+     * <p>Named {@code ListView} rather than {@code List} only to avoid
+     * colliding with {@link java.util.List} at every call site; the wire
+     * name is {@code "list"}.
+     *
+     * @param id         widget id, echoed back on selection
+     * @param items      rows in display order
+     * @param selectedId item to highlight initially; null selects the first
+     */
+    record ListView(String id, List<Item> items, String selectedId) implements Element {
+        /**
+         * @param id        stable identity sent back on commit — not the row index,
+         *                  so a list that reorders between paints can't mis-select
+         * @param label     primary text
+         * @param secondary optional trailing detail (timestamp, author, count)
+         */
+        public record Item(String id, String label, String secondary) {
+            public Item(String id, String label) { this(id, label, null); }
+        }
+    }
 }

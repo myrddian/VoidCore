@@ -617,6 +617,31 @@ body {
 /* ============================================================================
  * Widget theming for editor, tokens, status modes, text fields, headers, menus
  * ============================================================================ */
+/* --- list widget ---------------------------------------------------------
+ * Key source, hidden but focusable — same constraint as the editor's and
+ * the status line's: display:none would make .focus() a no-op and lock
+ * mobile users out of the on-screen keyboard (#42). */
+.widget-list-key-input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  border: none;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.widget-list-row {
+  display: flex;
+  gap: 1ch;
+  justify-content: space-between;
+}
+.widget-list-row-selected {
+  background: var(--widget-list-selected-bg, var(--widget-mode-normal-bg));
+  color: var(--widget-list-selected-fg, var(--widget-mode-normal-fg));
+}
+.widget-list-secondary { opacity: 0.7; }
+
 /*
  * The editor's key source (ADR-036). Taken out of the visual flow but kept
  * focusable — same constraint as .status-input.hidden: display:none would
