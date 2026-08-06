@@ -114,6 +114,7 @@ public class RoutingMessageDispatcher implements MessageDispatcher {
                 case ClientMessage.FieldCommit m -> notImplemented(session, m);
                 case ClientMessage.FieldCancel m -> notImplemented(session, m);
                 case ClientMessage.FocusMove m -> notImplemented(session, m);
+                case ClientMessage.ListSelected m -> notImplemented(session, m);
             }
             return;
         }
@@ -145,6 +146,8 @@ public class RoutingMessageDispatcher implements MessageDispatcher {
                     new AppEvent.FieldCancel(m.widget_id()));
             case ClientMessage.FocusMove m -> screen.onAppEvent(session,
                     new AppEvent.FocusMove(m.from(), m.direction()));
+            case ClientMessage.ListSelected m -> screen.onAppEvent(session,
+                    new AppEvent.ListSelected(m.widget_id(), m.item_id()));
         }
         log.debug("[ws-trace] dispatch-end id={} type={}", session.id(), inbound.type());
     }
@@ -166,6 +169,7 @@ public class RoutingMessageDispatcher implements MessageDispatcher {
             case ClientMessage.FieldCommit x    -> "onAppEvent(FieldCommit widget=" + x.widget_id() + ")";
             case ClientMessage.FieldCancel x    -> "onAppEvent(FieldCancel widget=" + x.widget_id() + ")";
             case ClientMessage.FocusMove x      -> "onAppEvent(FocusMove from=" + x.from() + " dir=" + x.direction() + ")";
+            case ClientMessage.ListSelected x   -> "onAppEvent(ListSelected widget=" + x.widget_id() + " item=" + x.item_id() + ")";
         };
     }
 

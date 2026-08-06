@@ -21,4 +21,7 @@ public sealed interface AppEvent {
     record EditorSnapshot(String widgetId, String content) implements AppEvent {}
 
     record FocusMove(String from, String direction) implements AppEvent {}
+
+    /** User committed a choice in a {@code list} widget. */
+    record ListSelected(String widgetId, String itemId) implements AppEvent {}
 }

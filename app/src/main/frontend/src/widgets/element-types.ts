@@ -5,7 +5,7 @@
 
 export type Element =
   | Shell | VStack | TextEl | Para | AnsiBlock | Rule | Spacer | Padded | Styled
-  | Header | StatusLine | KeyMenu | TextField | Editor | Form;
+  | Header | StatusLine | KeyMenu | TextField | Editor | Form | ListView;
 
 export interface Shell     {
   kind: "shell";
@@ -41,6 +41,14 @@ export interface Editor {
   kind: "editor";
   id: string; content: string; mode: string;
   syntaxMode: string; readOnly: boolean;
+}
+
+export interface ListItem { id: string; label: string; secondary?: string | null; }
+
+export interface ListView {
+  kind: "list"; id: string;
+  items: ListItem[];
+  selectedId: string | null;
 }
 
 export interface Form {

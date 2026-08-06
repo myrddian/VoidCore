@@ -9,6 +9,7 @@ import { renderStatusLine } from "./status-line.js";
 import { renderKeyMenu } from "./key-menu.js";
 import { renderTextField } from "./text-field.js";
 import { renderForm } from "./form.js";
+import { renderList } from "./list.js";
 import { renderEditor } from "./editor/editor.js";
 
 export interface RenderDeps {
@@ -37,6 +38,7 @@ export function renderTree(el: Element, focus: string | null, deps: RenderDeps):
     case "textField":  return renderTextField(el, focus, deps);
     case "editor":     return renderEditor(el, focus, deps);
     case "form":       return renderForm(el, focus, deps);
+    case "list":       return renderList(el, focus, deps);
     default: {
       const node = document.createElement("div");
       node.className = "widget-unknown";

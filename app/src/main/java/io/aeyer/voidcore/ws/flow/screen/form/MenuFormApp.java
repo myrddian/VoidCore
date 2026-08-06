@@ -195,6 +195,7 @@ public abstract class MenuFormApp<S> extends ScreenApp {
             case AppEvent.EditorCancel ec      -> handleEditorCancel(ctx, ec);
             case AppEvent.EditorSnapshot es    -> { /* MenuFormApp doesn't snapshot multi-line fields */ }
             case AppEvent.FocusMove fm         -> handleFocusMove(ctx, fm);
+            case AppEvent.ListSelected ls -> { /* no list widget on this screen */ }
         }
     }
 

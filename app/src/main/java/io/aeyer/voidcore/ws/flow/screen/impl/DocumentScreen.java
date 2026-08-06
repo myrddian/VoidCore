@@ -329,6 +329,7 @@ public class DocumentScreen extends ScreenApp {
             case AppEvent.EditorCancel ec     -> handleEditorCancel(ctx, ec);
             case AppEvent.EditorSnapshot es   -> handleEditorSnapshot(ctx, es);
             case AppEvent.FocusMove fm        -> handleFocusMove(ctx, fm);
+            case AppEvent.ListSelected ls -> { /* no list widget on this screen */ }
         }
     }
 

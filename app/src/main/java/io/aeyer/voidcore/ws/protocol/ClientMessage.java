@@ -41,7 +41,8 @@ import java.util.Map;
         @JsonSubTypes.Type(value = ClientMessage.EditorSnapshot.class, name = "editor.snapshot"),
         @JsonSubTypes.Type(value = ClientMessage.FieldCommit.class,    name = "field.commit"),
         @JsonSubTypes.Type(value = ClientMessage.FieldCancel.class,    name = "field.cancel"),
-        @JsonSubTypes.Type(value = ClientMessage.FocusMove.class,      name = "focus.move")
+        @JsonSubTypes.Type(value = ClientMessage.FocusMove.class,      name = "focus.move"),
+        @JsonSubTypes.Type(value = ClientMessage.ListSelected.class,   name = "list.selected")
 })
 public sealed interface ClientMessage {
 
@@ -100,6 +101,15 @@ public sealed interface ClientMessage {
     ) implements ClientMessage {}
 
     // --- Rich editor widget mechanics -----------------------------------
+
+    /**
+     * User committed a choice in a {@code list} widget. Cursor movement
+     * stays client-side; only the commit crosses the wire.
+     */
+    record ListSelected(
+            String widget_id,
+            String item_id
+    ) implements ClientMessage {}
 
     record EditorCommit(
             String widget_id,
