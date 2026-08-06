@@ -22,6 +22,7 @@ import java.sql.Driver;
 import java.time.Clock;
 import java.time.Duration;
 import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.Optional;
@@ -94,12 +95,20 @@ class SessionServiceIntegrationTest {
      * expiry-sensitive assertion inverted. The suite went red on
      * 2026-05-29 and stayed red — a failure with no commit behind it.
      *
+     * <p>Truncated to whole seconds on purpose. Postgres {@code timestamptz}
+     * stores microseconds, while {@code Instant.now()} carries nanoseconds on
+     * Linux (and usually only microseconds on macOS) — so an untruncated
+     * anchor round-trips through the database lossily and
+     * {@code lastSeenAt} compares unequal on CI while passing locally. The
+     * old hardcoded literals had no sub-second digits, which is why they
+     * never hit this.
+     *
      * <p>Anchoring to real now keeps the pinned clock and the database's
      * clock in the same relationship on every run, forever. Tests express
      * time as an offset — "a day later", "past the TTL" — which is what
      * they always meant.
      */
-    private static final Instant NOW = Instant.now();
+    private static final Instant NOW = Instant.now().truncatedTo(ChronoUnit.SECONDS);
 
     /** Service whose clock reads {@code NOW + offset}. */
     private SessionService serviceAt(Duration offset) {
