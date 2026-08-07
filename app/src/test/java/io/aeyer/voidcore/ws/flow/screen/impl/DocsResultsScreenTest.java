@@ -3,6 +3,7 @@ package io.aeyer.voidcore.ws.flow.screen.impl;
 import io.aeyer.voidcore.auth.UserRepository;
 import io.aeyer.voidcore.documents.DocumentKind;
 import io.aeyer.voidcore.documents.DocumentRow;
+import io.aeyer.voidcore.documents.DocumentSort;
 import io.aeyer.voidcore.documents.FacetCount;
 import io.aeyer.voidcore.documents.Status;
 import io.aeyer.voidcore.documents.Visibility;
@@ -32,6 +33,8 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -126,13 +129,50 @@ class DocsResultsScreenTest {
     void onKeyNumberPushesDocumentView() {
         when(session.docsFilter()).thenReturn("kind=note");
         when(session.docsResultsPage()).thenReturn(0);
-        when(documents.findByFilter(any(), any(), eq(0), anyInt()))
+        when(documents.findByFilter(any(), any(), any(DocumentSort.class), eq(0), anyInt()))
                 .thenReturn(List.of(doc(11, "a"), doc(22, "b")));
 
         screen.onKey(ctx, "2");
 
         verify(session).setCurrentDocumentId(22L);
         verify(navigator).push(session, Phase.DOCUMENT_SCREEN);
+    }
+
+    @Test
+    void numericOpenHonoursTheActiveSort() {
+        // Previously the render queried WITH the sort and the numeric open
+        // queried WITHOUT it, so cycling sort with [S] and then pressing a
+        // digit opened the row at that position in the *unsorted* ordering.
+        when(session.docsFilter()).thenReturn("kind=note");
+        when(session.docsResultsPage()).thenReturn(0);
+        when(session.docsResultsSort()).thenReturn(DocumentSort.ALPHA.wireValue());
+        when(documents.findByFilter(any(), any(), eq(DocumentSort.ALPHA), eq(0), anyInt()))
+                .thenReturn(List.of(doc(11, "a"), doc(22, "b")));
+
+        screen.onKey(ctx, "1");
+
+        verify(session).setCurrentDocumentId(11L);
+        verify(documents, never()).findByFilter(any(), any(), anyInt(), anyInt());
+    }
+
+    @Test
+    void rendersTheWholePageNotJustNineRows() {
+        // The old nine-row cap was a keybinding artifact — single-digit open
+        // keys — not a layout limit. The list reaches every row, so the whole
+        // page is fetched and rendered.
+        when(session.docsFilter()).thenReturn("kind=note");
+        when(documents.countByFilter(any(), any())).thenReturn(20L);
+        when(users.findById(anyLong())).thenReturn(
+                Optional.of(new UserRepository.UserRow(100, "SYSOP", "x", false, false)));
+        List<DocumentRow> twenty = new java.util.ArrayList<>();
+        for (int i = 1; i <= 20; i++) twenty.add(doc(i, "doc " + i));
+        when(documents.findByFilter(any(), any(), any(DocumentSort.class), anyInt(), anyInt()))
+                .thenReturn(twenty);
+
+        screen.onEnter(ctx);
+
+        verify(documents, atLeastOnce()).findByFilter(any(), any(), any(DocumentSort.class),
+                eq(0), eq(20));
     }
 
     @Test

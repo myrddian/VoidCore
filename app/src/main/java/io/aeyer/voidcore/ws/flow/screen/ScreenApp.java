@@ -71,6 +71,17 @@ public abstract class ScreenApp implements Screen {
     }
 
     /**
+     * Replace this screen with another and leave. Completes the set beside
+     * {@link #popAndExit} and {@link #pushAndExit}: any navigation from the
+     * event path has to suppress the post-event repaint, or this screen's
+     * tree lands on top of whatever replaced it.
+     */
+    protected final void replaceTopAndExit(BbsContext ctx, Phase phase) {
+        ctx.replaceTopAndEnter(phase);
+        this.exited = true;
+    }
+
+    /**
      * Short label that appears in the minimised banner when this ScreenApp
      * is on top. Default: the screen's name() in upper-case. Subclasses can
      * override to include richer context (e.g. document slug).
