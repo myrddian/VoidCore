@@ -7,40 +7,52 @@ import io.aeyer.voidcore.documents.DocumentSort;
 import io.aeyer.voidcore.instance.InstanceFeature;
 import io.aeyer.voidcore.ws.flow.Banner;
 import io.aeyer.voidcore.ws.flow.Frames;
+import io.aeyer.voidcore.ws.flow.layout.Element;
 import io.aeyer.voidcore.ws.flow.screen.BbsContext;
 import io.aeyer.voidcore.ws.flow.screen.Phase;
-import io.aeyer.voidcore.ws.flow.screen.Screen;
+import io.aeyer.voidcore.ws.flow.screen.ScreenApp;
 import io.aeyer.voidcore.ws.flow.screen.ScreenComponent;
+import io.aeyer.voidcore.ws.flow.screen.ScreenText;
 import io.aeyer.voidcore.ws.flow.screen.Transition;
+import io.aeyer.voidcore.ws.flow.ui.AppEvent;
 import io.aeyer.voidcore.ws.flow.view.DocumentView;
 import io.aeyer.voidcore.ws.protocol.ServerMessage;
-import io.aeyer.voidcore.ws.protocol.ServerMessage.InputPrompt;
-import io.aeyer.voidcore.ws.protocol.ServerMessage.Row;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Filtered list view (PR-5). Renders the breadcrumb header, the
- * paginated document list, and the "cd further" picker row
- * (only multi-value facets that aren't already constrained).
+ * Filtered document list. Breadcrumb header, the paginated results, and
+ * the "cd further" options for facets the filter doesn't already
+ * constrain.
+ *
+ * <h2>The nine-row cap is gone</h2>
+ *
+ * <p>This screen used to fetch {@code PAGE_SIZE} rows and render only
+ * nine of them — not for space, but because the numbered open keys are
+ * single digits. On the {@code list} element the highlight reaches every
+ * row, so the whole page renders and digits stay a shortcut to the first
+ * nine.
  *
  * <h2>Keys</h2>
  * <ul>
- *   <li>{@code 1..9} — open the corresponding row's doc.</li>
- *   <li>{@code J} — next page (no-op past the end).</li>
- *   <li>{@code K} — prev page (no-op before page 1).</li>
- *   <li>{@code T}/{@code B}/{@code W} — push the matching picker
- *       (kind picker is the only one not surfaced here, since we're
- *       always entered via either the kind picker or another picker
- *       — kind narrowing happens at hub level).</li>
- *   <li>{@code .} — drop the most-recently-added facet from the
- *       filter and re-enter; pops to hub if the filter ends empty.</li>
- *   <li>{@code Q} — back to menu (pops the whole stack down).</li>
+ *   <li>{@code 1..9} — open that row directly; arrows or {@code j}/{@code k}
+ *       plus {@code Enter} reach any row.</li>
+ *   <li>{@code J} / {@code K} — next / previous page. Upper case, and
+ *       distinct from the list's lower-case {@code j}/{@code k} movement:
+ *       the widget consumes only what it handles, so the two coexist.</li>
+ *   <li>{@code T}/{@code B}/{@code W} — push the matching facet picker.</li>
+ *   <li>{@code .} — drop the most-recently-added facet; pops to hub if the
+ *       filter ends empty.</li>
+ *   <li>{@code S} — cycle sort. {@code /} — filter expression.
+ *       {@code Q} — back to menu.</li>
  * </ul>
  */
 @ScreenComponent
-public class DocsResultsScreen implements Screen {
+public class DocsResultsScreen extends ScreenApp {
+
+    /** Widget id, echoed back on {@code list.selected}. */
+    private static final String LIST_ID = "docs";
 
     private final UserRepository users;
 
@@ -48,6 +60,7 @@ public class DocsResultsScreen implements Screen {
 
     @Override public Phase phase() { return Phase.DOCS_RESULTS; }
     @Override public String name() { return "docs-results"; }
+    @Override protected String appKey(BbsContext ctx) { return "docs-results"; }
 
     @Override
     public List<String> topics(BbsContext ctx) {
@@ -59,237 +72,203 @@ public class DocsResultsScreen implements Screen {
         if (!ScreenFeatureGate.ensureEnabled(ctx, InstanceFeature.INFO_DOCS, "info / docs")) {
             return Transition.None.INSTANCE;
         }
-        // Restore the full banner in case we're returning from a ScreenApp
-        // (e.g. DocumentScreen) that minimised it.
-        ctx.send(Frames.update("banner", 2, Banner.rows()));
         DocumentFilter filter = DocsCommon.currentFilter(ctx.session());
         if (filter.isEmpty()) {
-            // Defensive: results screen should always have a filter
-            // (entered via picker). If empty, route back to hub.
+            // Defensive: results should always have a filter (entered via a
+            // picker). If empty, route back to the hub.
             ctx.replaceTopAndEnter(Phase.DOCS_HUB);
             return Transition.None.INSTANCE;
         }
-        DocumentView docs = ctx.services().documents();
-        long total = docs.countByFilter(filter, ctx.session());
-        int totalPages = total == 0 ? 0
-                : (int) ((total + DocsCommon.PAGE_SIZE - 1) / DocsCommon.PAGE_SIZE);
-        Integer pageBox = ctx.session().docsResultsPage();
-        int page = pageBox == null ? 0 : Math.max(0, pageBox);
-        if (totalPages > 0 && page >= totalPages) {
-            page = totalPages - 1;
-            ctx.session().setDocsResultsPage(page);
-        }
-        int offset = page * DocsCommon.PAGE_SIZE;
-        // Page size on screen capped at 9 because we're using single-
-        // digit numbered open keys. The repo can return more but the
-        // rendered chunk is 9.
-        int pageRows = Math.min(DocsCommon.PAGE_SIZE, 9);
-        DocumentSort sort = DocumentSort.parse(ctx.session().docsResultsSort());
-        List<DocumentRow> rowsList = docs.findByFilter(
-                filter, ctx.session(), sort, offset, pageRows);
-
         ctx.persistCurrentScreen(
-                "{\"kind\":\"docs_results\",\"filter\":\""
-                        + filter.serialise() + "\"}");
+                "{\"kind\":\"docs_results\",\"filter\":\"" + filter.serialise() + "\"}");
+        Transition t = super.onEnter(ctx);
+        // ScreenApp minimises the banner for editor-style screens; this one
+        // is a browsing surface, so put the full banner back.
+        ctx.send(Frames.update("banner", 2, Banner.rows()));
+        return t;
+    }
 
-        ArrayList<Row> rendered = new ArrayList<>();
-        rendered.add(DocsCommon.pageHeaderRow(0, total, page, totalPages, filter.breadcrumb()));
-        rendered.add(Frames.row(1,
-                Frames.span("  sort: ", "grey"),
-                Frames.span(sort.wireValue(), "default"),
-                Frames.span("    (", "grey"),
-                Frames.span("S", "bright_yellow", true),
-                Frames.span(" cycles)", "grey")));
-        int rowN = 2;
-        int n = 1;
-        if (rowsList.isEmpty()) {
-            rendered.add(Frames.colored(rowN++, "  (no documents)", "dark_grey"));
+    @Override
+    protected Element compose(BbsContext ctx) {
+        DocumentFilter filter = DocsCommon.currentFilter(ctx.session());
+        DocumentView docs = ctx.services().documents();
+
+        long total = docs.countByFilter(filter, ctx.session());
+        int totalPages = totalPages(total);
+        int page = clampPage(ctx, totalPages);
+        DocumentSort sort = DocumentSort.parse(ctx.session().docsResultsSort());
+        List<DocumentRow> rows = pageRows(ctx, filter, sort, page);
+
+        List<Element> children = new ArrayList<>();
+        children.add(new Element.Header(
+                DocsCommon.displayPath(filter.breadcrumb()),
+                total + " doc" + (total == 1 ? "" : "s")
+                        + " · page " + (page + 1) + "/" + Math.max(1, totalPages)));
+        children.add(new Element.Text(
+                "  sort: " + sort.wireValue() + "    ([S] cycles)", "grey"));
+        children.add(new Element.Spacer(1));
+
+        if (rows.isEmpty()) {
+            children.add(new Element.Text("  (no documents)", "dark_grey"));
         } else {
-            for (DocumentRow d : rowsList) {
-                String handle = users.findById(d.authorId())
-                        .map(UserRepository.UserRow::handle).orElse("?");
-                rendered.add(DocsCommon.docListRow(rowN++, n++, d, handle));
-            }
+            children.add(new Element.ListView(LIST_ID, items(rows), selectedId(ctx, rows)));
         }
-        rendered.add(DocsCommon.blank(rowN++));
 
-        // cd further — list only multi-value facets that the
-        // current filter doesn't already constrain.
-        ArrayList<Character> furtherKeys = new ArrayList<>();
-        if (filter.kind().isEmpty()
-                && docs.kindFacetCounts(filter, ctx.session()).size() > 1) {
-            // Note: the kind picker is reachable from the hub; offering
-            // it from results too is convenient. Letter K conflicts with
-            // prev-page; use lowercase semantic but the keystroke filter
-            // is uppercase. Use a different letter — pick "F"orm? No.
-            // Skip kind narrowing from results for v1; user pops back
-            // to hub for a fresh start. This keeps J/K free for paging.
+        children.add(new Element.Spacer(1));
+        for (Narrow n : narrowOptions(ctx, filter)) {
+            children.add(new Element.Text("  [" + n.key() + "] cd " + n.label(), "grey"));
         }
-        if (filter.tagsList().isEmpty()
-                || furtherTagsAvailable(docs, filter, ctx)) {
-            rendered.add(narrowRow(rowN++, "T", "by-tag/"));
-            furtherKeys.add('T');
+
+        children.add(new Element.Spacer(1));
+        children.add(new Element.KeyMenu(keyMenu(page, totalPages)));
+        return new Element.VStack(children, 0);
+    }
+
+    private List<Element.ListView.Item> items(List<DocumentRow> rows) {
+        List<Element.ListView.Item> items = new ArrayList<>(rows.size());
+        for (int i = 0; i < rows.size(); i++) {
+            DocumentRow d = rows.get(i);
+            String title = d.title() == null || d.title().isBlank() ? "(untitled)" : d.title();
+            String author = users.findById(d.authorId())
+                    .map(UserRepository.UserRow::handle).orElse("?");
+            String prefix = i < 9 ? "[" + (i + 1) + "] " : "    ";
+            items.add(new Element.ListView.Item(
+                    String.valueOf(d.id()),
+                    prefix + ScreenText.truncate(title, 48) + "  " + author,
+                    DocsCommon.formatWhen(d.updatedAt())));
+        }
+        return items;
+    }
+
+    /** Re-highlight the document just read, when the user comes back. */
+    private String selectedId(BbsContext ctx, List<DocumentRow> rows) {
+        Long current = ctx.session().currentDocumentId();
+        if (current == null) return null;
+        return rows.stream().anyMatch(d -> d.id() == current) ? String.valueOf(current) : null;
+    }
+
+    private record Narrow(String key, String label) {}
+
+    /** Facets worth offering: multi-valued, and not already constrained. */
+    private List<Narrow> narrowOptions(BbsContext ctx, DocumentFilter filter) {
+        DocumentView docs = ctx.services().documents();
+        List<Narrow> out = new ArrayList<>();
+        if (filter.tagsList().isEmpty() || furtherTagsAvailable(docs, filter, ctx)) {
+            out.add(new Narrow("T", "by-tag/"));
         }
         if (filter.authorId().isEmpty()
                 && docs.authorFacetCounts(filter, ctx.session(), 2).size() > 1) {
-            rendered.add(narrowRow(rowN++, "B", "by-author/"));
-            furtherKeys.add('B');
+            out.add(new Narrow("B", "by-author/"));
         }
         if (filter.year().isEmpty()
                 && docs.whenFacetCounts(filter, ctx.session()).size() > 1) {
-            rendered.add(narrowRow(rowN++, "W", "by-year/"));
-            furtherKeys.add('W');
+            out.add(new Narrow("W", "by-year/"));
         }
-
-        rendered.add(DocsCommon.blank(rowN++));
-        ArrayList<ServerMessage.Span> footer = new ArrayList<>();
-        footer.add(Frames.span("  [", "grey"));
-        footer.add(Frames.span(".", "bright_yellow", true));
-        footer.add(Frames.span("] up  ", "grey"));
-        if (totalPages > 1) {
-            if (page > 0) {
-                footer.add(Frames.span("[", "grey"));
-                footer.add(Frames.span("K", "bright_yellow", true));
-                footer.add(Frames.span("] prev  ", "grey"));
-            }
-            if (page < totalPages - 1) {
-                footer.add(Frames.span("[", "grey"));
-                footer.add(Frames.span("J", "bright_yellow", true));
-                footer.add(Frames.span("] next  ", "grey"));
-            }
-        }
-        footer.add(Frames.span("[", "grey"));
-        footer.add(Frames.span("/", "bright_yellow", true));
-        footer.add(Frames.span("] filter expr  ", "grey"));
-        footer.add(Frames.span("[", "grey"));
-        footer.add(Frames.span("S", "bright_yellow", true));
-        footer.add(Frames.span("] sort  ", "grey"));
-        footer.add(Frames.span("[", "grey"));
-        footer.add(Frames.span("Q", "bright_yellow", true));
-        footer.add(Frames.span("] back to menu", "grey"));
-        rendered.add(Frames.row(rowN++, footer.toArray(new ServerMessage.Span[0])));
-
-        ctx.send(Frames.update("main", 76, rendered));
-
-        // Keystroke set: 1..N for open, T/B/W for narrow, J/K for paging,
-        // dot for back, Q for menu, / for search prompt, S for sort cycle.
-        StringBuilder keys = new StringBuilder();
-        for (int i = 1; i <= rowsList.size() && i <= 9; i++) keys.append(i);
-        for (char c : furtherKeys) keys.append(c);
-        if (totalPages > 1) {
-            if (page > 0) keys.append('K');
-            if (page < totalPages - 1) keys.append('J');
-        }
-        keys.append(".QS/");
-        ctx.send(new InputPrompt("keystroke", "docs:/", null,
-                keys.toString(), null));
-        return Transition.None.INSTANCE;
+        return out;
     }
 
-    private static boolean furtherTagsAvailable(DocumentView docs,
-                                                DocumentFilter filter,
-                                                BbsContext ctx) {
-        return docs.tagFacetCounts(filter, ctx.session(), 2).stream()
-                .anyMatch(t -> !filter.tagsList().contains(t.tag()));
+    private List<Element.KeyMenu.KeyEntry> keyMenu(int page, int totalPages) {
+        List<Element.KeyMenu.KeyEntry> keys = new ArrayList<>();
+        keys.add(new Element.KeyMenu.KeyEntry("↑↓", "move"));
+        keys.add(new Element.KeyMenu.KeyEntry("Enter", "open"));
+        keys.add(new Element.KeyMenu.KeyEntry(".", "up"));
+        if (totalPages > 1 && page > 0) keys.add(new Element.KeyMenu.KeyEntry("K", "prev page"));
+        if (totalPages > 1 && page < totalPages - 1) keys.add(new Element.KeyMenu.KeyEntry("J", "next page"));
+        keys.add(new Element.KeyMenu.KeyEntry("/", "filter expr"));
+        keys.add(new Element.KeyMenu.KeyEntry("S", "sort"));
+        keys.add(new Element.KeyMenu.KeyEntry("Q", "back to menu"));
+        return keys;
     }
 
-    private static Row narrowRow(int rowN, String letter, String label) {
-        return Frames.row(rowN,
-                Frames.span("  [", "grey"),
-                Frames.span(letter, "bright_yellow", true),
-                Frames.span("] cd ", "grey"),
-                Frames.span(label, "default"));
+    @Override
+    protected void onEvent(BbsContext ctx, AppEvent ev) {
+        switch (ev) {
+            case AppEvent.ListSelected ls -> {
+                if (LIST_ID.equals(ls.widgetId())) open(ctx, ls.itemId());
+            }
+            case AppEvent.FieldCancel fc -> backOneFacet(ctx);
+            default -> { /* no other widgets on this screen */ }
+        }
     }
 
     @Override
     public Transition onKey(BbsContext ctx, String k) {
-        if (".".equals(k)) {
-            handleBackOneFacet(ctx);
-            return Transition.None.INSTANCE;
-        }
-        if ("Q".equals(k)) {
-            // Pop the whole docs stack — hub is at the bottom; pop
-            // here pops to picker (already replaced) or hub.
-            ctx.session().setDocsFilter(null);
-            ctx.session().setDocsResultsPage(null);
-            ctx.pop();
-            return Transition.None.INSTANCE;
-        }
-        if ("J".equals(k)) {
-            advancePage(ctx, +1);
-            return Transition.None.INSTANCE;
-        }
-        if ("K".equals(k)) {
-            advancePage(ctx, -1);
-            return Transition.None.INSTANCE;
-        }
-        if ("T".equals(k)) {
-            ctx.push(Phase.DOCS_FACET_TAG);
-            return Transition.None.INSTANCE;
-        }
-        if ("B".equals(k)) {
-            ctx.push(Phase.DOCS_FACET_BY);
-            return Transition.None.INSTANCE;
-        }
-        if ("W".equals(k)) {
-            ctx.push(Phase.DOCS_FACET_WHEN);
-            return Transition.None.INSTANCE;
-        }
-        if ("/".equals(k)) {
-            ctx.push(Phase.DOCS_SEARCH_PROMPT);
-            return Transition.None.INSTANCE;
-        }
-        if ("S".equals(k)) {
-            cycleSort(ctx);
-            return Transition.None.INSTANCE;
-        }
-        if (k.length() == 1 && k.charAt(0) >= '1' && k.charAt(0) <= '9') {
-            handleOpen(ctx, k.charAt(0) - '0');
+        switch (k) {
+            case "." -> backOneFacet(ctx);
+            case "Q" -> {
+                ctx.session().setDocsFilter(null);
+                ctx.session().setDocsResultsPage(null);
+                popAndExit(ctx);
+            }
+            case "J" -> advancePage(ctx, +1);
+            case "K" -> advancePage(ctx, -1);
+            case "T" -> pushAndExit(ctx, Phase.DOCS_FACET_TAG);
+            case "B" -> pushAndExit(ctx, Phase.DOCS_FACET_BY);
+            case "W" -> pushAndExit(ctx, Phase.DOCS_FACET_WHEN);
+            case "/" -> pushAndExit(ctx, Phase.DOCS_SEARCH_PROMPT);
+            case "S" -> cycleSort(ctx);
+            default -> {
+                if (k.length() == 1 && k.charAt(0) >= '1' && k.charAt(0) <= '9') {
+                    openByOrdinal(ctx, k.charAt(0) - '0');
+                }
+            }
         }
         return Transition.None.INSTANCE;
     }
 
     private void cycleSort(BbsContext ctx) {
-        DocumentSort current = DocumentSort.parse(ctx.session().docsResultsSort());
-        DocumentSort next = current.cycle();
+        DocumentSort next = DocumentSort.parse(ctx.session().docsResultsSort()).cycle();
         ctx.session().setDocsResultsSort(next.wireValue());
-        // Reset to page 0 when changing sort — order is now different,
-        // page-N "where you were" is meaningless under the new order.
+        // Page N under the old order means nothing under the new one.
         ctx.session().setDocsResultsPage(0);
-        onEnter(ctx);
+        repaintNow(ctx);
+        ctx.send(defaultInputPrompt(ctx));
     }
 
     private void advancePage(BbsContext ctx, int delta) {
         Integer cur = ctx.session().docsResultsPage();
         int page = cur == null ? 0 : cur;
         ctx.session().setDocsResultsPage(Math.max(0, page + delta));
-        onEnter(ctx);
+        repaintNow(ctx);
+        ctx.send(defaultInputPrompt(ctx));
     }
 
-    private void handleOpen(BbsContext ctx, int n) {
-        DocumentFilter filter = DocsCommon.currentFilter(ctx.session());
-        Integer pageBox = ctx.session().docsResultsPage();
-        int page = pageBox == null ? 0 : pageBox;
-        int pageRows = Math.min(DocsCommon.PAGE_SIZE, 9);
-        List<DocumentRow> rowsList = ctx.services().documents().findByFilter(
-                filter, ctx.session(), page * DocsCommon.PAGE_SIZE, pageRows);
-        if (n < 1 || n > rowsList.size()) return;
-        ctx.session().setCurrentDocumentId(rowsList.get(n - 1).id());
-        ctx.push(Phase.DOCUMENT_SCREEN);
+    /** Selection arrives as an item id — a document id as a string. */
+    private void open(BbsContext ctx, String itemId) {
+        long id;
+        try {
+            id = Long.parseLong(itemId);
+        } catch (NumberFormatException e) {
+            return;
+        }
+        // Re-check against the page actually rendered: the id came off the
+        // wire and must be one this filter and this user can see.
+        if (currentPageRows(ctx).stream().noneMatch(d -> d.id() == id)) return;
+        enter(ctx, id);
+    }
+
+    private void openByOrdinal(BbsContext ctx, int n) {
+        List<DocumentRow> rows = currentPageRows(ctx);
+        if (n < 1 || n > rows.size()) return;
+        enter(ctx, rows.get(n - 1).id());
+    }
+
+    private void enter(BbsContext ctx, long documentId) {
+        ctx.session().setCurrentDocumentId(documentId);
+        pushAndExit(ctx, Phase.DOCUMENT_SCREEN);
     }
 
     /**
-     * {@code [..]} drops the most-recently-added facet. Without
-     * tracking add-order, "most recent" maps to a deterministic
-     * priority: tag (last tag in the list) → year → author → kind.
-     * Pops to hub if the filter ends empty.
+     * {@code [.]} drops the most-recently-added facet. Without add-order
+     * tracking, "most recent" maps to a deterministic priority:
+     * tag (last in the list) → year → author → kind. Pops to hub if the
+     * filter ends empty.
      */
-    private void handleBackOneFacet(BbsContext ctx) {
+    private void backOneFacet(BbsContext ctx) {
         DocumentFilter cur = DocsCommon.currentFilter(ctx.session());
         DocumentFilter next;
         if (!cur.tagsList().isEmpty()) {
-            String last = cur.tagsList().get(cur.tagsList().size() - 1);
-            next = cur.dropTag(last);
+            next = cur.dropTag(cur.tagsList().get(cur.tagsList().size() - 1));
         } else if (cur.year().isPresent() || cur.month().isPresent()) {
             next = cur.dropWhen();
         } else if (cur.authorId().isPresent()) {
@@ -297,17 +276,77 @@ public class DocsResultsScreen implements Screen {
         } else if (cur.kind().isPresent()) {
             next = cur.dropKind();
         } else {
-            ctx.pop();
+            popAndExit(ctx);
             return;
         }
         if (next.isEmpty()) {
             ctx.session().setDocsFilter(null);
             ctx.session().setDocsResultsPage(null);
-            ctx.replaceTopAndEnter(Phase.DOCS_HUB);
+            replaceTopAndExit(ctx, Phase.DOCS_HUB);
             return;
         }
         DocsCommon.writeFilter(ctx.session(), next);
         ctx.session().setDocsResultsPage(0);
-        onEnter(ctx);
+        repaintNow(ctx);
+        ctx.send(defaultInputPrompt(ctx));
+    }
+
+    /**
+     * Keystroke set: digits for the first nine rows, facet letters that are
+     * actually offered, paging where a neighbour page exists, plus the
+     * always-available controls.
+     */
+    @Override
+    protected ServerMessage.InputPrompt defaultInputPrompt(BbsContext ctx) {
+        DocumentFilter filter = DocsCommon.currentFilter(ctx.session());
+        int totalPages = totalPages(ctx.services().documents().countByFilter(filter, ctx.session()));
+        int page = clampPage(ctx, totalPages);
+
+        StringBuilder keys = new StringBuilder();
+        int digits = Math.min(9, currentPageRows(ctx).size());
+        for (int i = 1; i <= digits; i++) keys.append(i);
+        for (Narrow n : narrowOptions(ctx, filter)) keys.append(n.key());
+        if (totalPages > 1 && page > 0) keys.append('K');
+        if (totalPages > 1 && page < totalPages - 1) keys.append('J');
+        keys.append(".QS/");
+        return new ServerMessage.InputPrompt("keystroke", "docs:/", null, keys.toString(), null);
+    }
+
+    private int totalPages(long total) {
+        return total == 0 ? 0 : (int) ((total + DocsCommon.PAGE_SIZE - 1) / DocsCommon.PAGE_SIZE);
+    }
+
+    private int clampPage(BbsContext ctx, int totalPages) {
+        Integer box = ctx.session().docsResultsPage();
+        int page = box == null ? 0 : Math.max(0, box);
+        if (totalPages > 0 && page >= totalPages) {
+            page = totalPages - 1;
+            ctx.session().setDocsResultsPage(page);
+        }
+        return page;
+    }
+
+    /** The rows currently on screen — one query shape, used everywhere. */
+    private List<DocumentRow> currentPageRows(BbsContext ctx) {
+        DocumentFilter filter = DocsCommon.currentFilter(ctx.session());
+        DocumentSort sort = DocumentSort.parse(ctx.session().docsResultsSort());
+        int totalPages = totalPages(ctx.services().documents().countByFilter(filter, ctx.session()));
+        return pageRows(ctx, filter, sort, clampPage(ctx, totalPages));
+    }
+
+    private List<DocumentRow> pageRows(BbsContext ctx, DocumentFilter filter,
+                                       DocumentSort sort, int page) {
+        // Whole page, not nine: the cap existed only because the open keys
+        // were single digits, and the list reaches every row.
+        return ctx.services().documents().findByFilter(
+                filter, ctx.session(), sort,
+                page * DocsCommon.PAGE_SIZE, DocsCommon.PAGE_SIZE);
+    }
+
+    private static boolean furtherTagsAvailable(DocumentView docs,
+                                                DocumentFilter filter,
+                                                BbsContext ctx) {
+        return docs.tagFacetCounts(filter, ctx.session(), 2).stream()
+                .anyMatch(t -> !filter.tagsList().contains(t.tag()));
     }
 }
